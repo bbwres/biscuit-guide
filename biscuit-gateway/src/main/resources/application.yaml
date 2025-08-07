@@ -1,0 +1,30 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  servlet:
+    multipart:
+      max-request-size: 500MB
+      max-file-size: 500MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers,caches
+    jmx:
+      exposure:
+        include: health,info,metrics,loggers,caches
+  endpoint:
+    health:
+      show-details: always
+
+biscuit:
+  gateway:
+    no-auth-uris:
+      - /service-a/**
+      - /service-b/**
+
+
+
+
