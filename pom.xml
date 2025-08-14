@@ -28,6 +28,7 @@
     <modules>
         <module>biscuit-gateway</module>
         <module>biscuit-common</module>
+        <module>biscuit-auth</module>
     </modules>
 
     <properties>
