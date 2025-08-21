@@ -38,6 +38,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
@@ -63,16 +67,22 @@
         </dependency>
         <dependency>
             <groupId>cn.bbwres</groupId>
-            <artifactId>biscuit-security-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-mybatis-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.bbwres</groupId>
-            <artifactId>biscuit-security-captcha-boot-starter</artifactId>
+            <artifactId>biscuit-rpc-boot-starter</artifactId>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>cn.bbwres</groupId>-->
+<!--            <artifactId>biscuit-security-boot-starter</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>cn.bbwres</groupId>-->
+<!--            <artifactId>biscuit-security-captcha-boot-starter</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>

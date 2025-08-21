@@ -6,7 +6,15 @@ spring:
     multipart:
       max-request-size: 500MB
       max-file-size: 500MB
+  #数据源配置
+  datasource:
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      connection-timeout: 60000
+      connection-test-query: SELECT 1
 
+# 监控配置
 management:
   endpoints:
     web:
@@ -18,6 +26,31 @@ management:
   endpoint:
     health:
       show-details: always
+# mybatis plus 配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  mapper:
+    base-packages: cn.bbwres.biscuit.module.auth.dao
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    local-cache-scope: statement
+
+
+feign:
+  okhttp:
+    # 启动 okhttp
+    enabled: true
+  httpclient:
+    #2s
+    connection-timeout: 10000
+    ok-http:
+      read-timeout: 30
+    max-connections: 200
+    time-to-live: 900
+
+
 
 
 

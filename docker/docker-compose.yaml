@@ -1,0 +1,56 @@
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local  # 使用本地卷驱动
+
+services:
+  ## 数据库
+  postgresql:
+    image: 'swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/bitnami/postgresql:16.6.0'
+    volumes:
+      - db-data:/bitnami/postgresql
+      - ./init-scripts:/docker-entrypoint-initdb.d  # 初始化脚本目录
+    ports:
+      - "5432:5432"  # 明确映射宿主机端口
+    networks:
+      - app-network
+    environment:
+      - POSTGRESQL_USERNAME=postgresql  # 数据库用户名
+      - POSTGRESQL_PASSWORD=admin  # 数据库密码
+      - POSTGRESQL_DATABASE=postgresql  # 初始数据库名
+      - POSTGRESQL_POSTGRES_PASSWORD=admin123  # 超级用户密码
+    restart: always  # 自动重启策略
+
+  redis:
+    image: 'swr.cn-north-4.myhuaweicloud.com/ddn-k8s/quay.io/opstree/redis:v7.0.5'
+    volumes:
+      - db-data:/data
+      - ./init-scripts:/docker-entrypoint-initdb.d  # 初始化脚本目录
+    ports:
+      - "6379:6379"  # 明确映射宿主机端口
+    networks:
+      - app-network
+    restart: always  # 自动重启策略
+
+  nacos:
+    image: 'swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/nacos/nacos-server:v2.5.1'
+    volumes:
+      - db-data:/data
+      - ./init-scripts:/docker-entrypoint-initdb.d  # 初始化脚本目录
+    ports:
+      - "8080:8080"
+      - "8848:8848"
+      - "9848:9848"
+    environment:
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+      - NACOS_AUTH_IDENTITY_KEY=serverIdentity
+      - NACOS_AUTH_IDENTITY_VALUE=security
+      - NACOS_AUTH_TOKEN=VGhpc0lzTXlDdXN0b21TZWNyZXRLZXkwMTIzNDU2Nzg=
+    networks:
+      - app-network
+    restart: always  # 自动重启策略
+

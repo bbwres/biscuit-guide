@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bbwres.biscuit.module.auth.dao.MenuResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.bbwres.biscuit.module.auth.entity.MenuResourceEntity">
+        <id column="id" property="id" />
+        <result column="menu_id" property="menuId" />
+        <result column="create_time" property="createTime" />
+        <result column="creator" property="creator" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="url_method" property="urlMethod" />
+        <result column="url_path" property="urlPath" />
+        <result column="match_type" property="matchType" />
+        <result column="auth_type" property="authType" />
+        <result column="description" property="description" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, menu_id, create_time, creator, updater, update_time, tenant_id, url_method, url_path, match_type, auth_type, description
+    </sql>
+
+</mapper>

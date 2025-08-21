@@ -1,3 +1,15 @@
+server:
+  port: 28001
+management:
+  server:
+    port: 27001
+logging:
+  file:
+    name: logs/${spring.application.name}.log
+  config: classpath:logback-spring-sleuth.xml
+#  level:
+#    root: debug
+
 spring:
   application:
     name: auth
@@ -20,13 +32,25 @@ spring:
             group: DEFAULT_GROUP
             refresh: true
 
-server:
-  port: 28001
-management:
-  server:
-    port: 27001
-logging:
-  file:
-    name: logs/${spring.application.name}.log
-  config: classpath:logback-spring-sleuth.xml
+  datasource:
+    # 数据库配置
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5432/auth
+    username: postgresql
+    password: admin
+
+
+
+springdoc:
+  # 接口文档配置
+  api-docs:
+    enabled: true
+    swagger:
+      title: 认证服务
+      description: 认证服务
+      author: zlf
+      version: 1.0
+      basePackage: cn.bbwres.biscuit.module.auth.controller
+
+
 
