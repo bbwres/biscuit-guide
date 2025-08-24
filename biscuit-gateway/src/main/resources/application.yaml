@@ -19,11 +19,6 @@ management:
     health:
       show-details: always
 
-biscuit:
-  gateway:
-    no-auth-uris:
-      - /service-a/**
-      - /service-b/**
 
 
 

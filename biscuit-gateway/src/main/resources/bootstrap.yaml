@@ -5,12 +5,12 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER:localhost:8848}
-        namespace: ${NACOS_NAMESPACE:local}
+        namespace: ${NACOS_NAMESPACE:public}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
       config:
         server-addr: ${NACOS_SERVER:localhost:8848}
-        namespace: ${NACOS_NAMESPACE:local}
+        namespace: ${NACOS_NAMESPACE:public}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
         group: DEFAULT_GROUP
@@ -19,6 +19,15 @@ spring:
           - dataId: biscuit-shared-configs.yaml
             group: DEFAULT_GROUP
             refresh: true
+    gateway:
+      routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+
 
 server:
   port: 28000
@@ -30,3 +39,9 @@ logging:
     name: logs/${spring.application.name}.log
   config: classpath:logback-spring-sleuth.xml
 
+biscuit:
+  gateway:
+    no-auth-uris:
+      - /auth/**
+      - /service-b/**
+    disable-csrf: true

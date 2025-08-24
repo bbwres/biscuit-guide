@@ -17,12 +17,12 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER:localhost:8848}
-        namespace: ${NACOS_NAMESPACE:local}
+        namespace: ${NACOS_NAMESPACE:public}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
       config:
         server-addr: ${NACOS_SERVER:localhost:8848}
-        namespace: ${NACOS_NAMESPACE:local}
+        namespace: ${NACOS_NAMESPACE:public}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
         group: DEFAULT_GROUP
@@ -38,6 +38,14 @@ spring:
     url: jdbc:postgresql://127.0.0.1:5432/auth
     username: postgresql
     password: admin
+  redis:
+    host: localhost
+    port: 6379
+    lettuce:
+      pool:
+        enabled: true
+        max-active: 10
+        min-idle: 5
 
 
 
@@ -50,7 +58,15 @@ springdoc:
       description: 认证服务
       author: zlf
       version: 1.0
-      basePackage: cn.bbwres.biscuit.module.auth.controller
+  packages-to-scan:
+    - cn.bbwres.biscuit.module.auth.controller
+  show-oauth2-endpoints: true
 
+biscuit:
+  security:
+    token-store-type: redis
+  rpc:
+    security:
+      enable: true
 
 

@@ -74,15 +74,19 @@
             <artifactId>biscuit-rpc-boot-starter</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>cn.bbwres</groupId>-->
-<!--            <artifactId>biscuit-security-boot-starter</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-security-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-redis-cache-boot-starter</artifactId>
+        </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>cn.bbwres</groupId>-->
-<!--            <artifactId>biscuit-security-captcha-boot-starter</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>cn.bbwres</groupId>-->
+        <!--            <artifactId>biscuit-security-captcha-boot-starter</artifactId>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>

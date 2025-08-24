@@ -60,12 +60,8 @@
             <artifactId>biscuit-nacos-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-rpc-boot-starter</artifactId>
         </dependency>
     </dependencies>
 
