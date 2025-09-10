@@ -41,8 +41,7 @@ public class RoleController {
     @Operation(summary = "获得角色表分页")
     public Result<Page<RoleRespVO,RolePageReqVO>> getRolePage(@Validated @RequestBody Page<RoleEntity,RolePageReqVO> pageVO) {
         Page<RoleEntity,RolePageReqVO> pageResult = roleService.getRolePage(pageVO);
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    RoleConvert.INSTANCE.convertPage(pageResult));
+        return Result.success(RoleConvert.INSTANCE.convertPage(pageResult));
     }
 
     /**
@@ -54,8 +53,7 @@ public class RoleController {
     @Operation(summary = "根据id获取标签定义的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<RoleRespVO> getById(@RequestParam("id") String entityId) {
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    RoleConvert.INSTANCE.convert(roleService.getRole(entityId)));
+        return Result.success(RoleConvert.INSTANCE.convert(roleService.getRole(entityId)));
     }
 
 

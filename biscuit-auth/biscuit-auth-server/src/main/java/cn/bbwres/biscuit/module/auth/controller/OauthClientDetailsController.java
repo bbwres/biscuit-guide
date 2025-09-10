@@ -41,8 +41,7 @@ public class OauthClientDetailsController {
     @Operation(summary = "获得认证客户端信息表分页")
     public Result<Page<OauthClientDetailsRespVO,OauthClientDetailsPageReqVO>> getOauthClientDetailsPage(@Validated @RequestBody Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> pageVO) {
         Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> pageResult = oauthClientDetailsService.getOauthClientDetailsPage(pageVO);
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    OauthClientDetailsConvert.INSTANCE.convertPage(pageResult));
+        return Result.success(OauthClientDetailsConvert.INSTANCE.convertPage(pageResult));
     }
 
     /**
@@ -54,8 +53,7 @@ public class OauthClientDetailsController {
     @Operation(summary = "根据id获取标签定义的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<OauthClientDetailsRespVO> getById(@RequestParam("id") String entityId) {
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    OauthClientDetailsConvert.INSTANCE.convert(oauthClientDetailsService.getOauthClientDetails(entityId)));
+        return Result.success(OauthClientDetailsConvert.INSTANCE.convert(oauthClientDetailsService.getOauthClientDetails(entityId)));
     }
 
 

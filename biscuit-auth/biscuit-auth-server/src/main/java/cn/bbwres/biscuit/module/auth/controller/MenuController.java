@@ -41,8 +41,7 @@ public class MenuController {
     @Operation(summary = "获得菜单权限表分页")
     public Result<Page<MenuRespVO,MenuPageReqVO>> getMenuPage(@Validated @RequestBody Page<MenuEntity,MenuPageReqVO> pageVO) {
         Page<MenuEntity,MenuPageReqVO> pageResult = menuService.getMenuPage(pageVO);
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(),GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    MenuConvert.INSTANCE.convertPage(pageResult));
+        return Result.success(MenuConvert.INSTANCE.convertPage(pageResult));
     }
 
     /**
@@ -54,8 +53,7 @@ public class MenuController {
     @Operation(summary = "根据id获取标签定义的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<MenuRespVO> getById(@RequestParam("id") String entityId) {
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                    MenuConvert.INSTANCE.convert(menuService.getMenu(entityId)));
+        return Result.success(MenuConvert.INSTANCE.convert(menuService.getMenu(entityId)));
     }
 
 

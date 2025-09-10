@@ -2,7 +2,6 @@ package cn.bbwres.biscuit.module.auth.controller;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.dto.Result;
-import cn.bbwres.biscuit.exception.constants.GlobalErrorCodeConstants;
 import cn.bbwres.biscuit.module.auth.controller.vo.RoleMenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RoleMenuRespVO;
 import cn.bbwres.biscuit.module.auth.convert.RoleMenuConvert;
@@ -42,8 +41,7 @@ public class RoleMenuController {
     @Operation(summary = "获得角色所属的资源分页")
     public Result<Page<RoleMenuRespVO, RoleMenuPageReqVO>> getRoleMenuPage(@Validated @RequestBody Page<RoleMenuEntity, RoleMenuPageReqVO> pageVO) {
         Page<RoleMenuEntity, RoleMenuPageReqVO> pageResult = roleMenuService.getRoleMenuPage(pageVO);
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                RoleMenuConvert.INSTANCE.convertPage(pageResult));
+        return Result.success(RoleMenuConvert.INSTANCE.convertPage(pageResult));
     }
 
     /**
@@ -55,8 +53,7 @@ public class RoleMenuController {
     @Operation(summary = "根据id获取标签定义的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<RoleMenuRespVO> getById(@RequestParam("id") String entityId) {
-        return new Result<>(GlobalErrorCodeConstants.SUCCESS.getCode(), GlobalErrorCodeConstants.SUCCESS.getMessage(),
-                RoleMenuConvert.INSTANCE.convert(roleMenuService.getRoleMenu(entityId)));
+        return Result.success(RoleMenuConvert.INSTANCE.convert(roleMenuService.getRoleMenu(entityId)));
     }
 
 
