@@ -18,17 +18,33 @@
 
 package cn.bbwres.biscuit.module.auth.config;
 
+import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
+import cn.bbwres.biscuit.module.auth.service.cache.OauthClientDetailsCacheService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
+import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.stereotype.Component;
 
 /**
  * 客户端获取
+ *
  * @author zhanglinfeng
  */
+@Slf4j
 @Component("myClientDetailsService")
 public class ClientDetailsServiceImpl implements ClientDetailsService {
+
+    private OauthClientDetailsCacheService oauthClientDetailsCacheService;
+
+    @Autowired
+    public void setOauthClientDetailsCacheService(OauthClientDetailsCacheService oauthClientDetailsCacheService) {
+        this.oauthClientDetailsCacheService = oauthClientDetailsCacheService;
+    }
+
+
     /**
      * Load a client by the client id. This method must not return null.
      *
@@ -38,6 +54,16 @@ public class ClientDetailsServiceImpl implements ClientDetailsService {
      */
     @Override
     public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
-        return null;
+        OauthClientDetailsEntity details = oauthClientDetailsCacheService.getOauthClientDetails(clientId);
+        if (details == null) {
+            log.info("根据clientId:[{}],没有查询到客户端信息!", clientId);
+            return null;
+        }
+        BaseClientDetails baseClientDetails = new BaseClientDetails(details.getId(), details.getResourceIds(),
+                details.getScope(), details.getAuthorizedGrantTypes(), details.getAuthorities());
+        baseClientDetails.setAccessTokenValiditySeconds(details.getAccessTokenValidity());
+        baseClientDetails.setRefreshTokenValiditySeconds(details.getRefreshTokenValidity());
+        baseClientDetails.setClientSecret(details.getClientSecret());
+        return baseClientDetails;
     }
 }

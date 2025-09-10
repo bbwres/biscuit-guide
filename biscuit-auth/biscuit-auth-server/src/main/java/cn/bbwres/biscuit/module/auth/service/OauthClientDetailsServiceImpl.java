@@ -1,15 +1,17 @@
 package cn.bbwres.biscuit.module.auth.service;
 
 
-import java.util.*;
 import cn.bbwres.biscuit.dto.Page;
-import cn.bbwres.biscuit.module.auth.controller.vo.*;
-import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
+import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsPageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.OauthClientDetailsMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -20,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author zlf
  * @Date 2025-08-19
  */
-@RequiredArgsConstructor(onConstructor_={@Autowired})
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Slf4j
 @Service
 public class OauthClientDetailsServiceImpl implements OauthClientDetailsService {
@@ -57,8 +59,19 @@ public class OauthClientDetailsServiceImpl implements OauthClientDetailsService 
      * @return 认证客户端信息表分页
      */
     @Override
-    public  Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> getOauthClientDetailsPage(Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> pageReqVO) {
+    public Page<OauthClientDetailsEntity, OauthClientDetailsPageReqVO> getOauthClientDetailsPage(Page<OauthClientDetailsEntity, OauthClientDetailsPageReqVO> pageReqVO) {
         return oauthClientDetailsMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 根据id更新数据
+     *
+     * @param entity
+     * @return
+     */
+    @Override
+    public boolean updateById(OauthClientDetailsEntity entity) {
+        return oauthClientDetailsMapper.updateById(entity) > 0;
     }
 
 

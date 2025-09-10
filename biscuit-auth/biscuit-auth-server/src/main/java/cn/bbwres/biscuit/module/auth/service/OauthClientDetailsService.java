@@ -44,4 +44,10 @@ public interface OauthClientDetailsService {
     Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> getOauthClientDetailsPage(Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> pageReqVO);
 
 
+    /**
+     * 根据id更新数据
+     * @param entity
+     * @return
+     */
+    boolean updateById(OauthClientDetailsEntity entity);
 }

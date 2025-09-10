@@ -18,6 +18,8 @@
 
 package cn.bbwres.biscuit.module.auth.config;
 
+import cn.bbwres.biscuit.module.auth.service.LoginAccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,6 +32,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    private LoginAccountService loginAccountService;
+
+    @Autowired
+    public void setLoginAccountService(LoginAccountService loginAccountService) {
+        this.loginAccountService = loginAccountService;
+    }
+
     /**
      * 加载用户
      * @param username
@@ -38,6 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         return null;
     }
 }
