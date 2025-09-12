@@ -1,14 +1,14 @@
 package cn.bbwres.biscuit.module.auth.convert;
 
-import java.util.*;
-
-
+import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsAddOrUpdateReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsPageReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsRespVO;
+import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-import cn.bbwres.biscuit.module.auth.controller.vo.*;
-import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
-import cn.bbwres.biscuit.dto.Page;
 
+import java.util.List;
 
 
 /**
@@ -25,18 +25,20 @@ public interface OauthClientDetailsConvert {
     /**
      * 转换对象
      */
-     OauthClientDetailsConvert INSTANCE = Mappers.getMapper(OauthClientDetailsConvert.class);
+    OauthClientDetailsConvert INSTANCE = Mappers.getMapper(OauthClientDetailsConvert.class);
 
 
     /**
      * 对象转换
+     *
      * @param bean 分页查询条件
      * @return
      */
-     OauthClientDetailsRespVO convert(OauthClientDetailsEntity bean);
+    OauthClientDetailsRespVO convert(OauthClientDetailsEntity bean);
 
     /**
      * 转换list字段
+     *
      * @param list 请求list
      * @return
      */
@@ -44,10 +46,19 @@ public interface OauthClientDetailsConvert {
 
     /**
      * 分页查询数据
+     *
      * @param page 分页数据
      * @return
      */
-    Page<OauthClientDetailsRespVO,OauthClientDetailsPageReqVO> convertPage(Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> page);
+    Page<OauthClientDetailsRespVO, OauthClientDetailsPageReqVO> convertPage(Page<OauthClientDetailsEntity, OauthClientDetailsPageReqVO> page);
 
+
+    /**
+     * 转换请求参数
+     *
+     * @param req
+     * @return
+     */
+    OauthClientDetailsEntity covertAddOrUpdateReq(OauthClientDetailsAddOrUpdateReqVO req);
 
 }

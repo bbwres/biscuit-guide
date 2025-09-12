@@ -8,6 +8,7 @@ import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -28,6 +29,8 @@ import java.util.List;
 public class OauthClientDetailsServiceImpl implements OauthClientDetailsService {
 
     private final OauthClientDetailsMapper oauthClientDetailsMapper;
+
+    private final PasswordEncoder passwordEncoder;
 
 
     /**
@@ -72,6 +75,17 @@ public class OauthClientDetailsServiceImpl implements OauthClientDetailsService 
     @Override
     public boolean updateById(OauthClientDetailsEntity entity) {
         return oauthClientDetailsMapper.updateById(entity) > 0;
+    }
+
+    /**
+     * 新增客户端信息
+     *
+     * @param oauthClientDetailsEntity
+     */
+    @Override
+    public void save(OauthClientDetailsEntity oauthClientDetailsEntity) {
+        oauthClientDetailsEntity.setClientSecret(passwordEncoder.encode(oauthClientDetailsEntity.getClientSecret()));
+        oauthClientDetailsMapper.insert(oauthClientDetailsEntity);
     }
 
 

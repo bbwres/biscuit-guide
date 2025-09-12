@@ -2,11 +2,15 @@ package cn.bbwres.biscuit.module.auth.controller;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.dto.Result;
+import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsAddOrUpdateReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsPageReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsRespVO;
 import cn.bbwres.biscuit.module.auth.convert.OauthClientDetailsConvert;
 import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
 import cn.bbwres.biscuit.module.auth.service.OauthClientDetailsService;
+import cn.bbwres.biscuit.module.auth.service.cache.OauthClientDetailsCacheService;
+import cn.bbwres.biscuit.validate.ValidateAddGroup;
+import cn.bbwres.biscuit.validate.ValidateEditGroup;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,6 +33,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/oauthClientDetails")
 public class OauthClientDetailsController {
     private final OauthClientDetailsService oauthClientDetailsService;
+
+    private final OauthClientDetailsCacheService oauthClientDetailsCacheService;
 
 
     /**
@@ -58,13 +64,26 @@ public class OauthClientDetailsController {
 
 
     /**
-     * 新增或者修改客户端配置
+     * 新增客户端配置
      *
-     * @return
+     * @return Result
      */
-    @PostMapping("/addOrUpdate")
-    @Operation(summary = "新增或者修改客户端配置")
-    public Result<Void> addOrUpdate(@Validated @RequestBody String aa) {
+    @PostMapping("/add")
+    @Operation(summary = "新增客户端配置")
+    public Result<Void> add(@Validated(ValidateAddGroup.class) @RequestBody OauthClientDetailsAddOrUpdateReqVO req) {
+        oauthClientDetailsService.save(OauthClientDetailsConvert.INSTANCE.covertAddOrUpdateReq(req));
+        return Result.success(null);
+    }
+
+    /**
+     * 修改客户端配置
+     *
+     * @return Result
+     */
+    @PostMapping("/edit")
+    @Operation(summary = "修改客户端配置")
+    public Result<Void> edit(@Validated(ValidateEditGroup.class) @RequestBody OauthClientDetailsAddOrUpdateReqVO req) {
+        oauthClientDetailsCacheService.updateById(OauthClientDetailsConvert.INSTANCE.covertAddOrUpdateReq(req));
         return Result.success(null);
     }
 

@@ -50,4 +50,11 @@ public interface OauthClientDetailsService {
      * @return
      */
     boolean updateById(OauthClientDetailsEntity entity);
+
+    /**
+     * 新增客户端信息
+     * @param oauthClientDetailsEntity
+     */
+    void save(OauthClientDetailsEntity oauthClientDetailsEntity);
+
 }
