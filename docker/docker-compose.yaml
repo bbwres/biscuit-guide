@@ -5,6 +5,10 @@ networks:
 volumes:
   db-data:
     driver: local  # 使用本地卷驱动
+    driver_opts:
+      type: none
+      device: /Users/zhanglinfeng/opt/docker-data  # 宿主机上的实际路径
+      o: bind
 
 services:
   ## 数据库
@@ -53,4 +57,3 @@ services:
     networks:
       - app-network
     restart: always  # 自动重启策略
-
