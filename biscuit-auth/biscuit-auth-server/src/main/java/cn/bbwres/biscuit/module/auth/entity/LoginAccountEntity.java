@@ -1,29 +1,31 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
+import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+import java.time.LocalDateTime;
+
 /**
-*
-* 登陆账户表
-*
-* @author zlf
-* @Date 2025-08-19
-*/
+ * 登陆账户表
+ *
+ * @author zlf
+ * @Date 2025-08-19
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("t_login_account")
 public class LoginAccountEntity extends BaseTenantEntity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     /**
      * 主键
@@ -53,8 +55,6 @@ public class LoginAccountEntity extends BaseTenantEntity {
     private String phone;
 
 
-
-
     /**
      * 关联用户表id
      */
@@ -66,7 +66,7 @@ public class LoginAccountEntity extends BaseTenantEntity {
      * 登陆用户状态
      */
     @TableField("status")
-    private String status;
+    private LoginAccountStatusEnum status;
 
 
     /**
@@ -88,8 +88,6 @@ public class LoginAccountEntity extends BaseTenantEntity {
      */
     @TableField("last_update_password_time")
     private LocalDateTime lastUpdatePasswordTime;
-
-
 
 
 }

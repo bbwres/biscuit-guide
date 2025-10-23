@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+
 /**
  * 认证客户端信息表
  *
@@ -21,6 +23,7 @@ import lombok.experimental.Accessors;
 @TableName("t_oauth_client_details")
 public class OauthClientDetailsEntity extends BaseTenantEntity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     /**
      * 客户端id
@@ -30,24 +33,23 @@ public class OauthClientDetailsEntity extends BaseTenantEntity {
 
 
     /**
-     * 客户端所能访问的资源id集合,多个资源时用逗号(,)分隔
-     */
-    @TableField("resource_ids")
-    private String resourceIds;
-
-
-    /**
-     * 用于指定客户端(client)的访问密匙
+     * 用于指定客户端(client)的访问密钥
      */
     @TableField("client_secret")
     private String clientSecret;
+
+    /**
+     * 客户端支持的认证方式
+     */
+    @TableField("client_authentication_methods")
+    private String clientAuthenticationMethods;
 
 
     /**
      * 指定客户端申请的权限范围,可选值包括read,write,trust;
      */
-    @TableField("scope")
-    private String scope;
+    @TableField("scopes")
+    private String scopes;
 
 
     /**
@@ -58,17 +60,17 @@ public class OauthClientDetailsEntity extends BaseTenantEntity {
 
 
     /**
-     * 客户端的重定向URI,可为空
+     * 客户端的重定向URI
      */
     @TableField("web_server_redirect_uri")
     private String webServerRedirectUri;
 
 
     /**
-     * 指定客户端所拥有的权限值
+     * postLogoutRedirectUri
      */
-    @TableField("authorities")
-    private String authorities;
+    @TableField("post_logout_redirect_uri")
+    private String postLogoutRedirectUri;
 
 
     /**
@@ -83,6 +85,29 @@ public class OauthClientDetailsEntity extends BaseTenantEntity {
      */
     @TableField("refresh_token_validity")
     private Integer refreshTokenValidity;
+
+
+    /**
+     * accessToken的类型，reference-不透明的token，self-contained-jwt类型的token
+     */
+    @TableField("access_token_format")
+    private String accessTokenFormat;
+
+
+    /**
+     * 是否复用刷新令牌
+     * 为true则复用刷新令牌（refresh token），为false则签发新的刷新令牌。
+     */
+    @TableField("reuse_refresh_token")
+    private Boolean reuseRefreshToken;
+
+
+    /**
+     * 用户是否单一登录
+     * true则用户每次登录失效其他token，为false则允许用户同时登录多次
+     */
+    @TableField("single_user_login")
+    private Boolean singleUserLogin;
 
 
 }

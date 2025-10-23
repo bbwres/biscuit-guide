@@ -1,12 +1,11 @@
 package cn.bbwres.biscuit.module.auth.service;
 
-import java.util.*;
-import cn.bbwres.biscuit.module.auth.controller.vo.*;
-import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
+import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 
-
-
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -28,6 +27,13 @@ public interface LoginAccountService {
     LoginAccountEntity getLoginAccount(String id);
 
     /**
+     * 根据用户名称查询数据
+     * @param username
+     * @return
+     */
+    LoginAccountEntity findByLoginUsername(String username);
+
+    /**
      * 获得登陆账户表列表
      *
      * @param ids 编号
@@ -41,7 +47,23 @@ public interface LoginAccountService {
      * @param pageReqVO 分页查询
      * @return 登陆账户表分页
      */
-    Page<LoginAccountEntity,LoginAccountPageReqVO> getLoginAccountPage(Page<LoginAccountEntity,LoginAccountPageReqVO> pageReqVO);
+    Page<LoginAccountEntity, LoginAccountPageReqVO> getLoginAccountPage(Page<LoginAccountEntity, LoginAccountPageReqVO> pageReqVO);
+
+
+    /**
+     * 根据id更新数据
+     *
+     * @param entity
+     * @return
+     */
+    boolean updateById(LoginAccountEntity entity);
+
+    /**
+     * 新增用户信息
+     *
+     * @param entity
+     */
+    void save(LoginAccountEntity entity);
 
 
 }

@@ -1,5 +1,6 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
 
+import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,11 +34,6 @@ public class LoginAccountRespVO implements Serializable {
     @Schema(description = "登陆账号")
     private String loginName;
 
-    /**
-    * 登陆密码
-    */
-    @Schema(description = "登陆密码")
-    private String loginPassword;
 
     /**
     * 手机号
@@ -85,7 +81,7 @@ public class LoginAccountRespVO implements Serializable {
     * 登陆用户状态
     */
     @Schema(description = "登陆用户状态")
-    private String status;
+    private LoginAccountStatusEnum status;
 
     /**
     * 锁定到期时间

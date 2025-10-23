@@ -1,15 +1,18 @@
 package cn.bbwres.biscuit.module.auth.service;
 
 
-import java.util.*;
 import cn.bbwres.biscuit.dto.Page;
-import cn.bbwres.biscuit.module.auth.controller.vo.*;
-import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.LoginAccountMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -20,12 +23,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author zlf
  * @Date 2025-08-19
  */
-@RequiredArgsConstructor(onConstructor_={@Autowired})
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Slf4j
 @Service
 public class LoginAccountServiceImpl implements LoginAccountService {
 
     private final LoginAccountMapper loginAccountMapper;
+
+    private final PasswordEncoder passwordEncoder;
 
 
     /**
@@ -37,6 +42,17 @@ public class LoginAccountServiceImpl implements LoginAccountService {
     @Override
     public LoginAccountEntity getLoginAccount(String id) {
         return loginAccountMapper.selectById(id);
+    }
+
+    /**
+     * 根据用户名称查询数据
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public LoginAccountEntity findByLoginUsername(String username) {
+        return loginAccountMapper.findByLoginUsername(username);
     }
 
     /**
@@ -57,8 +73,30 @@ public class LoginAccountServiceImpl implements LoginAccountService {
      * @return 登陆账户表分页
      */
     @Override
-    public  Page<LoginAccountEntity,LoginAccountPageReqVO> getLoginAccountPage(Page<LoginAccountEntity,LoginAccountPageReqVO> pageReqVO) {
+    public Page<LoginAccountEntity, LoginAccountPageReqVO> getLoginAccountPage(Page<LoginAccountEntity, LoginAccountPageReqVO> pageReqVO) {
         return loginAccountMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 根据id更新数据
+     *
+     * @param entity
+     * @return
+     */
+    @Override
+    public boolean updateById(LoginAccountEntity entity) {
+        return loginAccountMapper.updateById(entity) > 0;
+    }
+
+    /**
+     * 新增用户信息
+     *
+     * @param entity
+     */
+    @Override
+    public void save(LoginAccountEntity entity) {
+        entity.setLoginPassword(passwordEncoder.encode(entity.getLoginPassword()));
+        loginAccountMapper.insert(entity);
     }
 
 

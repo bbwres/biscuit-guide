@@ -3,18 +3,23 @@ package cn.bbwres.biscuit.module.auth.controller;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.dto.Result;
+import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountRespVO;
 import cn.bbwres.biscuit.module.auth.convert.LoginAccountConvert;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 import cn.bbwres.biscuit.module.auth.service.LoginAccountService;
+import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Enumeration;
 
 /**
  * <p>
@@ -54,6 +59,8 @@ public class LoginAccountController {
     @Operation(summary = "根据id获取标签定义的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<LoginAccountRespVO> getById(@RequestParam("id") String entityId) {
+        UserBaseInfo<?> requestUser = WebFrameworkUtils.getRequestUser();
+        System.out.println(requestUser);
         return Result.success(LoginAccountConvert.INSTANCE.convert(loginAccountService.getLoginAccount(entityId)));
     }
 

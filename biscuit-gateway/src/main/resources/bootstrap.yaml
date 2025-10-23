@@ -20,13 +20,15 @@ spring:
             group: DEFAULT_GROUP
             refresh: true
     gateway:
-      routes:
-        - id: auth
-          uri: lb://auth
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=1
+      server:
+        webflux:
+          routes:
+            - id: auth
+              uri: lb://auth
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=1
 
 
 server:
@@ -42,6 +44,6 @@ logging:
 biscuit:
   gateway:
     no-auth-uris:
-      - /auth/**
+#      - /auth/**
       - /service-b/**
     disable-csrf: true

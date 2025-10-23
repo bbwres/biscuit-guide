@@ -1,7 +1,10 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
+import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -19,6 +22,7 @@ import java.io.Serializable;
 @ToString
 @Accessors(chain = true)
 public class LoginAccountPageReqVO implements Serializable{
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -85,7 +89,7 @@ public class LoginAccountPageReqVO implements Serializable{
     * 登陆用户状态
     */
     @Schema(description = "登陆用户状态")
-    private String status;
+    private LoginAccountStatusEnum status;
 
     /**
     * 锁定到期时间

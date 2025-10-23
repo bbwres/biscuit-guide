@@ -33,7 +33,7 @@ public class OauthClientDetailsCacheServiceImpl implements OauthClientDetailsCac
      * @return 返回对象
      */
     @Override
-    @Cacheable(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY, key = "targetClass.name+'_'+#id", unless = "#result eq null")
+    @Cacheable(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY, key = "targetClass.name+':'+#id", unless = "#result eq null")
     public OauthClientDetailsEntity getOauthClientDetails(String id) {
         return oauthClientDetailsService.getOauthClientDetails(id);
     }
@@ -45,7 +45,7 @@ public class OauthClientDetailsCacheServiceImpl implements OauthClientDetailsCac
      * @return OauthClientDetails
      */
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY, key = "targetClass.name+'_'+#entity.getId()")})
+    @Caching(evict = {@CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY, key = "targetClass.name+':'+#entity.getId()")})
     public OauthClientDetailsEntity updateById(OauthClientDetailsEntity entity) {
         if (oauthClientDetailsService.updateById(entity)) {
             return entity;

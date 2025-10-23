@@ -45,5 +45,15 @@ public interface LoginAccountMapper extends BatchBaseMapper<LoginAccountEntity> 
         return reqVO;
     }
 
+    /**
+     * 根据用户名称查询数据
+     *
+     * @param username
+     * @return
+     */
+    default LoginAccountEntity findByLoginUsername(String username) {
+        return selectOne(Wrappers.lambdaQuery(LoginAccountEntity.class)
+                .eq(LoginAccountEntity::getLoginName, username));
+    }
 }
 
