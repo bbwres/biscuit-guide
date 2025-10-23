@@ -4,6 +4,8 @@ import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -22,6 +24,8 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class LoginAccountRespVO implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = -9109387680865529585L;
     /**
     * 主键
     */
