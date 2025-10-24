@@ -13,13 +13,10 @@ import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Enumeration;
 
 /**
  * <p>
@@ -29,7 +26,7 @@ import java.util.Enumeration;
  * @author zlf
  * @Date 2025-08-19
  */
-@Tag(name = " 登陆账户表")
+@Tag(name = "登陆账户表")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 @RequestMapping("/loginAccount")
@@ -56,7 +53,7 @@ public class LoginAccountController {
      * @return Result
      */
     @GetMapping("/getById")
-    @Operation(summary = "根据id获取标签定义的数据",
+    @Operation(summary = "根据id获取登陆账户表的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<LoginAccountRespVO> getById(@RequestParam("id") String entityId) {
         UserBaseInfo requestUser = WebFrameworkUtils.getRequestUser();

@@ -50,7 +50,7 @@ public class RoleMenuController {
      * @return Result
      */
     @GetMapping("/getById")
-    @Operation(summary = "根据id获取标签定义的数据",
+    @Operation(summary = "根据id获取角色所属的资源数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<RoleMenuRespVO> getById(@RequestParam("id") String entityId) {
         return Result.success(RoleMenuConvert.INSTANCE.convert(roleMenuService.getRoleMenu(entityId)));

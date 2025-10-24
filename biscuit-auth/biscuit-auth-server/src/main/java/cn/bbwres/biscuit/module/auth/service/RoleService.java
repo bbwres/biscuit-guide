@@ -1,12 +1,11 @@
 package cn.bbwres.biscuit.module.auth.service;
 
-import java.util.*;
-import cn.bbwres.biscuit.module.auth.controller.vo.*;
-import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
+import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 
-
-
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -41,7 +40,22 @@ public interface RoleService {
      * @param pageReqVO 分页查询
      * @return 角色表分页
      */
-    Page<RoleEntity,RolePageReqVO> getRolePage(Page<RoleEntity,RolePageReqVO> pageReqVO);
+    Page<RoleEntity, RolePageReqVO> getRolePage(Page<RoleEntity, RolePageReqVO> pageReqVO);
 
 
+    /**
+     * 根据角色编码和客户端id查询数据
+     *
+     * @param roleCode
+     * @param clientId
+     * @return
+     */
+    RoleEntity findByRoleCodeAndClientId(String roleCode, String clientId);
+
+    /**
+     * 新增角色
+     *
+     * @param roleEntity
+     */
+    void addRole(RoleEntity roleEntity);
 }

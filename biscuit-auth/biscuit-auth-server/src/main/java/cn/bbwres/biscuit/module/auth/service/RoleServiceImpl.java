@@ -1,15 +1,18 @@
 package cn.bbwres.biscuit.module.auth.service;
 
 
-import java.util.*;
 import cn.bbwres.biscuit.dto.Page;
-import cn.bbwres.biscuit.module.auth.controller.vo.*;
-import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
+import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.RoleMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -20,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author zlf
  * @Date 2025-08-19
  */
-@RequiredArgsConstructor(onConstructor_={@Autowired})
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Slf4j
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -57,8 +60,31 @@ public class RoleServiceImpl implements RoleService {
      * @return 角色表分页
      */
     @Override
-    public  Page<RoleEntity,RolePageReqVO> getRolePage(Page<RoleEntity,RolePageReqVO> pageReqVO) {
+    public Page<RoleEntity, RolePageReqVO> getRolePage(Page<RoleEntity, RolePageReqVO> pageReqVO) {
         return roleMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 根据角色编码和客户端id查询数据
+     *
+     * @param roleCode
+     * @param clientId
+     * @return
+     */
+    @Override
+    public RoleEntity findByRoleCodeAndClientId(String roleCode, String clientId) {
+        return roleMapper.findByRoleCodeAndClientId(roleCode, clientId);
+    }
+
+    /**
+     * 新增角色
+     *
+     * @param roleEntity
+     */
+    @Override
+    public void addRole(RoleEntity roleEntity) {
+        roleEntity.setStatus(DataStatusEnum.NORMAL);
+        roleMapper.insert(roleEntity);
     }
 
 

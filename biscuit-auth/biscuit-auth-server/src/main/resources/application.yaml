@@ -13,6 +13,18 @@ spring:
       maximum-pool-size: 50
       connection-timeout: 60000
       connection-test-query: SELECT 1
+  cloud:
+    openfeign:
+      okhttp:
+        enabled: true
+      httpclient:
+        connection-timeout: 10000
+        max-connections: 200
+        time-to-live: 900
+        ok-http:
+          read-timeout: 30
+
+
 
 # 监控配置
 management:
@@ -31,6 +43,8 @@ mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
   tenant:
     enabled: true # 启动多租户配置
+    ignore-tenant-tables:
+      - t_oauth_client_details
   mapper:
     base-packages: cn.bbwres.biscuit.module.auth.dao
   configuration:
@@ -41,17 +55,6 @@ mybatis-plus:
   user-info: cn.bbwres.biscuit.web.supplier.UserInfoSupplier
 
 
-feign:
-  okhttp:
-    # 启动 okhttp
-    enabled: true
-  httpclient:
-    #2s
-    connection-timeout: 10000
-    ok-http:
-      read-timeout: 30
-    max-connections: 200
-    time-to-live: 900
 
 
 

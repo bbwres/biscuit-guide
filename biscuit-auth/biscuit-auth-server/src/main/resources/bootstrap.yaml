@@ -43,14 +43,15 @@ spring:
       host: localhost
       port: 6379
       lettuce:
-        enabled: true
-        max-active: 10
-        min-idle: 5
+        pool:
+          enabled: true
+          max-active: 10
+          min-idle: 5
 
 
-
-springdoc:
   # 接口文档配置
+springdoc:
+  disable-i18n: true
   api-docs:
     enabled: true
     swagger:

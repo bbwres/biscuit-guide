@@ -44,6 +44,23 @@ logging:
 biscuit:
   gateway:
     no-auth-uris:
-#      - /auth/**
+      - /doc.html
+      - /webjars/**
+      - /v3/api-docs/**
+      - /*/v3/api-docs
       - /service-b/**
     disable-csrf: true
+
+# 接口文档
+knife4j:
+  gateway:
+    enabled: true
+    # 指定服务发现的模式聚合微服务文档，并且是默认`default`分组
+    strategy: discover
+    discover:
+      enabled: true
+      # 指定版本号(Swagger2|OpenAPI3)
+      version : openapi3
+      # 需要排除的微服务(eg:网关服务)
+      excluded-services:
+        - gateway-service

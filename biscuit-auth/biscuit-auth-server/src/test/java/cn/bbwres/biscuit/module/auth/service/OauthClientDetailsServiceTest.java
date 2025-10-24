@@ -53,7 +53,6 @@ class OauthClientDetailsServiceTest {
         client.setAccessTokenFormat(OAuth2TokenFormat.REFERENCE.getValue());
         client.setReuseRefreshToken(true);
         client.setSingleUserLogin(true);
-        client.setTenantId("1");
         client.setCreateTime(LocalDateTime.now());
         client.setCreator("test");
 

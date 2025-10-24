@@ -39,6 +39,7 @@
         <spring.boot.version>3.5.5</spring.boot.version>
         <biscuit.version>3.0.0-SNAPSHOT</biscuit.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <knife4j.version>4.4.0</knife4j.version>
     </properties>
 
     <licenses>
@@ -51,6 +52,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>cn.bbwres</groupId>
                 <artifactId>biscuit-dependencies</artifactId>

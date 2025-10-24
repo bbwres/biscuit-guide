@@ -62,8 +62,7 @@ on column t_login_account.name is '姓名';
 comment
 on column t_login_account.last_update_password_time is '最后一次修改密码时间';
 
-alter table t_login_account
-    owner to postgresql;
+
 
 create unique index idx_un_account_loginname
     on t_login_account (login_name);
@@ -89,8 +88,7 @@ create table t_oauth_client_details
     refresh_token_validity        integer                not null,
     access_token_format           varchar(50)  default NULL:: character varying,
     reuse_refresh_token           bool     default true not null,
-    single_user_login             bool     default true not null,
-    tenant_id                     varchar(36)            not null
+    single_user_login             bool     default true not null
 );
 
 comment
@@ -148,11 +146,6 @@ comment
 on column t_oauth_client_details.single_user_login is '  用户是否单一登录true则用户每次登录失效其他token，为false则允许用户同时登录多次';
 
 
-comment
-on column t_oauth_client_details.tenant_id is '租户编码';
-
-alter table t_oauth_client_details
-    owner to postgresql;
 
 create table t_menu
 (
@@ -234,8 +227,7 @@ on column t_menu.update_time is '更新时间';
 comment
 on column t_menu.tenant_id is '租户编码';
 
-alter table t_menu
-    owner to postgresql;
+
 
 create index idx_menu_parent_id_001
     on t_menu (parent_id);
@@ -296,8 +288,7 @@ on column t_menu_resource.auth_type is '资源鉴权类型,无需鉴权、登录
 comment
 on column t_menu_resource.description is '资源描述';
 
-alter table t_menu_resource
-    owner to postgresql;
+
 
 create index idx_menu_resource_menu_id_001
     on t_menu_resource (menu_id, tenant_id);
@@ -354,8 +345,7 @@ on column t_role.tenant_id is '租户编码';
 comment
 on column t_role.client_id is '角色所属客户端应用';
 
-alter table t_role
-    owner to postgresql;
+
 
 create index idx_role_code_001
     on t_role (role_code);
@@ -404,8 +394,7 @@ on column t_role_account.remark is '备注';
 comment
 on column t_role_account.tenant_id is '租户编码';
 
-alter table t_role_account
-    owner to postgresql;
+
 
 create unique index idx_role_id_account_id_01
     on t_role_account (role_id, login_account_id);
@@ -450,8 +439,7 @@ on column t_role_menu.menu_id is '菜单id';
 comment
 on column t_role_menu.tenant_id is '租户编码';
 
-alter table t_role_menu
-    owner to postgresql;
+
 
 create index idx_rile_menu_menu_id_role_id_001
     on t_role_menu (role_id, menu_id);

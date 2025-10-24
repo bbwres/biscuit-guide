@@ -56,7 +56,7 @@ public class OauthClientDetailsController {
      * @return Result
      */
     @GetMapping("/getById")
-    @Operation(summary = "根据id获取标签定义的数据",
+    @Operation(summary = "根据id获取客户端信息的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<OauthClientDetailsRespVO> getById(@RequestParam("id") String entityId) {
         return Result.success(OauthClientDetailsConvert.INSTANCE.convert(oauthClientDetailsService.getOauthClientDetails(entityId)));

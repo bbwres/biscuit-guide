@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+
 /**
  * 菜单权限表
  *
@@ -21,6 +23,7 @@ import lombok.experimental.Accessors;
 @TableName("t_menu")
 public class MenuEntity extends BaseTenantEntity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     /**
      * 菜单id

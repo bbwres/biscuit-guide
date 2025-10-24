@@ -1,13 +1,14 @@
 package cn.bbwres.biscuit.module.auth.dao;
+
+import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
-import cn.bbwres.biscuit.dto.Page;
-import org.apache.ibatis.annotations.Mapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.springframework.util.ObjectUtils;
-import cn.bbwres.biscuit.module.auth.controller.vo .*;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.util.ObjectUtils;
 
 
 /**
@@ -21,21 +22,22 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 @Mapper
 public interface RoleMapper extends BatchBaseMapper<RoleEntity> {
 
-        /**
-    * 分页查询数据
-    * @param reqVO 分页查询条件
-    * @return
-    */
-    default Page<RoleEntity,RolePageReqVO> selectPage(Page<RoleEntity,RolePageReqVO> reqVO){
+    /**
+     * 分页查询数据
+     *
+     * @param reqVO 分页查询条件
+     * @return
+     */
+    default Page<RoleEntity, RolePageReqVO> selectPage(Page<RoleEntity, RolePageReqVO> reqVO) {
         LambdaQueryWrapper<RoleEntity> queryWrapper = Wrappers.lambdaQuery(RoleEntity.class);
         if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
             queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                RoleEntity::getId, reqVO.getQuery().getId());
+                    RoleEntity::getId, reqVO.getQuery().getId());
         }
 
         // 大多数情况下，id 倒序
         queryWrapper.orderByDesc(RoleEntity::getId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<RoleEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()),queryWrapper);
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<RoleEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()), queryWrapper);
 
         reqVO.setRecords(page.getRecords());
         reqVO.setTotal(page.getTotal());
@@ -43,5 +45,18 @@ public interface RoleMapper extends BatchBaseMapper<RoleEntity> {
         return reqVO;
     }
 
+    /**
+     * 根据角色编码和客户端id查询数据
+     *
+     * @param roleCode
+     * @param clientId
+     * @return
+     */
+    default RoleEntity findByRoleCodeAndClientId(String roleCode, String clientId) {
+        return selectOne(Wrappers.lambdaQuery(RoleEntity.class)
+                .eq(RoleEntity::getRoleCode, roleCode)
+                .eq(RoleEntity::getClientId, clientId)
+        );
+    }
 }
 

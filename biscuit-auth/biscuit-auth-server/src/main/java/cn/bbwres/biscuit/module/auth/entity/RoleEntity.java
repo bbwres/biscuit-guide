@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
+import cn.bbwres.biscuit.enums.DataStatusEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -50,7 +51,7 @@ public class RoleEntity extends BaseTenantEntity {
      * 角色状态
      */
     @TableField("status")
-    private Short status;
+    private DataStatusEnum status;
 
 
     /**

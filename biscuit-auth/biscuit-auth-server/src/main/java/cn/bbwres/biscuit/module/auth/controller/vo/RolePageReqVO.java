@@ -1,7 +1,10 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
+import cn.bbwres.biscuit.enums.DataStatusEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -19,6 +22,8 @@ import java.io.Serializable;
 @ToString
 @Accessors(chain = true)
 public class RolePageReqVO implements Serializable{
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -67,7 +72,7 @@ public class RolePageReqVO implements Serializable{
     * 角色状态
     */
     @Schema(description = "角色状态")
-    private Short status;
+    private DataStatusEnum status;
 
     /**
     * 备注
