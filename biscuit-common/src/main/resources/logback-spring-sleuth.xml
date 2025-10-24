@@ -48,19 +48,9 @@
     </appender>
 
 
-    <!-- 本地环境 -->
-    <springProfile name="local">
-        <root level="INFO">
-            <appender-ref ref="STDOUT"/>
-            <appender-ref ref="ASYNC"/>  <!-- 本地环境下，如果不想打印日志，可以注释掉本行 -->
-        </root>
-    </springProfile>
-    <!-- 其它环境 -->
-    <springProfile name="dev,test,stage,prod,default">
-        <root level="INFO">
-            <appender-ref ref="STDOUT"/>
-            <appender-ref ref="ASYNC"/>
-        </root>
-    </springProfile>
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ASYNC"/>  <!-- 本地环境下，如果不想打印日志，可以注释掉本行 -->
+    </root>
 
 </configuration>

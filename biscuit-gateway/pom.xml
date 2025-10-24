@@ -41,6 +41,11 @@
         </dependency>
         <dependency>
             <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-auth-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-gateway-boot-starter</artifactId>
         </dependency>
         <dependency>

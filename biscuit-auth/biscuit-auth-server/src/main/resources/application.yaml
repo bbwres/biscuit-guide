@@ -29,6 +29,8 @@ management:
 # mybatis plus 配置
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
+  tenant:
+    enabled: true # 启动多租户配置
   mapper:
     base-packages: cn.bbwres.biscuit.module.auth.dao
   configuration:

@@ -59,7 +59,7 @@ public class LoginAccountController {
     @Operation(summary = "根据id获取标签定义的数据",
             parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<LoginAccountRespVO> getById(@RequestParam("id") String entityId) {
-        UserBaseInfo<?> requestUser = WebFrameworkUtils.getRequestUser();
+        UserBaseInfo requestUser = WebFrameworkUtils.getRequestUser();
         System.out.println(requestUser);
         return Result.success(LoginAccountConvert.INSTANCE.convert(loginAccountService.getLoginAccount(entityId)));
     }
