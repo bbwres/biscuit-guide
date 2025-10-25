@@ -42,7 +42,7 @@ public class OauthClientDetailsAddOrUpdateReqVO implements Serializable {
     /**
      * 客户端id
      */
-    @Schema(description = "客户端id")
+    @Schema(description = "客户端id,修改时必填")
     @NotBlank(groups = ValidateEditGroup.class)
     private String id;
 

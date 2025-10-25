@@ -29,9 +29,10 @@ public interface LoginAccountService {
     /**
      * 根据用户名称查询数据
      * @param username
+     * @param tenantId
      * @return
      */
-    LoginAccountEntity findByLoginUsername(String username);
+    LoginAccountEntity findByLoginUsername(String tenantId,String username);
 
     /**
      * 获得登陆账户表列表

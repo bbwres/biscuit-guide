@@ -1,64 +1,80 @@
+/*
+ *
+ *  * Copyright 2024 bbwres
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
 package cn.bbwres.biscuit.module.auth.controller.vo;
 
 import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.module.auth.enums.MenuTypeEnum;
-import com.baomidou.mybatisplus.annotation.TableField;
+import cn.bbwres.biscuit.validate.ValidateAddGroup;
+import cn.bbwres.biscuit.validate.ValidateEditGroup;
+import cn.bbwres.biscuit.validate.ValidateEditStatusGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
- * <p>
- * 菜单权限表 Response VO
- * </p>
+ * 新增目录请求参数
  *
- * @author zlf
- * @Date 2025-10-25
+ * @author zhanglinfeng
  */
-@Schema(description = " 菜单权限表 Response VO")
 @Data
-@EqualsAndHashCode
-@ToString
-@Accessors(chain = true)
-public class MenuRespVO implements Serializable {
-
+@Schema(description = "新增目录请求参数")
+public class MenuAddReqVO implements Serializable {
     @Serial
-    private static final long serialVersionUID = 8431869249587109346L;
+    private static final long serialVersionUID = -4750877766481634635L;
+
     /**
      * 菜单id
      */
-    @Schema(description = "菜单id")
+    @Schema(description = "菜单id,修改时必填")
+    @NotBlank(groups = {ValidateEditGroup.class, ValidateEditStatusGroup.class})
     private String id;
+
 
     /**
      * 菜单名称
      */
     @Schema(description = "菜单名称")
+    @NotBlank(groups = {ValidateAddGroup.class})
     private String name;
 
     /**
      * 菜单类型，目录、菜单、按钮
      */
     @Schema(description = "菜单类型，目录、菜单、按钮")
+    @NotNull(groups = {ValidateAddGroup.class})
     private MenuTypeEnum menuType;
-
 
     /**
      * 显示顺序
      */
     @Schema(description = "显示顺序")
+    @NotNull(groups = {ValidateAddGroup.class})
     private Integer menuSort;
 
     /**
      * 父菜单ID
      */
-    @Schema(description = "父菜单ID")
+    @Schema(description = "父菜单ID,如果为空，则为顶级菜单。修改是如果为空则认为其被移动到最顶级")
     private String parentId;
 
     /**
@@ -83,6 +99,7 @@ public class MenuRespVO implements Serializable {
      * 菜单状态
      */
     @Schema(description = "菜单状态")
+    @NotNull(groups = {ValidateEditStatusGroup.class})
     private DataStatusEnum status;
 
     /**
@@ -115,40 +132,5 @@ public class MenuRespVO implements Serializable {
     @Schema(description = "请求接口地址")
     private String apiUrl;
 
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
 
-    /**
-     * 创建人
-     */
-    @Schema(description = "创建人")
-    private String creator;
-
-    /**
-     * 更新人
-     */
-    @Schema(description = "更新人")
-    private String updater;
-
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
-
-    /**
-     * 租户编码
-     */
-    @Schema(description = "租户编码")
-    private String tenantId;
-
-
-    /**
-     * 树形路径
-     */
-    @Schema(description = "树形路径")
-    private String treePath;
 }

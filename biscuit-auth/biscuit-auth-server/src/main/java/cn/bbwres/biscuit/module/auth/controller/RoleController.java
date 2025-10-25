@@ -12,6 +12,7 @@ import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.service.RoleService;
 import cn.bbwres.biscuit.validate.ValidateAddGroup;
 import cn.bbwres.biscuit.validate.ValidateEditGroup;
+import cn.bbwres.biscuit.validate.ValidateEditStatusGroup;
 import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -116,7 +117,7 @@ public class RoleController {
      */
     @PostMapping("/editRoleStatus")
     @Operation(summary = "修改角色状态")
-    public Result<Void> editRoleStatus(@RequestBody @Validated(RoleAddReqVO.ValidateEditStatus.class) RoleAddReqVO roleEditReq) {
+    public Result<Void> editRoleStatus(@RequestBody @Validated(ValidateEditStatusGroup.class) RoleAddReqVO roleEditReq) {
         log.info("当前用户:[{}]修改角色状态信息:[{}]", WebFrameworkUtils.getUserInfo(UserBaseInfo::getUsername), roleEditReq);
         RoleEntity roleEntity = roleService.findById(roleEditReq.getId());
         if (Objects.isNull(roleEntity)) {

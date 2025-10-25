@@ -236,6 +236,17 @@ on column t_menu.tenant_id is '租户编码';
 create index idx_menu_parent_id_001
     on t_menu (parent_id);
 
+alter table public.t_menu
+    add tree_path varchar(1024);
+
+comment on column public.t_menu.tree_path is '树形路径';
+
+create index idx_t_menu_tree_path_01
+    on public.t_menu (tree_path);
+
+
+
+
 
 
 create table t_menu_resource

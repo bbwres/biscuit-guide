@@ -50,9 +50,9 @@ public class LoginAccountCacheServiceImpl implements LoginAccountCacheService {
      */
     @Override
     @Cacheable(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
-            key = "targetClass.name+':'+#username", unless = "#result eq null")
-    public LoginAccountEntity findByLoginUsername(String username) {
-        return loginAccountService.findByLoginUsername(username);
+            key = "targetClass.name+':'+#tenantId+':'+#username", unless = "#result eq null")
+    public LoginAccountEntity findByLoginUsername(String tenantId,String username) {
+        return loginAccountService.findByLoginUsername(tenantId,username);
     }
 
     /**
@@ -62,8 +62,8 @@ public class LoginAccountCacheServiceImpl implements LoginAccountCacheService {
      */
     @Override
     @Caching(evict = {@CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
-            key = "targetClass.name+':'+#username")})
-    public void deleteCache(String username) {
+            key = "targetClass.name+':'+#tenantId+':'+#username")})
+    public void deleteCache(String tenantId,String username) {
 
     }
 }

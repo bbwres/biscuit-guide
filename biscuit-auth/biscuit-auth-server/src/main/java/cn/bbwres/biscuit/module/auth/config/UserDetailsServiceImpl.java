@@ -56,7 +56,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        LoginAccountEntity loginAccount = loginAccountCacheService.findByLoginUsername(username);
+        String user = username;
+        String tenantId = null;
+
+        if (username.contains(",")) {
+            String[] split = username.split(",");
+            tenantId = split[0];
+            user = split[1];
+        }
+        LoginAccountEntity loginAccount = loginAccountCacheService.findByLoginUsername(tenantId,user);
         if (ObjectUtils.isEmpty(loginAccount)) {
             throw new UsernameNotFoundException(username);
         }

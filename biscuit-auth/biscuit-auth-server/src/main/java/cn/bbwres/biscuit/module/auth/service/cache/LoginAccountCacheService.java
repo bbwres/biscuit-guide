@@ -30,16 +30,18 @@ public interface LoginAccountCacheService {
     /**
      * 根据用户名称查询数据
      *
+     * @param tenantId 租户id
      * @param username 用户名称
      * @return LoginAccountEntity
      */
-    LoginAccountEntity findByLoginUsername(String username);
+    LoginAccountEntity findByLoginUsername(String tenantId, String username);
 
     /**
      * 删除缓存
      *
+     * @param tenantId 租户id
      * @param username 用户名称
      */
-    void deleteCache(String username);
+    void deleteCache(String tenantId, String username);
 
 }

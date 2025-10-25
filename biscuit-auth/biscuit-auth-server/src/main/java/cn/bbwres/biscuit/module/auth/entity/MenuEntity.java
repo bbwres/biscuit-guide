@@ -122,4 +122,12 @@ public class MenuEntity extends BaseTenantEntity {
     private String apiUrl;
 
 
+    /**
+     * 树形路径
+     */
+    @TableField("tree_path")
+    private String treePath;
+
+
+
 }

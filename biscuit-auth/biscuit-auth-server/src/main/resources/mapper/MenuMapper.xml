@@ -23,11 +23,13 @@
         <result column="updater" property="updater" />
         <result column="update_time" property="updateTime" />
         <result column="tenant_id" property="tenantId" />
+        <result column="tree_path" property="treePath" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, menu_type, menu_sort, parent_id, icon, component, component_name, status, visible, keep_alive, always_show, api_url_method, api_url, create_time, creator, updater, update_time, tenant_id
+        id, name, menu_type, menu_sort, parent_id, icon, component, component_name, status,
+          visible, keep_alive, always_show, api_url_method, api_url, create_time, creator, updater, update_time, tenant_id,tree_path
     </sql>
 
 </mapper>

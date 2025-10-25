@@ -47,12 +47,13 @@ public class LoginAccountServiceImpl implements LoginAccountService {
     /**
      * 根据用户名称查询数据
      *
+     * @param tenantId
      * @param username
      * @return
      */
     @Override
-    public LoginAccountEntity findByLoginUsername(String username) {
-        return loginAccountMapper.findByLoginUsername(username);
+    public LoginAccountEntity findByLoginUsername(String tenantId,String username) {
+        return loginAccountMapper.findByLoginUsername(tenantId,username);
     }
 
     /**

@@ -4,6 +4,7 @@ import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
@@ -48,11 +49,14 @@ public interface LoginAccountMapper extends BatchBaseMapper<LoginAccountEntity> 
     /**
      * 根据用户名称查询数据
      *
+     * @param tenantId
      * @param username
      * @return
      */
-    default LoginAccountEntity findByLoginUsername(String username) {
+    @InterceptorIgnore(tenantLine = "true")
+    default LoginAccountEntity findByLoginUsername(String tenantId, String username) {
         return selectOne(Wrappers.lambdaQuery(LoginAccountEntity.class)
+                .eq(LoginAccountEntity::getTenantId, tenantId)
                 .eq(LoginAccountEntity::getLoginName, username));
     }
 }

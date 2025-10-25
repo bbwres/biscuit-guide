@@ -21,8 +21,10 @@ package cn.bbwres.biscuit.module.auth.controller.vo;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.validate.ValidateAddGroup;
 import cn.bbwres.biscuit.validate.ValidateEditGroup;
+import cn.bbwres.biscuit.validate.ValidateEditStatusGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -45,14 +47,11 @@ public class RoleAddReqVO implements Serializable {
     @Serial
     private static final long serialVersionUID = -6851893172289414748L;
 
-    public interface ValidateEditStatus {
-    }
-
     /**
      * 角色id
      */
-    @Schema(description = "角色id")
-    @NotBlank(groups = {ValidateEditGroup.class, ValidateEditStatus.class})
+    @Schema(description = "角色id,修改时必填")
+    @NotBlank(groups = {ValidateEditGroup.class, ValidateEditStatusGroup.class})
     private String id;
 
     /**
@@ -75,7 +74,7 @@ public class RoleAddReqVO implements Serializable {
      */
     @Schema(description = "备注")
     private String remark;
-    
+
 
     /**
      * 角色所属客户端应用
@@ -89,6 +88,6 @@ public class RoleAddReqVO implements Serializable {
      * 角色状态
      */
     @Schema(description = "角色状态")
-    @NotBlank(groups = {ValidateEditStatus.class})
+    @NotNull(groups = {ValidateEditStatusGroup.class})
     private DataStatusEnum status;
 }
