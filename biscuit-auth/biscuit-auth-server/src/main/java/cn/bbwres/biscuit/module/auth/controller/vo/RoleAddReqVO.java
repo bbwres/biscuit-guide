@@ -59,7 +59,7 @@ public class RoleAddReqVO implements Serializable {
      * 角色编码
      */
     @Schema(description = "角色编码")
-    @NotBlank(groups = {ValidateAddGroup.class, ValidateEditGroup.class})
+    @NotBlank(groups = {ValidateAddGroup.class})
     private String roleCode;
 
     /**
@@ -75,12 +75,7 @@ public class RoleAddReqVO implements Serializable {
      */
     @Schema(description = "备注")
     private String remark;
-
-    /**
-     * 租户编码
-     */
-    @Schema(description = "租户编码")
-    private String tenantId;
+    
 
     /**
      * 角色所属客户端应用

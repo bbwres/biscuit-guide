@@ -87,5 +87,26 @@ public class RoleServiceImpl implements RoleService {
         roleMapper.insert(roleEntity);
     }
 
+    /**
+     * 根据id查询数据
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public RoleEntity findById(String id) {
+        return roleMapper.selectById(id);
+    }
+
+    /**
+     * 修改数据
+     *
+     * @param entity
+     */
+    @Override
+    public void updateById(RoleEntity entity) {
+        roleMapper.updateById(entity);
+    }
+
 
 }

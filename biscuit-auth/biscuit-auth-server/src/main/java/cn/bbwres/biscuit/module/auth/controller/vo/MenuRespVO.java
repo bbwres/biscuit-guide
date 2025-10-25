@@ -1,8 +1,11 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
 
+import cn.bbwres.biscuit.enums.DataStatusEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -21,6 +24,8 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class MenuRespVO implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 6587570749950537340L;
     /**
     * 菜单id
     */
@@ -76,10 +81,10 @@ public class MenuRespVO implements Serializable {
     private String componentName;
 
     /**
-    * 菜单状态
-    */
+     * 菜单状态
+     */
     @Schema(description = "菜单状态")
-    private String status;
+    private DataStatusEnum status;
 
     /**
     * 是否可见（1:是，0:否）

@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -22,6 +23,7 @@ import java.io.Serializable;
 @ToString
 @Accessors(chain = true)
 public class OauthClientDetailsPageReqVO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -84,6 +86,35 @@ public class OauthClientDetailsPageReqVO implements Serializable {
      */
     @Schema(description = "租户编码")
     private String tenantId;
+
+
+    /**
+     * accessToken的类型，reference-不透明的token，self-contained-jwt类型的token
+     */
+    @Schema(description = "accessToken的类型")
+    private String accessTokenFormat;
+
+
+    /**
+     * 是否复用刷新令牌
+     * 为true则复用刷新令牌（refresh token），为false则签发新的刷新令牌。
+     */
+    @Schema(description = "是否复用刷新令牌")
+    private Boolean reuseRefreshToken;
+
+
+    /**
+     * 用户是否单一登录
+     * true则用户每次登录失效其他token，为false则允许用户同时登录多次
+     */
+    @Schema(description = "用户是否单一登录")
+    private Boolean singleUserLogin;
+
+    /**
+     * 客户端支持的认证方式
+     */
+    @Schema(description = "客户端支持的认证方式")
+    private String clientAuthenticationMethods;
 
 
 }

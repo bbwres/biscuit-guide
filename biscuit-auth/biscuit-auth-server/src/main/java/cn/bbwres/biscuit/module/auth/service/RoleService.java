@@ -58,4 +58,18 @@ public interface RoleService {
      * @param roleEntity
      */
     void addRole(RoleEntity roleEntity);
+
+    /**
+     * 根据id查询数据
+     * @param id
+     * @return
+     */
+    RoleEntity findById(String id);
+
+    /**
+     * 修改数据
+     * @param entity
+     */
+    void updateById(RoleEntity entity);
+
 }

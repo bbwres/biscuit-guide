@@ -1,5 +1,6 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -63,6 +64,9 @@ public class OauthClientDetailsRespVO implements Serializable {
     @Schema(description = "用于指定客户端(client)的访问密匙")
     private String clientSecret;
 
+
+
+
     /**
     * 指定客户端申请的权限范围,可选值包括read,write,trust;
     */
@@ -104,6 +108,35 @@ public class OauthClientDetailsRespVO implements Serializable {
     */
     @Schema(description = "租户编码")
     private String tenantId;
+
+
+    /**
+     * accessToken的类型，reference-不透明的token，self-contained-jwt类型的token
+     */
+    @Schema(description = "accessToken的类型")
+    private String accessTokenFormat;
+
+
+    /**
+     * 是否复用刷新令牌
+     * 为true则复用刷新令牌（refresh token），为false则签发新的刷新令牌。
+     */
+    @Schema(description = "是否复用刷新令牌")
+    private Boolean reuseRefreshToken;
+
+
+    /**
+     * 用户是否单一登录
+     * true则用户每次登录失效其他token，为false则允许用户同时登录多次
+     */
+    @Schema(description = "用户是否单一登录")
+    private Boolean singleUserLogin;
+
+    /**
+     * 客户端支持的认证方式
+     */
+    @Schema(description = "客户端支持的认证方式")
+    private String clientAuthenticationMethods;
 
 
 

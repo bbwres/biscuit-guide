@@ -31,4 +31,9 @@ public interface AuthErrorCodeConstants {
      * 数据已经存在
      */
     ErrorCode DATA_ALREADY_EXISTS_ERROR = new ErrorCode("201001001", "auth.data_already_exists_error");
+
+    /**
+     * 数据不存在
+     */
+    ErrorCode DATA_NO_EXISTS_ERROR = new ErrorCode("201001001", "auth.data_no_exists_error");
 }
