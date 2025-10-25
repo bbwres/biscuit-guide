@@ -1,6 +1,8 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
+import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.module.auth.enums.MenuTypeEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -40,10 +42,10 @@ public class MenuEntity extends BaseTenantEntity {
 
 
     /**
-     * 菜单类型，目录、菜单、按钮
+     * 菜单类型，菜单、按钮
      */
     @TableField("menu_type")
-    private String menuType;
+    private MenuTypeEnum menuType;
 
 
     /**
@@ -61,13 +63,6 @@ public class MenuEntity extends BaseTenantEntity {
 
 
     /**
-     * 路由地址
-     */
-    @TableField("path")
-    private String path;
-
-
-    /**
      * 菜单图标
      */
     @TableField("icon")
@@ -75,14 +70,14 @@ public class MenuEntity extends BaseTenantEntity {
 
 
     /**
-     * 组件路径
+     * 前端组件路径
      */
     @TableField("component")
     private String component;
 
 
     /**
-     * 组件名
+     * 前端组件名
      */
     @TableField("component_name")
     private String componentName;
@@ -92,28 +87,39 @@ public class MenuEntity extends BaseTenantEntity {
      * 菜单状态
      */
     @TableField("status")
-    private String status;
+    private DataStatusEnum status;
 
 
     /**
      * 是否可见（1:是，0:否）
      */
     @TableField("visible")
-    private Short visible;
+    private Boolean visible;
 
 
     /**
      * 是否缓存（1:是，0:否）
      */
     @TableField("keep_alive")
-    private Short keepAlive;
+    private Boolean keepAlive;
 
 
     /**
      * 是否总是显示（1:是，0:否）
      */
     @TableField("always_show")
-    private Short alwaysShow;
+    private Boolean alwaysShow;
+
+    /**
+     * 请求接口方法
+     */
+    @TableField("api_url_method")
+    private String apiUrlMethod;
+    /**
+     * 请求接口地址
+     */
+    @TableField("api_url")
+    private String apiUrl;
 
 
 }

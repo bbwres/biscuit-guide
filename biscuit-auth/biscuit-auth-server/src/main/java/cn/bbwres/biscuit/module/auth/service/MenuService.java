@@ -15,7 +15,7 @@ import cn.bbwres.biscuit.dto.Page;
  * </p>
  *
  * @author zlf
- * @Date 2025-08-19
+ * @Date 2025-10-25
  */
 public interface MenuService {
 

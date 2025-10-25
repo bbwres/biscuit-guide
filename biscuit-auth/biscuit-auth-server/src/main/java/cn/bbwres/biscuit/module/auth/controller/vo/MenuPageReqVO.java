@@ -1,10 +1,7 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
-import cn.bbwres.biscuit.enums.DataStatusEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.io.Serial;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -14,7 +11,7 @@ import java.io.Serializable;
 * </p>
 *
 * @author zlf
-* @Date 2025-08-19
+* @Date 2025-10-25
 */
 @Schema(description = "菜单权限表分页 Request VO")
 @Data
@@ -22,7 +19,6 @@ import java.io.Serializable;
 @ToString
 @Accessors(chain = true)
 public class MenuPageReqVO implements Serializable{
-    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -56,12 +52,6 @@ public class MenuPageReqVO implements Serializable{
     private String parentId;
 
     /**
-    * 路由地址
-    */
-    @Schema(description = "路由地址")
-    private String path;
-
-    /**
     * 菜单图标
     */
     @Schema(description = "菜单图标")
@@ -83,25 +73,37 @@ public class MenuPageReqVO implements Serializable{
     * 菜单状态
     */
     @Schema(description = "菜单状态")
-    private DataStatusEnum status;
+    private String status;
 
     /**
-    * 是否可见（1:是，0:否）
+    * 是否可见（true:是，false:否）
     */
-    @Schema(description = "是否可见（1:是，0:否）")
-    private Short visible;
+    @Schema(description = "是否可见（true:是，false:否）")
+    private Boolean visible;
 
     /**
-    * 是否缓存（1:是，0:否）
+    * 是否缓存（true:是，false:否）
     */
-    @Schema(description = "是否缓存（1:是，0:否）")
-    private Short keepAlive;
+    @Schema(description = "是否缓存（true:是，false:否）")
+    private Boolean keepAlive;
 
     /**
-    * 是否总是显示（1:是，0:否）
+    * 是否总是显示（true:是，false:否）
     */
-    @Schema(description = "是否总是显示（1:是，0:否）")
-    private Short alwaysShow;
+    @Schema(description = "是否总是显示（true:是，false:否）")
+    private Boolean alwaysShow;
+
+    /**
+    * 请求接口方法
+    */
+    @Schema(description = "请求接口方法")
+    private String apiUrlMethod;
+
+    /**
+    * 请求接口地址
+    */
+    @Schema(description = "请求接口地址")
+    private String apiUrl;
 
     /**
     * 创建时间

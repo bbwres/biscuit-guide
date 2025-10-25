@@ -1,20 +1,20 @@
 create table t_login_account
 (
-    id                        varchar(36)                                  not null
+    id                        varchar(36)  not null
         primary key,
-    login_name                varchar(36)                                  not null,
-    login_password            varchar(256)                                 not null,
+    login_name                varchar(36)  not null,
+    login_password            varchar(256) not null,
     phone                     varchar(256) default '':: character varying,
-    create_time               timestamp                                    not null,
-    creator                   varchar(50)                                  not null,
+    create_time               timestamp    not null,
+    creator                   varchar(50)  not null,
     updater                   varchar(50)  default NULL:: character varying,
     update_time               timestamp,
-    tenant_id                 varchar(36)                                  not null,
+    tenant_id                 varchar(36)  not null,
     user_id                   varchar(36)  default NULL:: character varying,
     status                    varchar(20)  default '0':: character varying not null,
     locked_time               timestamp,
     name                      varchar(100) default '':: character varying,
-    last_update_password_time timestamp                                    not null
+    last_update_password_time timestamp    not null
 );
 
 comment
@@ -72,23 +72,23 @@ create index idx_account_user_id
 
 create table t_oauth_client_details
 (
-    id                            varchar(36)            not null
+    id                            varchar(36)               not null
         primary key,
-    create_time                   timestamp              not null,
-    creator                       varchar(50)            not null,
+    create_time                   timestamp                 not null,
+    creator                       varchar(50)               not null,
     updater                       varchar(50)  default NULL:: character varying,
     update_time                   timestamp,
-    client_secret                 varchar(256)           not null,
-    client_authentication_methods varchar(256)           not null,
-    scopes                        varchar(256)           not null,
-    authorized_grant_types        varchar(256)           not null,
+    client_secret                 varchar(256)              not null,
+    client_authentication_methods varchar(256)              not null,
+    scopes                        varchar(256)              not null,
+    authorized_grant_types        varchar(256)              not null,
     web_server_redirect_uri       varchar(256) default NULL:: character varying,
     post_logout_redirect_uri      varchar(256) default NULL:: character varying,
-    access_token_validity         integer                not null,
-    refresh_token_validity        integer                not null,
+    access_token_validity         integer                   not null,
+    refresh_token_validity        integer                   not null,
     access_token_format           varchar(50)  default NULL:: character varying,
-    reuse_refresh_token           bool     default true not null,
-    single_user_login             bool     default true not null
+    reuse_refresh_token           bool         default true not null,
+    single_user_login             bool         default true not null
 );
 
 comment
@@ -149,25 +149,26 @@ on column t_oauth_client_details.single_user_login is '  用户是否单一登�
 
 create table t_menu
 (
-    id             varchar(36)                                  not null
+    id             varchar(36)              not null
         primary key,
-    name           varchar(50)                                  not null,
-    menu_type      varchar(20)                                  not null,
-    menu_sort      integer      default 0                       not null,
-    parent_id      varchar(36)  default '0':: character varying not null,
-    path           varchar(200) default '':: character varying,
-    icon           varchar(100) default '#':: character varying,
-    component      varchar(255) default NULL:: character varying,
-    component_name varchar(255) default NULL:: character varying,
-    status         varchar(20)  default '0':: character varying not null,
-    visible        smallint     default 1                       not null,
-    keep_alive     smallint     default 1                       not null,
-    always_show    smallint     default 1                       not null,
-    create_time    timestamp                                    not null,
-    creator        varchar(50)                                  not null,
-    updater        varchar(50)  default NULL:: character varying,
+    name           varchar(50)              not null,
+    menu_type      varchar(20)              not null,
+    menu_sort      integer     default 0    not null,
+    parent_id      varchar(36),
+    icon           varchar(100),
+    component      varchar(255),
+    component_name varchar(255),
+    status         varchar(20)              not null,
+    visible        bool        default true not null,
+    keep_alive     bool        default true not null,
+    always_show    bool        default true not null,
+    api_url_method varchar(50),
+    api_url        varchar(255),
+    create_time    timestamp                not null,
+    creator        varchar(50)              not null,
+    updater        varchar(50) default NULL:: character varying,
     update_time    timestamp,
-    tenant_id      varchar(36)                                  not null
+    tenant_id      varchar(36)              not null
 );
 
 comment
@@ -188,8 +189,6 @@ on column t_menu.menu_sort is '显示顺序';
 comment
 on column t_menu.parent_id is '父菜单ID';
 
-comment
-on column t_menu.path is '路由地址';
 
 comment
 on column t_menu.icon is '菜单图标';
@@ -204,14 +203,19 @@ comment
 on column t_menu.status is '菜单状态';
 
 comment
-on column t_menu.visible is '是否可见（1:是，0:否）';
+on column t_menu.visible is '是否可见（true:是，false:否）';
 
 comment
-on column t_menu.keep_alive is '是否缓存（1:是，0:否）';
+on column t_menu.keep_alive is '是否缓存（true:是，false:否）';
 
 comment
-on column t_menu.always_show is '是否总是显示（1:是，0:否）';
+on column t_menu.always_show is '是否总是显示（true:是，false:否）';
 
+comment
+on column t_menu.api_url_method is '请求接口方法';
+
+comment
+on column t_menu.api_url is '请求接口地址';
 comment
 on column t_menu.create_time is '创建时间';
 
@@ -231,6 +235,8 @@ on column t_menu.tenant_id is '租户编码';
 
 create index idx_menu_parent_id_001
     on t_menu (parent_id);
+
+
 
 create table t_menu_resource
 (

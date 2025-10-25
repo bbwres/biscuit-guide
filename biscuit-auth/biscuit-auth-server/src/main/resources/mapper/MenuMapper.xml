@@ -9,7 +9,6 @@
         <result column="menu_type" property="menuType" />
         <result column="menu_sort" property="menuSort" />
         <result column="parent_id" property="parentId" />
-        <result column="path" property="path" />
         <result column="icon" property="icon" />
         <result column="component" property="component" />
         <result column="component_name" property="componentName" />
@@ -17,6 +16,8 @@
         <result column="visible" property="visible" />
         <result column="keep_alive" property="keepAlive" />
         <result column="always_show" property="alwaysShow" />
+        <result column="api_url_method" property="apiUrlMethod" />
+        <result column="api_url" property="apiUrl" />
         <result column="create_time" property="createTime" />
         <result column="creator" property="creator" />
         <result column="updater" property="updater" />
@@ -26,7 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, menu_type, menu_sort, parent_id, path, icon, component, component_name, status, visible, keep_alive, always_show, create_time, creator, updater, update_time, tenant_id
+        id, name, menu_type, menu_sort, parent_id, icon, component, component_name, status, visible, keep_alive, always_show, api_url_method, api_url, create_time, creator, updater, update_time, tenant_id
     </sql>
 
 </mapper>

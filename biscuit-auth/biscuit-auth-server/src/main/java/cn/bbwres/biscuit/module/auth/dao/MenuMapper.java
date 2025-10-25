@@ -16,7 +16,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
  * </p>
  *
  * @author zlf
- * @Date 2025-08-19
+ * @Date 2025-10-25
  */
 @Mapper
 public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
