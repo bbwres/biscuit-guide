@@ -1,0 +1,78 @@
+/*
+ *
+ *  * Copyright 2024 bbwres
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
+package cn.bbwres.biscuit.module.auth.controller.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
+import java.io.Serial;
+import java.io.Serializable;
+
+/**
+ * 登陆账户表 修改密码请求参数
+ *
+ * @author zhanglinfeng
+ */
+@Schema(description = " 登陆账户表 修改密码请求参数")
+@Data
+@EqualsAndHashCode
+@ToString
+@Accessors(chain = true)
+public class LoginAccountEditPasswordReqVO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 6359721724055324732L;
+
+    /**
+     * 修改密码
+     */
+    public interface ValidateEditPasswordGroup {
+    }
+
+    /**
+     * 重置密码
+     */
+    public interface ValidateResetPasswordGroup {
+    }
+
+
+    /**
+     * id
+     */
+    @Schema(description = "登陆账户表主键")
+    @NotBlank(groups = {ValidateEditPasswordGroup.class, ValidateResetPasswordGroup.class})
+    private String id;
+
+    /**
+     * 旧密码
+     */
+    @Schema(description = "旧密码")
+    @NotBlank(groups = {ValidateEditPasswordGroup.class})
+    private String oldPassword;
+
+    /**
+     * 新密码
+     */
+    @Schema(description = "新密码")
+    @NotBlank(groups = {ValidateEditPasswordGroup.class, ValidateResetPasswordGroup.class})
+    private String newPassword;
+}

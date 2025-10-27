@@ -16,33 +16,18 @@
  *
  */
 
-package cn.bbwres.biscuit.module.auth.service.cache;
-
-import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
+package cn.bbwres.biscuit.module.auth.constants;
 
 /**
- * 登录用户的缓存信息
+ * 系统常量
  *
  * @author zhanglinfeng
  */
-public interface LoginAccountCacheService {
+public interface AuthSystemConstant {
 
     /**
-     * 根据用户名称查询数据
-     *
-     * @param tenantId 租户id
-     * @param username 用户名称
-     * @return LoginAccountEntity
+     * 一天的缓存name
      */
-    LoginAccountEntity findByLoginUsername(String tenantId, String username);
-
-    /**
-     * 删除缓存
-     *
-     * @param tenantId 租户id
-     * @param username 用户名称
-     */
-    void deleteCache(String tenantId, String username);
-
+    String CACHE_NAME_AUTH_ONE_DAY = "auth#86400";
 
 }

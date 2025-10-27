@@ -1,6 +1,6 @@
 package cn.bbwres.biscuit.module.auth.service.cache;
 
-import cn.bbwres.biscuit.module.auth.config.AuthSystemConstant;
+import cn.bbwres.biscuit.module.auth.constants.AuthSystemConstant;
 import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
 import cn.bbwres.biscuit.module.auth.service.OauthClientDetailsService;
 import lombok.extern.slf4j.Slf4j;

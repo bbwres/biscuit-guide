@@ -4,12 +4,14 @@ import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
+import cn.bbwres.biscuit.module.auth.controller.vo.RoleAddMenuReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RoleAddReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RoleRespVO;
 import cn.bbwres.biscuit.module.auth.convert.RoleConvert;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.service.RoleService;
+import cn.bbwres.biscuit.module.auth.service.cache.RoleCacheService;
 import cn.bbwres.biscuit.validate.ValidateAddGroup;
 import cn.bbwres.biscuit.validate.ValidateEditGroup;
 import cn.bbwres.biscuit.validate.ValidateEditStatusGroup;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -41,6 +44,7 @@ import java.util.Objects;
 public class RoleController {
     private final RoleService roleService;
 
+    private final RoleCacheService roleCacheService;
 
     /**
      * 分页参数信息
@@ -61,8 +65,7 @@ public class RoleController {
      * @return Result
      */
     @GetMapping("/getById")
-    @Operation(summary = "根据id获取角色的数据",
-            parameters = {@Parameter(name = "id", description = "id", required = true)})
+    @Operation(summary = "根据id获取角色的数据", parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<RoleRespVO> getById(@RequestParam("id") String entityId) {
         return Result.success(RoleConvert.INSTANCE.convert(roleService.getRole(entityId)));
     }
@@ -106,6 +109,7 @@ public class RoleController {
                 .setRemark(roleEditReq.getRemark());
 
         roleService.updateById(oldRoleEntity);
+        deleteAccountCache(roleEditReq.getId());
         return Result.success(null);
     }
 
@@ -128,7 +132,40 @@ public class RoleController {
         }
         roleEntity.setStatus(roleEditReq.getStatus());
         roleService.updateById(roleEntity);
+        deleteAccountCache(roleEditReq.getId());
         return Result.success(null);
+    }
+
+
+    /**
+     * 角色菜单配置
+     *
+     * @return Result
+     */
+    @PostMapping("/roleMenuConfig")
+    @Operation(summary = "角色菜单配置")
+    public Result<Void> roleMenuConfig(@RequestBody @Validated RoleAddMenuReqVO roleAddMenuReq) {
+        log.info("当前用户:[{}]角色菜单配置信息:[{}]", WebFrameworkUtils.getUserInfo(UserBaseInfo::getUsername), roleAddMenuReq);
+        RoleEntity roleEntity = roleService.findById(roleAddMenuReq.getId());
+        if (Objects.isNull(roleEntity)) {
+            return Result.error(AuthErrorCodeConstants.DATA_NO_EXISTS_ERROR);
+        }
+        roleService.roleMenuConfig(roleEntity, roleAddMenuReq);
+        deleteAccountCache(roleAddMenuReq.getId());
+        return Result.success(null);
+    }
+
+
+    /**
+     * 根据roleId删除account的角色缓存
+     *
+     * @param roleId 角色id
+     */
+    private void deleteAccountCache(String roleId) {
+        List<String> accountIds = roleService.findAccountsByRoleId(roleId);
+        for (String accountId : accountIds) {
+            roleCacheService.deleteCacheByAccountId(accountId);
+        }
     }
 
 

@@ -18,11 +18,17 @@
 
 package cn.bbwres.biscuit.module.auth.config;
 
+import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
+import cn.bbwres.biscuit.module.auth.service.cache.MenuCacheService;
 import cn.bbwres.biscuit.security.oauth2.endpoint.ResourceService;
-import jakarta.validation.constraints.Max;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -31,9 +37,24 @@ import java.util.Set;
  *
  * @author zhanglinfeng
  */
+@RefreshScope
 @Slf4j
 @Service
 public class ResourceServiceImpl implements ResourceService {
+
+    /**
+     * 登录鉴权的数据
+     */
+    @Value("${auth.loginAuthResource:}")
+    private List<String> loginAuthResource;
+
+    private MenuCacheService menuCacheService;
+
+    @Autowired
+    public void setMenuCacheService(MenuCacheService menuCacheService) {
+        this.menuCacheService = menuCacheService;
+    }
+
     /**
      * 获取仅需要登陆认证的资源地址
      *
@@ -41,7 +62,7 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public List<String> getLoginAuthResource() {
-        return List.of("/auth/**");
+        return loginAuthResource;
     }
 
     /**
@@ -52,6 +73,18 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public List<String> getResourceByRole(Set<String> roleIds) {
-        return List.of();
+        List<MenuEntity> menuEntityList = new ArrayList<>(16);
+        for (String roleId : roleIds) {
+            menuEntityList.addAll(menuCacheService.findByRoleId(roleId));
+        }
+        //过滤掉没有api的数据
+        return menuEntityList.stream()
+                .filter(menuEntity -> StringUtils.isNotBlank(menuEntity.getApiUrl()))
+                .map(menuEntity -> {
+                    if (StringUtils.isBlank(menuEntity.getApiUrlMethod())) {
+                        return "*" + cn.bbwres.biscuit.utils.StringUtils.DATA_STRING_SPLIT + menuEntity.getApiUrl();
+                    }
+                    return menuEntity.getApiUrlMethod() + cn.bbwres.biscuit.utils.StringUtils.DATA_STRING_SPLIT + menuEntity.getApiUrl();
+                }).toList();
     }
 }

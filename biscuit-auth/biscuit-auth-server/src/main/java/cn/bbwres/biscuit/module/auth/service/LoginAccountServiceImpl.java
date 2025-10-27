@@ -2,15 +2,28 @@ package cn.bbwres.biscuit.module.auth.service;
 
 
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.exception.SystemRuntimeException;
+import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddOrUpdateReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddRoleReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountEditPasswordReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.LoginAccountMapper;
+import cn.bbwres.biscuit.module.auth.dao.RoleAccountMapper;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
+import cn.bbwres.biscuit.module.auth.entity.RoleAccountEntity;
+import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
+import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +45,8 @@ public class LoginAccountServiceImpl implements LoginAccountService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RoleAccountMapper roleAccountMapper;
+
 
     /**
      * 获得登陆账户表
@@ -52,8 +67,8 @@ public class LoginAccountServiceImpl implements LoginAccountService {
      * @return
      */
     @Override
-    public LoginAccountEntity findByLoginUsername(String tenantId,String username) {
-        return loginAccountMapper.findByLoginUsername(tenantId,username);
+    public LoginAccountEntity findByLoginUsernameNoTenant(String tenantId, String username) {
+        return loginAccountMapper.findByLoginUsernameNoTenant(tenantId, username);
     }
 
     /**
@@ -97,7 +112,74 @@ public class LoginAccountServiceImpl implements LoginAccountService {
     @Override
     public void save(LoginAccountEntity entity) {
         entity.setLoginPassword(passwordEncoder.encode(entity.getLoginPassword()));
+        entity.setStatus(LoginAccountStatusEnum.UNACTIVATED);
+        entity.setLastUpdatePasswordTime(LocalDateTime.now());
         loginAccountMapper.insert(entity);
+    }
+
+    /**
+     * 账号角色配置
+     *
+     * @param loginAccountAddRoleReq
+     */
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void accountRoleConfig(LoginAccountAddRoleReqVO loginAccountAddRoleReq) {
+        //先删除所有账户角色数据
+        roleAccountMapper.deleteByAccountId(loginAccountAddRoleReq.getId());
+        if (CollectionUtils.isEmpty(loginAccountAddRoleReq.getRoleIds())) {
+            log.info("当前账号id:[{}]配置的角色信息为空!", loginAccountAddRoleReq.getId());
+            return;
+        }
+        List<RoleAccountEntity> roleAccounts = loginAccountAddRoleReq.getRoleIds().stream().map(roleId -> new RoleAccountEntity()
+                .setLoginAccountId(loginAccountAddRoleReq.getId())
+                .setRoleId(roleId)).toList();
+        roleAccountMapper.insert(roleAccounts);
+    }
+
+    /**
+     * 检查用户是否配置角色信息
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean checkUserRole(String id) {
+        return roleAccountMapper.countByAccountId(id) > 0;
+    }
+
+    /**
+     * 修改账户状态
+     *
+     * @param loginAccountAddOrUpdateReq
+     */
+    @Override
+    public void editAccountStatus(LoginAccountAddOrUpdateReqVO loginAccountAddOrUpdateReq) {
+        LoginAccountEntity entity = new LoginAccountEntity();
+        entity.setId(loginAccountAddOrUpdateReq.getId());
+        entity.setStatus(loginAccountAddOrUpdateReq.getStatus());
+        loginAccountMapper.updateById(entity);
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param entity
+     * @param loginAccountEditPasswordReq
+     */
+    @Override
+    public void editAccountPassword(LoginAccountEntity entity, LoginAccountEditPasswordReqVO loginAccountEditPasswordReq) {
+        if (!ObjectUtils.isEmpty(loginAccountEditPasswordReq.getOldPassword())) {
+            log.info("当前用户:[{}]修改密码，校验原密码是否正确", entity.getName());
+            if (passwordEncoder.matches(loginAccountEditPasswordReq.getOldPassword(), entity.getLoginPassword())) {
+                throw new SystemRuntimeException(AuthErrorCodeConstants.ACCOUNT_PASSWORD_ERROR);
+            }
+        }
+        LoginAccountEntity updateEntity = new LoginAccountEntity();
+        updateEntity.setId(loginAccountEditPasswordReq.getId());
+        updateEntity.setLoginPassword(passwordEncoder.encode(loginAccountEditPasswordReq.getNewPassword()));
+        updateEntity.setLastUpdatePasswordTime(LocalDateTime.now());
+        loginAccountMapper.updateById(updateEntity);
     }
 
 

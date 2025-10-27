@@ -3,20 +3,21 @@ package cn.bbwres.biscuit.module.auth.service;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.MenuMapper;
+import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 /**
@@ -33,6 +34,8 @@ import java.util.Objects;
 public class MenuServiceImpl implements MenuService {
 
     private final MenuMapper menuMapper;
+
+    private final RoleMenuMapper roleMenuMapper;
 
 
     /**
@@ -142,8 +145,86 @@ public class MenuServiceImpl implements MenuService {
         String treePath = entity.getTreePath();
         menuMapper.updateStatusById(entity.getId(), entity.getStatus());
         //修改子级的数据状态
-        menuMapper.updateStatusByParentTreePath(treePath,entity.getStatus());
+        menuMapper.updateStatusByParentTreePath(treePath, entity.getStatus());
 
+    }
+
+    /**
+     * 根据菜单id获取出整个树形结构
+     *
+     * @param entityId
+     * @return
+     */
+    @Override
+    public List<MenuTreeRespVO> getMenuTreeById(String entityId) {
+        //查询出根节点
+        List<MenuTreeRespVO> menuTreeRespList = menuMapper.getMenuTreeByIdAndStatus(entityId, DataStatusEnum.NORMAL);
+        if (CollectionUtils.isEmpty(menuTreeRespList)) {
+            return menuTreeRespList;
+        }
+        //查询所有子级
+        for (MenuTreeRespVO menuTreeResp : menuTreeRespList) {
+            //只查询下一级
+            List<MenuTreeRespVO> childrenMenuTreeRespList = menuMapper.getMenuTreeByTreePathAndStatus(menuTreeResp.getTreePath() + "/", DataStatusEnum.NORMAL);
+            if (CollectionUtils.isEmpty(childrenMenuTreeRespList)) {
+                continue;
+            }
+            Map<String, List<MenuTreeRespVO>> nextChildrenMap = new HashMap<>(16);
+            for (MenuTreeRespVO menuTreeRespVO : childrenMenuTreeRespList) {
+                List<MenuTreeRespVO> nextChildrenList = nextChildrenMap.get(menuTreeRespVO.getParentId());
+                if (CollectionUtils.isEmpty(nextChildrenList)) {
+                    nextChildrenList = new ArrayList<>(16);
+                    nextChildrenMap.put(menuTreeRespVO.getParentId(), nextChildrenList);
+                }
+                nextChildrenList.add(menuTreeRespVO);
+            }
+
+            buildChildren(menuTreeResp, nextChildrenMap);
+
+        }
+        return menuTreeRespList;
+    }
+
+    /**
+     * 根据角色id查询出关联的菜单信息
+     *
+     * @param roleId
+     * @return
+     */
+    @Override
+    public List<MenuEntity> findByRoleId(String roleId) {
+        return roleMenuMapper.findByRoleIdNoTenant(roleId, DataStatusEnum.NORMAL);
+    }
+
+    /**
+     * 根据菜单id查询出 关联的角色id
+     *
+     * @param menuId
+     * @return
+     */
+    @Override
+    public List<String> findRolesByMenuId(String menuId) {
+        return roleMenuMapper.findRolesByMenuId(menuId);
+    }
+
+    /**
+     * 为当前节点递归挂载子节点
+     *
+     * @param currentNode 当前节点
+     * @param nodeMap     所有节点的ID映射
+     */
+    private static void buildChildren(MenuTreeRespVO currentNode, Map<String, List<MenuTreeRespVO>> nodeMap) {
+        for (String parentId : nodeMap.keySet()) {
+            if (currentNode.getId().equals(parentId)) {
+                List<MenuTreeRespVO> menuTreeResp = nodeMap.get(parentId);
+                currentNode.setChildren(menuTreeResp);
+                nodeMap.remove(parentId);
+                for (MenuTreeRespVO menuTree : menuTreeResp) {
+                    buildChildren(menuTree, nodeMap);
+                }
+            }
+
+        }
     }
 
     /**
@@ -153,7 +234,7 @@ public class MenuServiceImpl implements MenuService {
      * @param updateEntity
      * @return
      */
-    private boolean checkNoChangeParent(MenuEntity oldEntity, MenuEntity updateEntity) {
+    private static boolean checkNoChangeParent(MenuEntity oldEntity, MenuEntity updateEntity) {
         if (oldEntity.getParentId() == null && updateEntity.getParentId() == null) {
             return true;
         }

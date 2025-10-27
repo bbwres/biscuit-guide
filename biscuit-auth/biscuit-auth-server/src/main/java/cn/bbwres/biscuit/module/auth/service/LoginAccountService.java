@@ -1,6 +1,9 @@
 package cn.bbwres.biscuit.module.auth.service;
 
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddOrUpdateReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddRoleReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountEditPasswordReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 
@@ -28,11 +31,12 @@ public interface LoginAccountService {
 
     /**
      * 根据用户名称查询数据
+     *
      * @param username
      * @param tenantId
      * @return
      */
-    LoginAccountEntity findByLoginUsername(String tenantId,String username);
+    LoginAccountEntity findByLoginUsernameNoTenant(String tenantId, String username);
 
     /**
      * 获得登陆账户表列表
@@ -66,5 +70,35 @@ public interface LoginAccountService {
      */
     void save(LoginAccountEntity entity);
 
+
+    /**
+     * 账号角色配置
+     *
+     * @param loginAccountAddRoleReq
+     */
+    void accountRoleConfig(LoginAccountAddRoleReqVO loginAccountAddRoleReq);
+
+    /**
+     * 检查用户是否配置角色信息
+     *
+     * @param id
+     * @return
+     */
+    boolean checkUserRole(String id);
+
+    /**
+     * 修改账户状态
+     *
+     * @param loginAccountAddOrUpdateReq
+     */
+    void editAccountStatus(LoginAccountAddOrUpdateReqVO loginAccountAddOrUpdateReq);
+
+    /**
+     * 修改密码
+     *
+     * @param entity
+     * @param loginAccountEditPasswordReq
+     */
+    void editAccountPassword(LoginAccountEntity entity, LoginAccountEditPasswordReqVO loginAccountEditPasswordReq);
 
 }

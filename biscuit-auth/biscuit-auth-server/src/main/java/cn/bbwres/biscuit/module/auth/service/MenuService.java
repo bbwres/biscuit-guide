@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.module.auth.service;
 
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 
@@ -66,5 +67,29 @@ public interface MenuService {
      * @param entity
      */
     void editMenuStatus(MenuEntity entity);
+
+    /**
+     * 根据菜单id获取出整个树形结构
+     *
+     * @param entityId
+     * @return
+     */
+    List<MenuTreeRespVO> getMenuTreeById(String entityId);
+
+    /**
+     * 根据角色id查询出关联的菜单信息
+     *
+     * @param roleId
+     * @return
+     */
+    List<MenuEntity> findByRoleId(String roleId);
+
+    /**
+     * 根据菜单id查询出 关联的角色id
+     *
+     * @param menuId
+     * @return
+     */
+    List<String> findRolesByMenuId(String menuId);
 
 }

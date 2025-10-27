@@ -2,6 +2,7 @@ package cn.bbwres.biscuit.module.auth.dao;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
@@ -13,6 +14,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.util.ObjectUtils;
+
+import java.util.List;
 
 
 /**
@@ -109,5 +112,23 @@ public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
                 .set(MenuEntity::getStatus, status)
                 .likeLeft(MenuEntity::getTreePath, treePath));
     }
+
+    /**
+     * 根据id和状态查询数据，当id为空是查询所有父节点为空的数据
+     *
+     * @param entityId
+     * @param dataStatus
+     * @return
+     */
+    List<MenuTreeRespVO> getMenuTreeByIdAndStatus(@Param("entityId") String entityId, @Param("dataStatus") DataStatusEnum dataStatus);
+
+    /**
+     * 根据treePath和状态查询数据
+     *
+     * @param treePath
+     * @param dataStatus
+     * @return
+     */
+    List<MenuTreeRespVO> getMenuTreeByTreePathAndStatus(@Param("treePath") String treePath, @Param("dataStatus") DataStatusEnum dataStatus);
 }
 

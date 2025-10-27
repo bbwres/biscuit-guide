@@ -3,7 +3,7 @@ package cn.bbwres.biscuit.module.auth.convert;
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuAddReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
-import cn.bbwres.biscuit.module.auth.controller.vo.MenuRespVO;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuRespVO;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

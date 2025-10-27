@@ -16,33 +16,30 @@
  *
  */
 
-package cn.bbwres.biscuit.module.auth.service.cache;
+package cn.bbwres.biscuit.module.auth.api.vo;
 
-import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serial;
+import java.util.List;
 
 /**
- * 登录用户的缓存信息
+ * 菜单树形响应
  *
  * @author zhanglinfeng
  */
-public interface LoginAccountCacheService {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class MenuTreeRespVO extends MenuRespVO {
+    @Serial
+    private static final long serialVersionUID = -5801030657767850173L;
 
     /**
-     * 根据用户名称查询数据
-     *
-     * @param tenantId 租户id
-     * @param username 用户名称
-     * @return LoginAccountEntity
+     * 当前树形结构的子级
      */
-    LoginAccountEntity findByLoginUsername(String tenantId, String username);
-
-    /**
-     * 删除缓存
-     *
-     * @param tenantId 租户id
-     * @param username 用户名称
-     */
-    void deleteCache(String tenantId, String username);
-
+    @Schema(description = "当前树形结构的子级")
+    private List<MenuTreeRespVO> children;
 
 }

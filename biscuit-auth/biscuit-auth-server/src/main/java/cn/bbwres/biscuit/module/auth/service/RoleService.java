@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.module.auth.service;
 
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.controller.vo.RoleAddMenuReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 
@@ -61,6 +62,7 @@ public interface RoleService {
 
     /**
      * 根据id查询数据
+     *
      * @param id
      * @return
      */
@@ -68,8 +70,34 @@ public interface RoleService {
 
     /**
      * 修改数据
+     *
      * @param entity
      */
     void updateById(RoleEntity entity);
+
+    /**
+     * 新增角色菜单配置
+     *
+     * @param roleEntity
+     * @param roleAddMenuReq
+     */
+    void roleMenuConfig(RoleEntity roleEntity, RoleAddMenuReqVO roleAddMenuReq);
+
+    /**
+     * 根据账户id查询关联的角色信息
+     *
+     * @param accountId
+     * @return
+     */
+    List<RoleEntity> findByAccountIdNoTenant(String accountId);
+
+
+    /**
+     * 根据角色id查询出角色关联的账户信息
+     *
+     * @param roleId
+     * @return
+     */
+    List<String> findAccountsByRoleId(String roleId);
 
 }

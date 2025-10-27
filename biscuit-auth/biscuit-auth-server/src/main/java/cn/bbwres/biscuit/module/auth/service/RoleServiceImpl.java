@@ -3,14 +3,21 @@ package cn.bbwres.biscuit.module.auth.service;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.module.auth.controller.vo.RoleAddMenuReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
+import cn.bbwres.biscuit.module.auth.dao.RoleAccountMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMapper;
+import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
+import cn.bbwres.biscuit.module.auth.entity.RoleMenuEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,6 +36,9 @@ import java.util.List;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleMapper roleMapper;
+    private final RoleMenuMapper roleMenuMapper;
+
+    private final RoleAccountMapper roleAccountMapper;
 
 
     /**
@@ -106,6 +116,56 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void updateById(RoleEntity entity) {
         roleMapper.updateById(entity);
+    }
+
+    /**
+     * 新增角色菜单配置
+     *
+     * @param roleEntity
+     * @param roleAddMenuReq
+     */
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void roleMenuConfig(RoleEntity roleEntity, RoleAddMenuReqVO roleAddMenuReq) {
+        //删除目前的角色资源配置
+        roleMenuMapper.deleteByRoleId(roleEntity.getId());
+        if (CollectionUtils.isEmpty(roleAddMenuReq.getMenuIds())) {
+            log.info("当前角色id:[{}]配置的菜单信息为空!", roleAddMenuReq.getId());
+            return;
+        }
+        List<RoleMenuEntity> roleMenuEntities = new ArrayList<>(16);
+        for (String menuId : roleAddMenuReq.getMenuIds()) {
+            RoleMenuEntity roleMenuEntity = new RoleMenuEntity();
+            roleMenuEntity.setRoleId(roleEntity.getId());
+            roleMenuEntity.setMenuId(menuId);
+            roleMenuEntity.setRoleCode(roleEntity.getRoleCode());
+            roleMenuEntity.setClientId(roleEntity.getClientId());
+            roleMenuEntities.add(roleMenuEntity);
+        }
+        roleMenuMapper.insert(roleMenuEntities);
+
+    }
+
+    /**
+     * 根据账户id查询关联的角色信息
+     *
+     * @param accountId
+     * @return
+     */
+    @Override
+    public List<RoleEntity> findByAccountIdNoTenant(String accountId) {
+        return roleAccountMapper.findByAccountId(accountId,DataStatusEnum.NORMAL);
+    }
+
+    /**
+     * 根据角色id查询出角色关联的账户信息
+     *
+     * @param roleId
+     * @return
+     */
+    @Override
+    public List<String> findAccountsByRoleId(String roleId) {
+        return roleAccountMapper.findAccountsByRoleId(roleId);
     }
 
 

@@ -3,13 +3,15 @@ package cn.bbwres.biscuit.module.auth.controller;
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuRespVO;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuAddReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
-import cn.bbwres.biscuit.module.auth.controller.vo.MenuRespVO;
 import cn.bbwres.biscuit.module.auth.convert.MenuConvert;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.service.MenuService;
+import cn.bbwres.biscuit.module.auth.service.cache.MenuCacheService;
 import cn.bbwres.biscuit.validate.ValidateAddGroup;
 import cn.bbwres.biscuit.validate.ValidateEditGroup;
 import cn.bbwres.biscuit.validate.ValidateEditStatusGroup;
@@ -23,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -39,6 +43,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/menu")
 public class MenuController {
     private final MenuService menuService;
+
+    private final MenuCacheService menuCacheService;
 
 
     /**
@@ -65,6 +71,17 @@ public class MenuController {
         return Result.success(MenuConvert.INSTANCE.convert(menuService.getMenu(entityId)));
     }
 
+    /**
+     * 根据id获取树形结构
+     *
+     * @param entityId
+     * @return
+     */
+    @GetMapping("/getMenuTreeById")
+    @Operation(summary = "根据id获取菜单权限的树形结构", parameters = {@Parameter(name = "id", description = "id")})
+    public Result<List<MenuTreeRespVO>> getMenuTreeById(@RequestParam(value = "id", required = false) String entityId) {
+        return Result.success(menuService.getMenuTreeById(entityId));
+    }
 
     /**
      * 新增菜单信息
@@ -107,6 +124,7 @@ public class MenuController {
         }
         MenuEntity updateMenu = MenuConvert.INSTANCE.convertByAddReq(req);
         menuService.editMenu(oldMenu, updateMenu, parentMenu);
+        deleteRoleCache(req.getId());
         return Result.success(null);
     }
 
@@ -131,7 +149,20 @@ public class MenuController {
         }
         oldMenu.setStatus(req.getStatus());
         menuService.editMenuStatus(oldMenu);
+        deleteRoleCache(req.getId());
         return Result.success(null);
+    }
+
+    /**
+     * 根据menuId删除角色缓存信息
+     *
+     * @param menuId 菜单id
+     */
+    private void deleteRoleCache(String menuId) {
+        List<String> roleIds = menuService.findRolesByMenuId(menuId);
+        for (String roleId : roleIds) {
+            menuCacheService.deleteCacheByRoleId(roleId);
+        }
     }
 
 }

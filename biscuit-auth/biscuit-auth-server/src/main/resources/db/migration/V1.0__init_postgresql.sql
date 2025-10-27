@@ -310,62 +310,51 @@ on column t_menu_resource.description is '资源描述';
 create index idx_menu_resource_menu_id_001
     on t_menu_resource (menu_id, tenant_id);
 
+
 create table t_role
 (
     id          varchar(36)  not null
         primary key,
     create_time timestamp    not null,
     creator     varchar(50)  not null,
-    updater     varchar(50)  default NULL:: character varying,
+    updater     varchar(50)  default NULL::character varying,
     update_time timestamp,
     role_code   varchar(50)  not null,
     role_name   varchar(100) not null,
-    status      smallint     not null,
-    remark      varchar(256) default NULL:: character varying,
+    status      varchar(20)  not null,
+    remark      varchar(256) default NULL::character varying,
     tenant_id   varchar(36)  not null,
     client_id   varchar(36)  not null
 );
 
-comment
-on table t_role is '角色表';
+comment on table t_role is '角色表';
 
-comment
-on column t_role.id is '角色id';
+comment on column t_role.id is '角色id';
 
-comment
-on column t_role.create_time is '创建时间';
+comment on column t_role.create_time is '创建时间';
 
-comment
-on column t_role.creator is '创建人';
+comment on column t_role.creator is '创建人';
 
-comment
-on column t_role.updater is '更新人';
+comment on column t_role.updater is '更新人';
 
-comment
-on column t_role.update_time is '更新时间';
+comment on column t_role.update_time is '更新时间';
 
-comment
-on column t_role.role_code is '角色编码';
+comment on column t_role.role_code is '角色编码';
 
-comment
-on column t_role.role_name is '角色名称';
+comment on column t_role.role_name is '角色名称';
 
-comment
-on column t_role.status is '角色状态';
+comment on column t_role.status is '角色状态';
 
-comment
-on column t_role.remark is '备注';
+comment on column t_role.remark is '备注';
 
-comment
-on column t_role.tenant_id is '租户编码';
+comment on column t_role.tenant_id is '租户编码';
 
-comment
-on column t_role.client_id is '角色所属客户端应用';
+comment on column t_role.client_id is '角色所属客户端应用';
 
 
+create unique index idx_role_code_001
+    on t_role (role_code, client_id, tenant_id);
 
-create index idx_role_code_001
-    on t_role (role_code);
 
 create table t_role_account
 (
@@ -460,4 +449,23 @@ on column t_role_menu.tenant_id is '租户编码';
 
 create index idx_rile_menu_menu_id_role_id_001
     on t_role_menu (role_id, menu_id);
+
+alter table public.t_role_menu
+    add client_id varchar(36);
+
+comment on column public.t_role_menu.client_id is '角色所属客户端应用id';
+
+alter table public.t_role_menu
+    add role_code varchar(50);
+
+comment on column public.t_role_menu.role_code is '角色编码';
+
+
+create index idx_role_menu_role_code_client_001
+    on public.t_role_menu (role_code, client_id, tenant_id);
+
+drop index public.idx_role_id_account_id_01;
+
+create unique index idx_role_id_account_id_01
+    on public.t_role_account (login_account_id, role_id);
 

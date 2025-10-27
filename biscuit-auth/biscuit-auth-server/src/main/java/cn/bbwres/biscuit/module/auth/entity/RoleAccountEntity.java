@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+
 /**
  * 用户角色表
  *
@@ -21,6 +23,7 @@ import lombok.experimental.Accessors;
 @TableName("t_role_account")
 public class RoleAccountEntity extends BaseTenantEntity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     /**
      * 主键

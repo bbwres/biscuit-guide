@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+
 /**
  * 角色所属的资源
  *
@@ -21,6 +23,7 @@ import lombok.experimental.Accessors;
 @TableName("t_role_menu")
 public class RoleMenuEntity extends BaseTenantEntity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     /**
      * 主键
@@ -42,5 +45,18 @@ public class RoleMenuEntity extends BaseTenantEntity {
     @TableField("menu_id")
     private String menuId;
 
+
+    /**
+     * 角色编码
+     */
+    @TableField("role_code")
+    private String roleCode;
+
+
+    /**
+     * 角色所属客户端应用
+     */
+    @TableField("client_id")
+    private String clientId;
 
 }

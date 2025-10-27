@@ -18,31 +18,30 @@
 
 package cn.bbwres.biscuit.module.auth.service.cache;
 
-import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
+import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
+
+import java.util.List;
 
 /**
- * 登录用户的缓存信息
+ * 菜单缓存信息
  *
  * @author zhanglinfeng
  */
-public interface LoginAccountCacheService {
+public interface MenuCacheService {
+
 
     /**
-     * 根据用户名称查询数据
+     * 根据角色id查询关联的菜单信息
      *
-     * @param tenantId 租户id
-     * @param username 用户名称
-     * @return LoginAccountEntity
+     * @param roleId 角色id
+     * @return List<MenuEntity>
      */
-    LoginAccountEntity findByLoginUsername(String tenantId, String username);
+    List<MenuEntity> findByRoleId(String roleId);
 
     /**
      * 删除缓存
      *
-     * @param tenantId 租户id
-     * @param username 用户名称
+     * @param roleId 角色id
      */
-    void deleteCache(String tenantId, String username);
-
-
+    void deleteCacheByRoleId(String roleId);
 }

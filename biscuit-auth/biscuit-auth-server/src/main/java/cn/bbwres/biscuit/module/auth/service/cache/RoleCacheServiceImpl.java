@@ -19,52 +19,53 @@
 package cn.bbwres.biscuit.module.auth.service.cache;
 
 import cn.bbwres.biscuit.module.auth.constants.AuthSystemConstant;
-import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
-import cn.bbwres.biscuit.module.auth.service.LoginAccountService;
+import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
+import cn.bbwres.biscuit.module.auth.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
- * 登录用户的缓存信息
+ * 用户角色 缓存服务
  *
  * @author zhanglinfeng
  */
 @Service
-public class LoginAccountCacheServiceImpl implements LoginAccountCacheService {
+public class RoleCacheServiceImpl implements RoleCacheService {
 
-    private LoginAccountService loginAccountService;
+    private RoleService roleService;
 
     @Autowired
-    public void setLoginAccountService(LoginAccountService loginAccountService) {
-        this.loginAccountService = loginAccountService;
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
     }
 
     /**
-     * 根据用户名称查询数据
+     * 根据账户id查询关联的角色信息
      *
-     * @param username 用户名称
-     * @return LoginAccountEntity
+     * @param accountId 根据账户id查询关联的角色信息
+     * @return List<RoleEntity>
      */
     @Override
     @Cacheable(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
-            key = "targetClass.name+':'+#tenantId+':'+#username", unless = "#result eq null")
-    public LoginAccountEntity findByLoginUsername(String tenantId, String username) {
-        return loginAccountService.findByLoginUsernameNoTenant(tenantId, username);
+            key = "targetClass.name+':'+#accountId", unless = "#result eq null or #result.size()<=0")
+    public List<RoleEntity> findByAccountId(String accountId) {
+        return roleService.findByAccountIdNoTenant(accountId);
     }
 
     /**
      * 删除缓存
      *
-     * @param username 用户名称
+     * @param accountId 账户id
      */
     @Override
     @Caching(evict = {@CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
-            key = "targetClass.name+':'+#tenantId+':'+#username")})
-    public void deleteCache(String tenantId, String username) {
+            key = "targetClass.name+':'+#accountId")})
+    public void deleteCacheByAccountId(String accountId) {
 
     }
-
 }

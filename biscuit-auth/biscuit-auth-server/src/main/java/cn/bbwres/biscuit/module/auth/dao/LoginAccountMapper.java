@@ -54,7 +54,7 @@ public interface LoginAccountMapper extends BatchBaseMapper<LoginAccountEntity> 
      * @return
      */
     @InterceptorIgnore(tenantLine = "true")
-    default LoginAccountEntity findByLoginUsername(String tenantId, String username) {
+    default LoginAccountEntity findByLoginUsernameNoTenant(String tenantId, String username) {
         return selectOne(Wrappers.lambdaQuery(LoginAccountEntity.class)
                 .eq(LoginAccountEntity::getTenantId, tenantId)
                 .eq(LoginAccountEntity::getLoginName, username));

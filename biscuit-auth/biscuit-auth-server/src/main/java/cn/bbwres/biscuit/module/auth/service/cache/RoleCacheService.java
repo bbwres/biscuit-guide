@@ -16,18 +16,32 @@
  *
  */
 
-package cn.bbwres.biscuit.module.auth.config;
+package cn.bbwres.biscuit.module.auth.service.cache;
+
+import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
+
+import java.util.List;
 
 /**
- * 系统常量
+ * role 缓存信息
  *
  * @author zhanglinfeng
  */
-public interface AuthSystemConstant {
+public interface RoleCacheService {
+
 
     /**
-     * 一天的缓存name
+     * 根据账户id查询关联的角色信息
+     *
+     * @param accountId 根据账户id查询关联的角色信息
+     * @return List<RoleEntity>
      */
-    String CACHE_NAME_AUTH_ONE_DAY = "auth#86400";
+    List<RoleEntity> findByAccountId(String accountId);
 
+    /**
+     * 删除缓存
+     *
+     * @param accountId 账户id
+     */
+    void deleteCacheByAccountId(String accountId);
 }

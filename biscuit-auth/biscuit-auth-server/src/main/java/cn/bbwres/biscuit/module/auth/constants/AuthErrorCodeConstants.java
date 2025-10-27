@@ -35,5 +35,14 @@ public interface AuthErrorCodeConstants {
     /**
      * 数据不存在
      */
-    ErrorCode DATA_NO_EXISTS_ERROR = new ErrorCode("201001001", "auth.data_no_exists_error");
+    ErrorCode DATA_NO_EXISTS_ERROR = new ErrorCode("201001002", "auth.data_no_exists_error");
+
+    /**
+     * 账户未配置角色信息
+     */
+    ErrorCode ACCOUNT_NO_ROLE_ERROR = new ErrorCode("201001003", "auth.account_no_role_error");
+    /**
+     * 密码错误
+     */
+    ErrorCode ACCOUNT_PASSWORD_ERROR = new ErrorCode("201001004", "auth.account_password_error");
 }
