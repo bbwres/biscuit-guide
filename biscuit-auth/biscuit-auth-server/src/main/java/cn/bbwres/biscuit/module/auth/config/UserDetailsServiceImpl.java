@@ -111,6 +111,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         .toArray(String[]::new))
                 .build();
 
-        return new AuthUser(userDetails, loginAccount.getName(), loginAccount.getUserId(), loginAccount.getTenantId());
+        return new AuthUser(userDetails, loginAccount.getName(), loginAccount.getId(), loginAccount.getTenantId());
     }
 }
