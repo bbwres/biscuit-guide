@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.module.auth.convert;
 
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuAddReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.api.vo.MenuRespVO;
@@ -43,6 +44,14 @@ public interface MenuConvert {
      * @return
      */
     List<MenuRespVO> convertList(List<MenuEntity> list);
+
+
+    /**
+     * 转换为tree的list
+     * @param list
+     * @return
+     */
+    List<MenuTreeRespVO> convertTreeList(List<MenuEntity> list);
 
     /**
      * 分页查询数据
