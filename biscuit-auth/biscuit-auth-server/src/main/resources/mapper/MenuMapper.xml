@@ -43,7 +43,7 @@
             <if test="entityId==null">
                 and parent_id is null
             </if>
-            and status = #{dataStatus,jdbcType=VARCHAR}
+            and status = #{dataStatus,jdbcType=SMALLINT}
         </where>
         order by  menu_sort
 
@@ -54,7 +54,7 @@
         <include refid="Base_Column_List"/>
         from t_menu
         where tree_path like CONCAT( #{treePath, jdbcType=VARCHAR},'%')
-        and status = #{dataStatus,jdbcType=VARCHAR}
+        and status = #{dataStatus,jdbcType=SMALLINT}
         order by  menu_sort
     </select>
 

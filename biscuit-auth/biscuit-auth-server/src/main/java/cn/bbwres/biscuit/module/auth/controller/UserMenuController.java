@@ -48,7 +48,7 @@ public class UserMenuController {
      *
      * @return Result
      */
-    @GetMapping("/menuTree")
+    @GetMapping("/roleInfo")
     @Operation(summary = "获取当前登录用户的角色信息")
     public Result<List<RoleRespVO>> roleInfo() {
         String userId = WebFrameworkUtils.getUserInfo(UserBaseInfo::getUserId);

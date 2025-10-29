@@ -13,6 +13,9 @@ logging:
 spring:
   application:
     name: auth
+  config:
+    import:
+      - nacos:${spring.application.name}
   cloud:
     nacos:
       discovery:
@@ -27,10 +30,6 @@ spring:
         password: ${NACOS_PASSWORD:nacos}
         group: DEFAULT_GROUP
         file-extension: yaml
-        extension-configs:
-          - dataId: biscuit-shared-configs.yaml
-            group: DEFAULT_GROUP
-            refresh: true
 
   datasource:
     # 数据库配置
