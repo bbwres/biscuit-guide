@@ -40,6 +40,7 @@
         <biscuit.version>3.0.2-SNAPSHOT</biscuit.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <knife4j.version>4.4.0</knife4j.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <licenses>
@@ -48,10 +49,27 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+    <repositories>
+        <repository>
+            <id>huaweicloud</id>
+            <name>huawei</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+        </repository>
+        <repository>
+            <id>aliyunmaven</id>
+            <name>aliyun</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+    </repositories>
 
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
@@ -97,6 +115,11 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring.boot.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>cn.bbwres</groupId>
+                    <artifactId>biscuit-generator-code-maven-plugin</artifactId>
+                    <version>${biscuit.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -110,6 +133,19 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
+                    <!-- 配置注解处理器：Lombok 先执行，再执行 MapStruct -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
