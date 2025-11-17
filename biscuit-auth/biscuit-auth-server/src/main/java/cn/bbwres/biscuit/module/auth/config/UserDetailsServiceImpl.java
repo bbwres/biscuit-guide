@@ -25,20 +25,19 @@ import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import cn.bbwres.biscuit.module.auth.service.cache.LoginAccountCacheService;
 import cn.bbwres.biscuit.module.auth.service.cache.RoleCacheService;
+import cn.bbwres.biscuit.security.oauth2.service.AbstractCustomUserDetailsService;
+import cn.bbwres.biscuit.security.oauth2.service.redis.RedisCheckUserLockService;
 import cn.bbwres.biscuit.security.oauth2.vo.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 
 /**
@@ -47,12 +46,16 @@ import java.util.List;
  * @author zhanglinfeng
  */
 @Component
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl extends AbstractCustomUserDetailsService {
 
-    public static final String TENANT_SPLIT = ",";
 
     private LoginAccountCacheService loginAccountCacheService;
     private RoleCacheService roleCacheService;
+
+    @Autowired
+    public UserDetailsServiceImpl(RedisCheckUserLockService redisCheckUserLockService) {
+        super(redisCheckUserLockService);
+    }
 
     @Autowired
     public void setLoginAccountCacheService(LoginAccountCacheService loginAccountCacheService) {
@@ -65,25 +68,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     /**
-     * 加载用户
+     * 获取用户信息
      *
      * @param username
+     * @param tenantId
+     * @param clientId
      * @return
-     * @throws UsernameNotFoundException
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        String user = username;
-        String tenantId = null;
-        String clientId = null;
-
-        if (username.contains(TENANT_SPLIT)) {
-            String[] split = username.split(TENANT_SPLIT);
-            user = new String(Base64.getDecoder().decode(split[0]), StandardCharsets.UTF_8);
-            clientId = split[1];
-            tenantId = split[2];
-        }
-        LoginAccountEntity loginAccount = loginAccountCacheService.findByLoginUsername(tenantId, user);
+    public UserDetails loadUserByUsername(String username, String tenantId, String clientId) {
+        LoginAccountEntity loginAccount = loginAccountCacheService.findByLoginUsername(tenantId, username);
         if (ObjectUtils.isEmpty(loginAccount)) {
             throw new UsernameNotFoundException(username);
         }
@@ -100,13 +94,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (CollectionUtils.isEmpty(roleEntityList)) {
             throw new SystemRuntimeException(AuthErrorCodeConstants.ACCOUNT_NO_ROLE_ERROR);
         }
-        String queryClientId = clientId;
         //查询角色信息
         UserDetails userDetails = User.builder()
                 .username(loginAccount.getLoginName())
                 .password(loginAccount.getLoginPassword())
                 .roles(roleEntityList.stream()
-                        .filter(roleEntity -> roleEntity.getClientId().equals(queryClientId))
+                        .filter(roleEntity -> roleEntity.getClientId().equals(clientId))
                         .map(RoleEntity::getId)
                         .toArray(String[]::new))
                 .build();

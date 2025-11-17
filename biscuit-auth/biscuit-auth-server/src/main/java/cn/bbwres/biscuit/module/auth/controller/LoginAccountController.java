@@ -100,7 +100,7 @@ public class LoginAccountController {
     @PostMapping("/accountRoleConfig")
     @Operation(summary = "账户分配角色")
     public Result<Void> accountRoleConfig(@RequestBody @Validated LoginAccountAddRoleReqVO loginAccountAddRoleReq) {
-        log.info("当前用户:[{}]新增新增登录账户信息:[{}]", WebFrameworkUtils.getUserInfo(UserBaseInfo::getUsername), loginAccountAddRoleReq);
+        log.info("当前用户:[{}]账户分配角色信息:[{}]", WebFrameworkUtils.getUserInfo(UserBaseInfo::getUsername), loginAccountAddRoleReq);
         LoginAccountEntity entity = loginAccountService.getLoginAccount(loginAccountAddRoleReq.getId());
         if (Objects.isNull(entity)) {
             return Result.error(AuthErrorCodeConstants.DATA_NO_EXISTS_ERROR);

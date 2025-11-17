@@ -21,6 +21,7 @@ package cn.bbwres.biscuit.module.auth.service.cache;
 import cn.bbwres.biscuit.module.auth.constants.AuthSystemConstant;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 import cn.bbwres.biscuit.module.auth.service.LoginAccountService;
+import cn.bbwres.biscuit.security.oauth2.service.redis.RedisCheckUserLockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,6 +37,12 @@ import org.springframework.stereotype.Service;
 public class LoginAccountCacheServiceImpl implements LoginAccountCacheService {
 
     private LoginAccountService loginAccountService;
+    private RedisCheckUserLockService redisCheckUserLockService;
+
+    @Autowired
+    public void setRedisCheckUserLockService(RedisCheckUserLockService redisCheckUserLockService) {
+        this.redisCheckUserLockService = redisCheckUserLockService;
+    }
 
     @Autowired
     public void setLoginAccountService(LoginAccountService loginAccountService) {
@@ -64,7 +71,8 @@ public class LoginAccountCacheServiceImpl implements LoginAccountCacheService {
     @Caching(evict = {@CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
             key = "targetClass.name+':'+#tenantId+':'+#username")})
     public void deleteCache(String tenantId, String username) {
-
+        //删除锁定信息
+        redisCheckUserLockService.deleteLoginFailLock(tenantId, username);
     }
 
 }
