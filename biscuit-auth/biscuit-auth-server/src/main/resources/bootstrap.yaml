@@ -21,13 +21,13 @@ spring:
       discovery:
         server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:public}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+#        username: ${NACOS_USERNAME:nacos}
+#        password: ${NACOS_PASSWORD:nacos}
       config:
         server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:public}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+#        username: ${NACOS_USERNAME:nacos}
+#        password: ${NACOS_PASSWORD:nacos}
         group: DEFAULT_GROUP
         file-extension: yaml
 
@@ -63,10 +63,29 @@ springdoc:
   show-oauth2-endpoints: true
 
 biscuit:
+  # 配置验证码的背景资源
+  captcha:
+    login-failure-captcha-threshold: 3
+    captcha-resource:
+      SLIDER:
+        - bgimages/slider
   security:
     token-store-type: redis
   rpc:
     security:
       enable: true
+
+
+
+captcha:
+  prefix: captcha
+  expire:
+    default: 10000
+    # 针对 点选验证码 过期时间设置为 2分钟， 因为点选验证码验证比较慢，把过期时间调整大一些
+    WORD_IMAGE_CLICK: 20000
+  init-default-resource: true
+  secondary:
+    enabled: true
+    expire: 120000
 
 

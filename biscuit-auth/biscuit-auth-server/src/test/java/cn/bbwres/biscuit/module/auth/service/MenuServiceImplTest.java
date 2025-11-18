@@ -18,10 +18,10 @@
 
 package cn.bbwres.biscuit.module.auth.service;
 
+import cn.bbwres.biscuit.context.UserInfoContext;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.utils.JsonUtil;
-import cn.bbwres.biscuit.web.context.UserInfoContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

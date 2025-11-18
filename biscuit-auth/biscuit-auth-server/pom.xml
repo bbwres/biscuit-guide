@@ -87,10 +87,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>cn.bbwres</groupId>-->
-        <!--            <artifactId>biscuit-security-captcha-boot-starter</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-security-captcha-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
