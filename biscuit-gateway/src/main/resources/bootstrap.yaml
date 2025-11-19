@@ -49,6 +49,7 @@ biscuit:
       - /*/v3/api-docs
       - /service-b/**
       - /auth/oauth2/token
+      - /auth/oauth2/revoke
     disable-csrf: true
 
 # 接口文档
