@@ -146,11 +146,6 @@
                             <artifactId>mapstruct-processor</artifactId>
                             <version>${mapstruct.version}</version>
                         </path>
-                        <path>
-                            <groupId>com.mybatis.flex</groupId>
-                            <artifactId>mybatis-flex-processor</artifactId>
-                            <version>1.11.4</version>
-                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
