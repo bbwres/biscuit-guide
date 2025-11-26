@@ -4,11 +4,10 @@ import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.module.auth.entity.RoleAccountEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
+import cn.bbwres.biscuit.module.auth.entity.table.RoleEntityTableDef;
 import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -75,12 +74,13 @@ public interface RoleAccountMapper extends BaseMapper<RoleAccountEntity> {
      * @param status
      * @return
      */
-    @Select("""
-            select r.*  from t_role_account ra left join  t_role r on r.id = ra.role_id
-            where ra.login_account_id = #{accountId,jdbcType=VARCHAR}
-            and r.status = #{status}
-            """)
-    List<RoleEntity> findByAccountIdNoTenant(@Param("accountId") String accountId, @Param("status") DataStatusEnum status);
+    default List<RoleEntity> findByAccountIdNoTenant(String accountId, DataStatusEnum status) {
+        QueryWrapper queryWrapper = QueryWrapper.create().leftJoin(RoleEntityTableDef.ROLE_ENTITY)
+                .on(RoleEntityTableDef.ROLE_ENTITY.ID.eq(ROLE_ACCOUNT_ENTITY.ID))
+                .where(ROLE_ACCOUNT_ENTITY.LOGIN_ACCOUNT_ID.eq(accountId))
+                .and(RoleEntityTableDef.ROLE_ENTITY.STATUS.eq(status));
+        return selectObjectListByQueryAs(queryWrapper, RoleEntity.class);
+    }
 
 
     /**

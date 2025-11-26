@@ -155,7 +155,8 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public List<RoleEntity> findByAccountIdNoTenant(String accountId) {
-        return TenantManager.withoutTenantCondition(() -> roleAccountMapper.findByAccountIdNoTenant(accountId, DataStatusEnum.NORMAL));
+       // return TenantManager.withoutTenantCondition(() -> roleAccountMapper.findByAccountIdNoTenant(accountId, DataStatusEnum.NORMAL));
+        return roleAccountMapper.findByAccountIdNoTenant(accountId, DataStatusEnum.NORMAL);
     }
 
     /**
