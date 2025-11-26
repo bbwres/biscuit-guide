@@ -1,0 +1,71 @@
+server:
+  port: 28002
+management:
+  server:
+    port: 27002
+logging:
+  file:
+    name: logs/${spring.application.name}.log
+  config: classpath:logback-spring-sleuth.xml
+#  level:
+#    root: debug
+
+spring:
+  application:
+    name: basic
+  config:
+    import:
+      - nacos:${spring.application.name}
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+      #        username: ${NACOS_USERNAME:nacos}
+      #        password: ${NACOS_PASSWORD:nacos}
+      config:
+        server-addr: ${NACOS_SERVER:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        #        username: ${NACOS_USERNAME:nacos}
+        #        password: ${NACOS_PASSWORD:nacos}
+        group: DEFAULT_GROUP
+        file-extension: yaml
+
+  datasource:
+    # 数据库配置
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5432/basic
+    username: postgresql
+    password: admin
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 10
+          min-idle: 5
+
+
+  # 接口文档配置
+springdoc:
+  disable-i18n: true
+  api-docs:
+    enabled: true
+    swagger:
+      title: 基础服务
+      description: 基础服务
+      author: zlf
+      version: 1.0
+  packages-to-scan:
+    - cn.bbwres.biscuit.module.basic.controller
+  show-oauth2-endpoints: true
+
+biscuit:
+  rpc:
+    security:
+      enable: true
+
+
+

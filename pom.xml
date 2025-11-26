@@ -29,6 +29,7 @@
         <module>biscuit-gateway</module>
         <module>biscuit-common</module>
         <module>biscuit-auth</module>
+        <module>biscuit-basic</module>
     </modules>
 
     <properties>
@@ -144,6 +145,11 @@
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
                             <version>${mapstruct.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.mybatis.flex</groupId>
+                            <artifactId>mybatis-flex-processor</artifactId>
+                            <version>1.11.4</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
