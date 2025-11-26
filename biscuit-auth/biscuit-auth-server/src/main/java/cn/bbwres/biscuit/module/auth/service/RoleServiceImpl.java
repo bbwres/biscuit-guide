@@ -10,6 +10,7 @@ import cn.bbwres.biscuit.module.auth.dao.RoleMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleMenuEntity;
+import com.mybatisflex.core.tenant.TenantManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public RoleEntity getRole(String id) {
-        return roleMapper.selectById(id);
+        return roleMapper.selectOneById(id);
     }
 
     /**
@@ -60,7 +61,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public List<RoleEntity> getRoleList(Collection<String> ids) {
-        return roleMapper.selectByIds(ids);
+        return roleMapper.selectListByIds(ids);
     }
 
     /**
@@ -105,7 +106,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public RoleEntity findById(String id) {
-        return roleMapper.selectById(id);
+        return roleMapper.selectOneById(id);
     }
 
     /**
@@ -115,7 +116,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public void updateById(RoleEntity entity) {
-        roleMapper.updateById(entity);
+        roleMapper.update(entity);
     }
 
     /**
@@ -142,7 +143,7 @@ public class RoleServiceImpl implements RoleService {
             roleMenuEntity.setClientId(roleEntity.getClientId());
             roleMenuEntities.add(roleMenuEntity);
         }
-        roleMenuMapper.insert(roleMenuEntities);
+        roleMenuMapper.insertBatch(roleMenuEntities);
 
     }
 
@@ -154,7 +155,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public List<RoleEntity> findByAccountIdNoTenant(String accountId) {
-        return roleAccountMapper.findByAccountId(accountId,DataStatusEnum.NORMAL);
+        return TenantManager.withoutTenantCondition(() -> roleAccountMapper.findByAccountIdNoTenant(accountId, DataStatusEnum.NORMAL));
     }
 
     /**

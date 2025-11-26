@@ -1,10 +1,11 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.keygen.KeyGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -20,7 +21,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("t_role_menu")
+@Table("t_role_menu")
 public class RoleMenuEntity extends BaseTenantEntity {
 
     @Serial
@@ -28,35 +29,35 @@ public class RoleMenuEntity extends BaseTenantEntity {
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
     private String id;
 
 
     /**
      * 角色id
      */
-    @TableField("role_id")
+    @Column("role_id")
     private String roleId;
 
 
     /**
      * 菜单id
      */
-    @TableField("menu_id")
+    @Column("menu_id")
     private String menuId;
 
 
     /**
      * 角色编码
      */
-    @TableField("role_code")
+    @Column("role_code")
     private String roleCode;
 
 
     /**
      * 角色所属客户端应用
      */
-    @TableField("client_id")
+    @Column("client_id")
     private String clientId;
 
 }

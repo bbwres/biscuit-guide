@@ -3,13 +3,13 @@ package cn.bbwres.biscuit.module.auth.dao;
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
-import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.tenant.TenantManager;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.util.ObjectUtils;
+
+import static cn.bbwres.biscuit.module.auth.entity.table.LoginAccountEntityTableDef.LOGIN_ACCOUNT_ENTITY;
 
 
 /**
@@ -21,7 +21,7 @@ import org.springframework.util.ObjectUtils;
  * @Date 2025-08-19
  */
 @Mapper
-public interface LoginAccountMapper extends BatchBaseMapper<LoginAccountEntity> {
+public interface LoginAccountMapper extends BaseMapper<LoginAccountEntity> {
 
     /**
      * 分页查询数据
@@ -30,18 +30,17 @@ public interface LoginAccountMapper extends BatchBaseMapper<LoginAccountEntity> 
      * @return
      */
     default Page<LoginAccountEntity, LoginAccountPageReqVO> selectPage(Page<LoginAccountEntity, LoginAccountPageReqVO> reqVO) {
-        LambdaQueryWrapper<LoginAccountEntity> queryWrapper = Wrappers.lambdaQuery(LoginAccountEntity.class);
+        QueryWrapper queryWrapper = QueryWrapper.create();
         if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    LoginAccountEntity::getId, reqVO.getQuery().getId());
+            queryWrapper.where(LOGIN_ACCOUNT_ENTITY.ID.eq(reqVO.getQuery().getId()));
         }
 
         // 大多数情况下，id 倒序
-        queryWrapper.orderByDesc(LoginAccountEntity::getId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<LoginAccountEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()), queryWrapper);
+        queryWrapper.orderBy(LOGIN_ACCOUNT_ENTITY.ID, false);
 
+        com.mybatisflex.core.paginate.Page<LoginAccountEntity> page = paginate(reqVO.getCurrent(), reqVO.getSize(), queryWrapper);
         reqVO.setRecords(page.getRecords());
-        reqVO.setTotal(page.getTotal());
+        reqVO.setTotal(page.getTotalRow());
         reqVO.calculationPages();
         return reqVO;
     }
@@ -53,11 +52,10 @@ public interface LoginAccountMapper extends BatchBaseMapper<LoginAccountEntity> 
      * @param username
      * @return
      */
-    @InterceptorIgnore(tenantLine = "true")
     default LoginAccountEntity findByLoginUsernameNoTenant(String tenantId, String username) {
-        return selectOne(Wrappers.lambdaQuery(LoginAccountEntity.class)
-                .eq(LoginAccountEntity::getTenantId, tenantId)
-                .eq(LoginAccountEntity::getLoginName, username));
+        return TenantManager.withoutTenantCondition(() -> selectOneByQuery(QueryWrapper.create()
+                .where(LOGIN_ACCOUNT_ENTITY.TENANT_ID.eq(tenantId)
+                        .and(LOGIN_ACCOUNT_ENTITY.LOGIN_NAME.eq(username)))));
     }
 }
 

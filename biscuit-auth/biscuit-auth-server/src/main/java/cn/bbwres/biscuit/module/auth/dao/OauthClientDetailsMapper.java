@@ -1,13 +1,14 @@
 package cn.bbwres.biscuit.module.auth.dao;
-import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
-import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
+
 import cn.bbwres.biscuit.dto.Page;
+import cn.bbwres.biscuit.module.auth.controller.vo.OauthClientDetailsPageReqVO;
+import cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.util.ObjectUtils;
-import cn.bbwres.biscuit.module.auth.controller.vo .*;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+
+import static cn.bbwres.biscuit.module.auth.entity.table.OauthClientDetailsEntityTableDef.OAUTH_CLIENT_DETAILS_ENTITY;
 
 
 /**
@@ -19,7 +20,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
  * @Date 2025-08-19
  */
 @Mapper
-public interface OauthClientDetailsMapper extends BatchBaseMapper<OauthClientDetailsEntity> {
+public interface OauthClientDetailsMapper extends BaseMapper<OauthClientDetailsEntity> {
 
         /**
     * 分页查询数据
@@ -27,18 +28,17 @@ public interface OauthClientDetailsMapper extends BatchBaseMapper<OauthClientDet
     * @return
     */
     default Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> selectPage(Page<OauthClientDetailsEntity,OauthClientDetailsPageReqVO> reqVO){
-        LambdaQueryWrapper<OauthClientDetailsEntity> queryWrapper = Wrappers.lambdaQuery(OauthClientDetailsEntity.class);
+        QueryWrapper queryWrapper = QueryWrapper.create();
         if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                OauthClientDetailsEntity::getId, reqVO.getQuery().getId());
+            queryWrapper.where(OAUTH_CLIENT_DETAILS_ENTITY.ID.eq(reqVO.getQuery().getId()));
         }
 
         // 大多数情况下，id 倒序
-        queryWrapper.orderByDesc(OauthClientDetailsEntity::getId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<OauthClientDetailsEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()),queryWrapper);
+        queryWrapper.orderBy(OAUTH_CLIENT_DETAILS_ENTITY.ID, false);
 
+        com.mybatisflex.core.paginate.Page<OauthClientDetailsEntity> page = paginate(reqVO.getCurrent(), reqVO.getSize(), queryWrapper);
         reqVO.setRecords(page.getRecords());
-        reqVO.setTotal(page.getTotal());
+        reqVO.setTotal(page.getTotalRow());
         reqVO.calculationPages();
         return reqVO;
     }

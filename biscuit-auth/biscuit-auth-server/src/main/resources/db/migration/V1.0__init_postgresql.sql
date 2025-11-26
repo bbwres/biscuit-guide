@@ -315,3 +315,53 @@ create index idx_menu_parent_id_001
 create index idx_t_menu_tree_path_01
     on public.t_menu (tree_path);
 
+
+
+alter table public.t_login_account add creator_name varchar(100);
+comment on column public.t_login_account.creator_name is '创建者姓名';
+
+alter table public.t_login_account add updater_name varchar(100);
+comment on column public.t_login_account.creator_name is '更新者姓名';
+
+
+
+alter table public.t_menu add creator_name varchar(100);
+comment on column public.t_menu.creator_name is '创建者姓名';
+
+alter table public.t_menu add updater_name varchar(100);
+comment on column public.t_menu.creator_name is '更新者姓名';
+
+
+
+alter table public.t_oauth_client_details add creator_name varchar(100);
+comment on column public.t_oauth_client_details.creator_name is '创建者姓名';
+
+alter table public.t_oauth_client_details add updater_name varchar(100);
+comment on column public.t_oauth_client_details.creator_name is '更新者姓名';
+
+
+
+alter table public.t_role add creator_name varchar(100);
+comment on column public.t_role.creator_name is '创建者姓名';
+
+alter table public.t_role add updater_name varchar(100);
+comment on column public.t_role.creator_name is '更新者姓名';
+
+
+
+alter table public.t_role_account add creator_name varchar(100);
+comment on column public.t_role_account.creator_name is '创建者姓名';
+
+alter table public.t_role_account add updater_name varchar(100);
+comment on column public.t_role_account.creator_name is '更新者姓名';
+
+
+
+
+alter table public.t_role_menu add creator_name varchar(100);
+comment on column public.t_role_menu.creator_name is '创建者姓名';
+
+alter table public.t_role_menu add updater_name varchar(100);
+comment on column public.t_role_menu.creator_name is '更新者姓名';
+
+

@@ -1,18 +1,14 @@
 package cn.bbwres.biscuit.module.auth.dao;
 
-import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleMenuEntity;
-import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import cn.bbwres.biscuit.module.auth.entity.table.RoleMenuEntityTableDef;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -26,30 +22,8 @@ import java.util.List;
  * @Date 2025-08-19
  */
 @Mapper
-public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
+public interface RoleMenuMapper extends BaseMapper<RoleMenuEntity> {
 
-    /**
-     * 分页查询数据
-     *
-     * @param reqVO 分页查询条件
-     * @return
-     */
-    default Page<RoleMenuEntity, RoleMenuEntity> selectPage(Page<RoleMenuEntity, RoleMenuEntity> reqVO) {
-        LambdaQueryWrapper<RoleMenuEntity> queryWrapper = Wrappers.lambdaQuery(RoleMenuEntity.class);
-        if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    RoleMenuEntity::getId, reqVO.getQuery().getId());
-        }
-
-        // 大多数情况下，id 倒序
-        queryWrapper.orderByDesc(RoleMenuEntity::getId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<RoleMenuEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()), queryWrapper);
-
-        reqVO.setRecords(page.getRecords());
-        reqVO.setTotal(page.getTotal());
-        reqVO.calculationPages();
-        return reqVO;
-    }
 
     /**
      * 根据roleId删除所有配置的菜单数据
@@ -57,8 +31,7 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
      * @param roleId
      */
     default void deleteByRoleId(String roleId) {
-        delete(Wrappers.lambdaQuery(RoleMenuEntity.class)
-                .eq(RoleMenuEntity::getId, roleId));
+        deleteByCondition(RoleMenuEntityTableDef.ROLE_MENU_ENTITY.ROLE_ID.eq(roleId));
     }
 
 
@@ -74,7 +47,6 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
             where rm.role_id = #{roleId,jdbcType=VARCHAR}
             and m.status = #{status}
             """)
-    @InterceptorIgnore(tenantLine = "true")
     List<MenuEntity> findByRoleIdNoTenant(@Param("roleId") String roleId, @Param("status") DataStatusEnum status);
 
     /**
@@ -84,9 +56,9 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
      * @return
      */
     default List<String> findRolesByMenuId(String menuId) {
-        return selectObjs(Wrappers.lambdaQuery(RoleMenuEntity.class)
-                .eq(RoleMenuEntity::getMenuId, menuId)
-                .select(RoleMenuEntity::getRoleId));
+        return selectObjectListByQueryAs(QueryWrapper.create()
+                .where(RoleMenuEntityTableDef.ROLE_MENU_ENTITY.MENU_ID.eq(menuId))
+                .select(RoleMenuEntityTableDef.ROLE_MENU_ENTITY.ROLE_ID), String.class);
     }
 
 }

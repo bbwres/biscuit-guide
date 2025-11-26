@@ -5,10 +5,9 @@ import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
-import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.update.UpdateChain;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -16,6 +15,8 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+
+import static cn.bbwres.biscuit.module.auth.entity.table.MenuEntityTableDef.MENU_ENTITY;
 
 
 /**
@@ -27,7 +28,7 @@ import java.util.List;
  * @Date 2025-10-25
  */
 @Mapper
-public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
+public interface MenuMapper extends BaseMapper<MenuEntity> {
 
     /**
      * 分页查询数据
@@ -36,18 +37,17 @@ public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
      * @return
      */
     default Page<MenuEntity, MenuPageReqVO> selectPage(Page<MenuEntity, MenuPageReqVO> reqVO) {
-        LambdaQueryWrapper<MenuEntity> queryWrapper = Wrappers.lambdaQuery(MenuEntity.class);
+        QueryWrapper queryWrapper = QueryWrapper.create();
         if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    MenuEntity::getId, reqVO.getQuery().getId());
+            queryWrapper.where(MENU_ENTITY.ID.eq(reqVO.getQuery().getId()));
         }
 
         // 大多数情况下，id 倒序
-        queryWrapper.orderByAsc(MenuEntity::getId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<MenuEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()), queryWrapper);
+        queryWrapper.orderBy(MENU_ENTITY.ID, false);
 
+        com.mybatisflex.core.paginate.Page<MenuEntity> page = paginate(reqVO.getCurrent(), reqVO.getSize(), queryWrapper);
         reqVO.setRecords(page.getRecords());
-        reqVO.setTotal(page.getTotal());
+        reqVO.setTotal(page.getTotalRow());
         reqVO.calculationPages();
         return reqVO;
     }
@@ -96,9 +96,10 @@ public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
      * @param status
      */
     default void updateStatusById(String id, DataStatusEnum status) {
-        update(Wrappers.lambdaUpdate(MenuEntity.class)
-                .set(MenuEntity::getStatus, status)
-                .eq(MenuEntity::getId, id));
+        UpdateChain.of(MenuEntity.class)
+                .set(MENU_ENTITY.STATUS, status)
+                .where(MENU_ENTITY.ID.eq(id))
+                .update();
     }
 
     /**
@@ -108,9 +109,10 @@ public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
      * @param status
      */
     default void updateStatusByParentTreePath(String treePath, DataStatusEnum status) {
-        update(Wrappers.lambdaUpdate(MenuEntity.class)
-                .set(MenuEntity::getStatus, status)
-                .likeLeft(MenuEntity::getTreePath, treePath));
+        UpdateChain.of(MenuEntity.class)
+                .set(MENU_ENTITY.STATUS, status)
+                .where(MENU_ENTITY.TREE_PATH.likeLeft(treePath))
+                .update();
     }
 
     /**

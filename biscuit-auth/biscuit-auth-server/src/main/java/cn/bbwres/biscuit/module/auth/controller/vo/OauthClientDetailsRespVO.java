@@ -1,11 +1,13 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.*;
-import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
 * <p>

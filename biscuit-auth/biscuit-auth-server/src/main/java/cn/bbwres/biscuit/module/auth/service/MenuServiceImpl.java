@@ -9,6 +9,7 @@ import cn.bbwres.biscuit.module.auth.dao.MenuMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.utils.MenuTreeUtils;
+import com.mybatisflex.core.tenant.TenantManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class MenuServiceImpl implements MenuService {
      */
     @Override
     public MenuEntity getMenu(String id) {
-        return menuMapper.selectById(id);
+        return menuMapper.selectOneById(id);
     }
 
     /**
@@ -59,7 +60,7 @@ public class MenuServiceImpl implements MenuService {
      */
     @Override
     public List<MenuEntity> getMenuList(Collection<String> ids) {
-        return menuMapper.selectByIds(ids);
+        return menuMapper.selectListByIds(ids);
     }
 
     /**
@@ -120,7 +121,7 @@ public class MenuServiceImpl implements MenuService {
         if (checkNoChangeParent(oldEntity, updateEntity)) {
             //没有修改层级
             log.info("当前用户修改了菜单信息:[{}]为:[{}]，未修改层级，则不处理层级关系", oldEntity, updateEntity);
-            menuMapper.updateById(oldEntity);
+            menuMapper.update(oldEntity);
             return;
         }
         //修改了层级
@@ -128,7 +129,7 @@ public class MenuServiceImpl implements MenuService {
         oldEntity.setParentId(updateEntity.getParentId());
         oldEntity.setTreePath(ObjectUtils.isEmpty(parentMenu) ? oldEntity.getId() : parentMenu.getTreePath() + "/" + oldEntity.getId());
 
-        menuMapper.updateById(oldEntity);
+        menuMapper.update(oldEntity);
         if (ObjectUtils.isEmpty(oldEntity.getParentId())) {
             menuMapper.updateParentIdById(oldEntity.getId(), oldEntity.getParentId());
         }
@@ -172,7 +173,7 @@ public class MenuServiceImpl implements MenuService {
      */
     @Override
     public List<MenuEntity> findByRoleId(String roleId) {
-        return roleMenuMapper.findByRoleIdNoTenant(roleId, DataStatusEnum.NORMAL);
+        return TenantManager.withoutTenantCondition(() -> roleMenuMapper.findByRoleIdNoTenant(roleId, DataStatusEnum.NORMAL));
     }
 
     /**

@@ -41,7 +41,7 @@ public class OauthClientDetailsServiceImpl implements OauthClientDetailsService 
      */
     @Override
     public OauthClientDetailsEntity getOauthClientDetails(String id) {
-        return oauthClientDetailsMapper.selectById(id);
+        return oauthClientDetailsMapper.selectOneById(id);
     }
 
     /**
@@ -52,7 +52,7 @@ public class OauthClientDetailsServiceImpl implements OauthClientDetailsService 
      */
     @Override
     public List<OauthClientDetailsEntity> getOauthClientDetailsList(Collection<String> ids) {
-        return oauthClientDetailsMapper.selectByIds(ids);
+        return oauthClientDetailsMapper.selectListByIds(ids);
     }
 
     /**
@@ -74,7 +74,7 @@ public class OauthClientDetailsServiceImpl implements OauthClientDetailsService 
      */
     @Override
     public boolean updateById(OauthClientDetailsEntity entity) {
-        return oauthClientDetailsMapper.updateById(entity) > 0;
+        return oauthClientDetailsMapper.update(entity) > 0;
     }
 
     /**

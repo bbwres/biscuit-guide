@@ -2,10 +2,11 @@ package cn.bbwres.biscuit.module.auth.entity;
 
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.keygen.KeyGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -21,7 +22,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("t_role")
+@Table("t_role")
 public class RoleEntity extends BaseTenantEntity {
 
     @Serial
@@ -29,42 +30,42 @@ public class RoleEntity extends BaseTenantEntity {
     /**
      * 角色id
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
     private String id;
 
 
     /**
      * 角色编码
      */
-    @TableField("role_code")
+    @Column("role_code")
     private String roleCode;
 
 
     /**
      * 角色名称
      */
-    @TableField("role_name")
+    @Column("role_name")
     private String roleName;
 
 
     /**
      * 角色状态
      */
-    @TableField("status")
+    @Column("status")
     private DataStatusEnum status;
 
 
     /**
      * 备注
      */
-    @TableField("remark")
+    @Column("remark")
     private String remark;
 
 
     /**
      * 角色所属客户端应用
      */
-    @TableField("client_id")
+    @Column("client_id")
     private String clientId;
 
 

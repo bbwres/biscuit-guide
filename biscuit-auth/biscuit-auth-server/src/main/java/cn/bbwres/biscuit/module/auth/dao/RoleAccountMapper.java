@@ -4,17 +4,16 @@ import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.module.auth.entity.RoleAccountEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
-import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+
+import static cn.bbwres.biscuit.module.auth.entity.table.RoleAccountEntityTableDef.ROLE_ACCOUNT_ENTITY;
 
 
 /**
@@ -26,7 +25,7 @@ import java.util.List;
  * @Date 2025-08-19
  */
 @Mapper
-public interface RoleAccountMapper extends BatchBaseMapper<RoleAccountEntity> {
+public interface RoleAccountMapper extends BaseMapper<RoleAccountEntity> {
 
     /**
      * 分页查询数据
@@ -35,18 +34,17 @@ public interface RoleAccountMapper extends BatchBaseMapper<RoleAccountEntity> {
      * @return
      */
     default Page<RoleAccountEntity, RoleAccountEntity> selectPage(Page<RoleAccountEntity, RoleAccountEntity> reqVO) {
-        LambdaQueryWrapper<RoleAccountEntity> queryWrapper = Wrappers.lambdaQuery(RoleAccountEntity.class);
+        QueryWrapper queryWrapper = QueryWrapper.create();
         if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    RoleAccountEntity::getId, reqVO.getQuery().getId());
+            queryWrapper.where(ROLE_ACCOUNT_ENTITY.ID.eq(reqVO.getQuery().getId()));
         }
 
         // 大多数情况下，id 倒序
-        queryWrapper.orderByDesc(RoleAccountEntity::getId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<RoleAccountEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()), queryWrapper);
+        queryWrapper.orderBy(ROLE_ACCOUNT_ENTITY.ID, false);
 
+        com.mybatisflex.core.paginate.Page<RoleAccountEntity> page = paginate(reqVO.getCurrent(), reqVO.getSize(), queryWrapper);
         reqVO.setRecords(page.getRecords());
-        reqVO.setTotal(page.getTotal());
+        reqVO.setTotal(page.getTotalRow());
         reqVO.calculationPages();
         return reqVO;
     }
@@ -57,8 +55,7 @@ public interface RoleAccountMapper extends BatchBaseMapper<RoleAccountEntity> {
      * @param accountId
      */
     default void deleteByAccountId(String accountId) {
-        delete(Wrappers.lambdaQuery(RoleAccountEntity.class)
-                .eq(RoleAccountEntity::getLoginAccountId, accountId));
+        deleteByCondition(ROLE_ACCOUNT_ENTITY.LOGIN_ACCOUNT_ID.eq(accountId));
     }
 
     /**
@@ -68,8 +65,7 @@ public interface RoleAccountMapper extends BatchBaseMapper<RoleAccountEntity> {
      * @return
      */
     default Long countByAccountId(String accountId) {
-        return selectCount(Wrappers.lambdaQuery(RoleAccountEntity.class)
-                .eq(RoleAccountEntity::getLoginAccountId, accountId));
+        return selectCountByCondition(ROLE_ACCOUNT_ENTITY.LOGIN_ACCOUNT_ID.eq(accountId));
     }
 
     /**
@@ -84,8 +80,7 @@ public interface RoleAccountMapper extends BatchBaseMapper<RoleAccountEntity> {
             where ra.login_account_id = #{accountId,jdbcType=VARCHAR}
             and r.status = #{status}
             """)
-    @InterceptorIgnore(tenantLine = "true")
-    List<RoleEntity> findByAccountId(@Param("accountId") String accountId, @Param("status") DataStatusEnum status);
+    List<RoleEntity> findByAccountIdNoTenant(@Param("accountId") String accountId, @Param("status") DataStatusEnum status);
 
 
     /**
@@ -95,9 +90,10 @@ public interface RoleAccountMapper extends BatchBaseMapper<RoleAccountEntity> {
      * @return
      */
     default List<String> findAccountsByRoleId(String roleId) {
-        return selectObjs(Wrappers.lambdaQuery(RoleAccountEntity.class)
-                .eq(RoleAccountEntity::getRoleId, roleId)
-                .select(RoleAccountEntity::getLoginAccountId));
+        return selectObjectListByQueryAs(QueryWrapper.create()
+                .where(ROLE_ACCOUNT_ENTITY.ROLE_ID.eq(roleId))
+                .select(ROLE_ACCOUNT_ENTITY.LOGIN_ACCOUNT_ID), String.class);
+
     }
 }
 

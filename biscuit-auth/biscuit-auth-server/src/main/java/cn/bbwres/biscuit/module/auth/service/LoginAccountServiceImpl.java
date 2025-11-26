@@ -56,7 +56,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
      */
     @Override
     public LoginAccountEntity getLoginAccount(String id) {
-        return loginAccountMapper.selectById(id);
+        return loginAccountMapper.selectOneById(id);
     }
 
     /**
@@ -79,7 +79,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
      */
     @Override
     public List<LoginAccountEntity> getLoginAccountList(Collection<String> ids) {
-        return loginAccountMapper.selectByIds(ids);
+        return loginAccountMapper.selectListByIds(ids);
     }
 
     /**
@@ -101,7 +101,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
      */
     @Override
     public boolean updateById(LoginAccountEntity entity) {
-        return loginAccountMapper.updateById(entity) > 0;
+        return loginAccountMapper.update(entity) > 0;
     }
 
     /**
@@ -134,7 +134,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
         List<RoleAccountEntity> roleAccounts = loginAccountAddRoleReq.getRoleIds().stream().map(roleId -> new RoleAccountEntity()
                 .setLoginAccountId(loginAccountAddRoleReq.getId())
                 .setRoleId(roleId)).toList();
-        roleAccountMapper.insert(roleAccounts);
+        roleAccountMapper.insertBatch(roleAccounts);
     }
 
     /**
@@ -158,7 +158,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
         LoginAccountEntity entity = new LoginAccountEntity();
         entity.setId(loginAccountAddOrUpdateReq.getId());
         entity.setStatus(loginAccountAddOrUpdateReq.getStatus());
-        loginAccountMapper.updateById(entity);
+        loginAccountMapper.update(entity);
     }
 
     /**
@@ -179,7 +179,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
         updateEntity.setId(loginAccountEditPasswordReq.getId());
         updateEntity.setLoginPassword(passwordEncoder.encode(loginAccountEditPasswordReq.getNewPassword()));
         updateEntity.setLastUpdatePasswordTime(LocalDateTime.now());
-        loginAccountMapper.updateById(updateEntity);
+        loginAccountMapper.update(updateEntity);
     }
 
 

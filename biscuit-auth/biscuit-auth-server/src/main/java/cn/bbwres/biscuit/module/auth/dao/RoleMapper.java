@@ -3,12 +3,12 @@ package cn.bbwres.biscuit.module.auth.dao;
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
-import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.util.ObjectUtils;
+
+import static cn.bbwres.biscuit.module.auth.entity.table.RoleEntityTableDef.ROLE_ENTITY;
 
 
 /**
@@ -20,7 +20,7 @@ import org.springframework.util.ObjectUtils;
  * @Date 2025-08-19
  */
 @Mapper
-public interface RoleMapper extends BatchBaseMapper<RoleEntity> {
+public interface RoleMapper extends BaseMapper<RoleEntity> {
 
     /**
      * 分页查询数据
@@ -29,18 +29,17 @@ public interface RoleMapper extends BatchBaseMapper<RoleEntity> {
      * @return
      */
     default Page<RoleEntity, RolePageReqVO> selectPage(Page<RoleEntity, RolePageReqVO> reqVO) {
-        LambdaQueryWrapper<RoleEntity> queryWrapper = Wrappers.lambdaQuery(RoleEntity.class);
+        QueryWrapper queryWrapper = QueryWrapper.create();
         if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    RoleEntity::getId, reqVO.getQuery().getId());
+            queryWrapper.where(ROLE_ENTITY.ID.eq(reqVO.getQuery().getId()));
         }
 
         // 大多数情况下，id 倒序
-        queryWrapper.orderByDesc(RoleEntity::getId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<RoleEntity> page = selectPage(PageDTO.of(reqVO.getCurrent(), reqVO.getSize()), queryWrapper);
+        queryWrapper.orderBy(ROLE_ENTITY.ID, false);
 
+        com.mybatisflex.core.paginate.Page<RoleEntity> page = paginate(reqVO.getCurrent(), reqVO.getSize(), queryWrapper);
         reqVO.setRecords(page.getRecords());
-        reqVO.setTotal(page.getTotal());
+        reqVO.setTotal(page.getTotalRow());
         reqVO.calculationPages();
         return reqVO;
     }
@@ -53,10 +52,8 @@ public interface RoleMapper extends BatchBaseMapper<RoleEntity> {
      * @return
      */
     default RoleEntity findByRoleCodeAndClientId(String roleCode, String clientId) {
-        return selectOne(Wrappers.lambdaQuery(RoleEntity.class)
-                .eq(RoleEntity::getRoleCode, roleCode)
-                .eq(RoleEntity::getClientId, clientId)
-        );
+        return selectOneByCondition(ROLE_ENTITY.ROLE_CODE.eq(roleCode)
+                .and(ROLE_ENTITY.CLIENT_ID.eq(clientId)));
     }
 }
 

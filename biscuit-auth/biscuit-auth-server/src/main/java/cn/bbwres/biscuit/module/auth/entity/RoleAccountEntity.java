@@ -1,10 +1,11 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.keygen.KeyGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -20,7 +21,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("t_role_account")
+@Table("t_role_account")
 public class RoleAccountEntity extends BaseTenantEntity {
 
     @Serial
@@ -28,28 +29,28 @@ public class RoleAccountEntity extends BaseTenantEntity {
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
     private String id;
 
 
     /**
      * 登陆账号id
      */
-    @TableField("login_account_id")
+    @Column("login_account_id")
     private String loginAccountId;
 
 
     /**
      * 角色id
      */
-    @TableField("role_id")
+    @Column("role_id")
     private String roleId;
 
 
     /**
      * 备注
      */
-    @TableField("remark")
+    @Column("remark")
     private String remark;
 
 
