@@ -15,6 +15,7 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 import static cn.bbwres.biscuit.module.auth.entity.table.MenuEntityTableDef.MENU_ENTITY;
 
@@ -122,7 +123,15 @@ public interface MenuMapper extends BaseMapper<MenuEntity> {
      * @param dataStatus
      * @return
      */
-    List<MenuTreeRespVO> getMenuTreeByIdAndStatus(@Param("entityId") String entityId, @Param("dataStatus") DataStatusEnum dataStatus);
+    default List<MenuTreeRespVO> getMenuTreeByIdAndStatus(String entityId, DataStatusEnum dataStatus) {
+        QueryWrapper queryWrapper = QueryWrapper.create();
+        queryWrapper.where(MENU_ENTITY.ID.eq(entityId, Objects.nonNull(entityId)))
+                .and(MENU_ENTITY.PARENT_ID.isNull(Objects.isNull(entityId)))
+                .and(MENU_ENTITY.STATUS.eq(dataStatus))
+                .orderBy(MENU_ENTITY.MENU_SORT, true);
+
+        return selectListByQueryAs(queryWrapper, MenuTreeRespVO.class);
+    }
 
     /**
      * 根据treePath和状态查询数据
@@ -131,6 +140,12 @@ public interface MenuMapper extends BaseMapper<MenuEntity> {
      * @param dataStatus
      * @return
      */
-    List<MenuTreeRespVO> getMenuTreeByTreePathAndStatus(@Param("treePath") String treePath, @Param("dataStatus") DataStatusEnum dataStatus);
+    default List<MenuTreeRespVO> getMenuTreeByTreePathAndStatus(String treePath, DataStatusEnum dataStatus) {
+        QueryWrapper queryWrapper = QueryWrapper.create();
+        queryWrapper.where(MENU_ENTITY.TREE_PATH.likeLeft(treePath))
+                .and(MENU_ENTITY.STATUS.eq(dataStatus))
+                .orderBy(MENU_ENTITY.MENU_SORT, true);
+        return selectListByQueryAs(queryWrapper, MenuTreeRespVO.class);
+    }
 }
 
