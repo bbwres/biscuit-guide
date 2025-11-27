@@ -1,6 +1,6 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
-import cn.bbwres.biscuit.entity.BaseTenantEntity;
+import cn.bbwres.biscuit.entity.BaseNameTenantEntity;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.module.auth.enums.MenuTypeEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -23,7 +23,7 @@ import java.io.Serial;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("t_menu")
-public class MenuEntity extends BaseTenantEntity {
+public class MenuEntity extends BaseNameTenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

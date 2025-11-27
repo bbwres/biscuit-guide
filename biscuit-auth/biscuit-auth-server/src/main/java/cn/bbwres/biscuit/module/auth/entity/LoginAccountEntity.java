@@ -1,5 +1,6 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
+import cn.bbwres.biscuit.entity.BaseNameTenantEntity;
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
 import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("t_login_account")
-public class LoginAccountEntity extends BaseTenantEntity {
+public class LoginAccountEntity extends BaseNameTenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

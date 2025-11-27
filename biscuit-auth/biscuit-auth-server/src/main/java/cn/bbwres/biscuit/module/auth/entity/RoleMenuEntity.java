@@ -1,6 +1,6 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
-import cn.bbwres.biscuit.entity.BaseTenantEntity;
+import cn.bbwres.biscuit.entity.BaseNameTenantEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -21,7 +21,7 @@ import java.io.Serial;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("t_role_menu")
-public class RoleMenuEntity extends BaseTenantEntity {
+public class RoleMenuEntity extends BaseNameTenantEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

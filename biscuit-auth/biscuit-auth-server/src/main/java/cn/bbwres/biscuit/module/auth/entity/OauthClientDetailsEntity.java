@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.module.auth.entity;
 
 import cn.bbwres.biscuit.entity.BaseEntity;
+import cn.bbwres.biscuit.entity.BaseNameEntity;
 import cn.bbwres.biscuit.entity.BaseTenantEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -22,7 +23,7 @@ import java.io.Serial;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("t_oauth_client_details")
-public class OauthClientDetailsEntity extends BaseEntity {
+public class OauthClientDetailsEntity extends BaseNameEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
