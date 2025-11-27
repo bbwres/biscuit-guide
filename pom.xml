@@ -38,7 +38,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot.version>3.5.5</spring.boot.version>
-        <biscuit.version>3.0.2-SNAPSHOT</biscuit.version>
+        <biscuit.version>3.0.3-SNAPSHOT</biscuit.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <knife4j.version>4.4.0</knife4j.version>
         <lombok.version>1.18.38</lombok.version>
