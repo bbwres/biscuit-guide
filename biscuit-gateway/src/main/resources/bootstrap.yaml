@@ -44,6 +44,9 @@ biscuit:
   gateway:
     no-auth-uris:
       - /doc.html
+      - /actuator
+      - /actuator/health
+      - /actuator/info
       - /webjars/**
       - /v3/api-docs/**
       - /*/v3/api-docs

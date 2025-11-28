@@ -11,10 +11,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,loggers,caches
+        include: health,info,metrics
     jmx:
       exposure:
-        include: health,info,metrics,loggers,caches
+        include: health,info,metrics,loggers
   endpoint:
     health:
       show-details: always
