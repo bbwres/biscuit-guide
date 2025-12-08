@@ -19,8 +19,11 @@
 package cn.bbwres.biscuit.module.auth;
 
 import cn.bbwres.biscuit.BootstrapProfile;
+import cn.bbwres.biscuit.i18n.I18nProperties;
+import cn.bbwres.biscuit.i18n.support.SystemMessageSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 /**
  * 认证鉴权服务
@@ -30,8 +33,22 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AuthApplication {
 
+
+
+    /**
+     * 系统默认的messageSource
+     *
+     * @return
+     */
+    @Bean("authMessageBasename")
+    public SystemMessageSource authMessageBasename(I18nProperties i18nProperties) {
+        return new SystemMessageSource(i18nProperties.getMessageSourceCacheSeconds(), "i18n.auth_messages");
+    }
+
+
     public static void main(String[] args) {
         BootstrapProfile.setBootstrapProfile();
         SpringApplication.run(AuthApplication.class, args);
     }
 }
+
