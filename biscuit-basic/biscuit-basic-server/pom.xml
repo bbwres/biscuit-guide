@@ -62,6 +62,10 @@
         </dependency>
         <dependency>
             <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-web-file-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-mybatis-boot-starter</artifactId>
         </dependency>
         <dependency>
