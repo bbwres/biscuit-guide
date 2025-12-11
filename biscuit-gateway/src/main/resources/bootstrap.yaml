@@ -28,6 +28,12 @@ spring:
                 - Path=/auth/**
               filters:
                 - StripPrefix=1
+            - id: basic
+              uri: lb://basic
+              predicates:
+                - Path=/basic/**
+              filters:
+                - StripPrefix=1
 
 
 server:

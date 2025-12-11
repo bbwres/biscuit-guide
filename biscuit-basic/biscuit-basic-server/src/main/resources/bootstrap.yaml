@@ -60,12 +60,23 @@ springdoc:
       version: 1.0
   packages-to-scan:
     - cn.bbwres.biscuit.module.basic.controller
+    - cn.bbwres.biscuit.web.file.endpoint
   show-oauth2-endpoints: true
 
 biscuit:
   rpc:
     security:
       enable: true
+
+
+file:
+  default-storage-type: local
+  storage-config:
+    local:
+      enabled: true
+      storage-path: /opt/
+
+
 
 
 
