@@ -2,7 +2,7 @@
     <!-- 引用 Spring Boot 的 logback 基础配置 -->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="PATTERN_DEFAULT"
-              value="%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%thread] [%logger:%line] : %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+              value="%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} [%X{traceId:-},%X{spanId:-}] --- [%thread] [%logger:%line] : %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
 
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
     <!-- 控制台 Appender -->

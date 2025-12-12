@@ -52,8 +52,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-micrometer-boot-starter</artifactId>
         </dependency>
 
         <dependency>
@@ -91,6 +91,7 @@
             <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-security-captcha-boot-starter</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
