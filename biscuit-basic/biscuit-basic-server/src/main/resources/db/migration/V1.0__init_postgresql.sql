@@ -183,6 +183,9 @@ comment on column t_file_business_info.module_name is '业务所属模块';
 comment on column t_file_business_info.auth_path is '鉴权请求路径';
 
 
+create unique index un_index_t_file_business_type_001
+    on t_file_business_info (business_type, tenant_id);
+
 
 
 

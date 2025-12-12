@@ -44,4 +44,11 @@ public interface FileBusinessInfoService {
     Page<FileBusinessInfoEntity,FileBusinessInfoPageReqVO> getFileBusinessInfoPage(Page<FileBusinessInfoEntity,FileBusinessInfoPageReqVO> pageReqVO);
 
 
+    /**
+     * 根据业务类型获取到配置信息
+     * @param businessType
+     * @return
+     */
+    FileBusinessInfoEntity findByBusinessType(String businessType);
+
 }

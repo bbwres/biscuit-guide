@@ -16,23 +16,20 @@
  *
  */
 
-package cn.bbwres.biscuit.module.basic;
+package cn.bbwres.biscuit.module.basic.constants;
 
-import cn.bbwres.biscuit.BootstrapProfile;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import cn.bbwres.biscuit.exception.constants.ErrorCode;
 
 /**
- * 基础服务
+ * 基础服务异常信息
  *
  * @author zhanglinfeng
  */
-@SpringBootApplication
-public class BasicApplication {
+public interface BasicErrorCodeConstants {
 
-    public static void main(String[] args) {
-        BootstrapProfile.setBootstrapProfile();
-        SpringApplication.run(BasicApplication.class, args);
-    }
+    /**
+     * 文件获取异常
+     */
+    ErrorCode FILE_GET_ERROR = new ErrorCode("202001001", "basic.file_get_error");
 
 }

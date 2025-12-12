@@ -45,5 +45,15 @@ public interface FileBusinessInfoMapper extends BatchBaseMapper<FileBusinessInfo
         return reqVO;
     }
 
+    /**
+     * 根据业务类型获取配置信息
+     *
+     * @param businessType
+     * @return
+     */
+    default FileBusinessInfoEntity findByBusinessType(String businessType) {
+        return selectOne(Wrappers.lambdaQuery(FileBusinessInfoEntity.class)
+                .eq(FileBusinessInfoEntity::getBusinessType, businessType), false);
+    }
 }
 

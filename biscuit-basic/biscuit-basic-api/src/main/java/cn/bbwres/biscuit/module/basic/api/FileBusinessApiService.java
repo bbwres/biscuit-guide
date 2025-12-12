@@ -26,7 +26,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -93,14 +92,14 @@ public interface FileBusinessApiService {
     void deleteTempFile();
 
     /**
-     * 获取文件流
+     * 获取文件流 需要避免超过20m的文件
      *
      * @param businessType a {@link java.lang.String} object
      * @param businessId   a {@link java.lang.String} object
      * @param fileId       a {@link java.lang.String} object
      * @return a {@link java.io.InputStream} object
      */
-    InputStream getFileInputStream(String businessType, String businessId, String fileId);
+    Result<byte[]> getFileInputStream(String businessType, String businessId, String fileId);
 
 
 }

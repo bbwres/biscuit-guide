@@ -18,9 +18,12 @@
 
 package cn.bbwres.biscuit.module.basic.service;
 
+import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.entity.UserBaseInfo;
+import cn.bbwres.biscuit.enums.YesOrNoEnum;
 import cn.bbwres.biscuit.module.basic.convert.FileInfoConvert;
 import cn.bbwres.biscuit.module.basic.convert.TempFileInfoConvert;
+import cn.bbwres.biscuit.module.basic.entity.FileBusinessInfoEntity;
 import cn.bbwres.biscuit.module.basic.entity.FileInfoEntity;
 import cn.bbwres.biscuit.module.basic.entity.TempFileInfoEntity;
 import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessExpandParams;
@@ -29,9 +32,12 @@ import cn.bbwres.biscuit.web.file.entity.TempFileInfo;
 import cn.bbwres.biscuit.web.file.service.FileInfoOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,13 +51,23 @@ import java.util.List;
 @Component
 public class DefaultFileInfoOperation implements FileInfoOperation {
 
+    private final ParameterizedTypeReference<Result<Boolean>> BOOLEAN_TYPE_REFERENCE = new ParameterizedTypeReference<>() {
+    };
+
+
     private final TempFileInfoService tempFileInfoService;
     private final FileInfoService fileInfoService;
+    private final FileBusinessInfoService fileBusinessInfoService;
+
+    private final WebClient webClient;
 
     @Autowired
-    public DefaultFileInfoOperation(TempFileInfoService tempFileInfoService, FileInfoService fileInfoService) {
+    public DefaultFileInfoOperation(TempFileInfoService tempFileInfoService, FileInfoService fileInfoService,
+                                    FileBusinessInfoService fileBusinessInfoService, WebClient webClient) {
         this.tempFileInfoService = tempFileInfoService;
         this.fileInfoService = fileInfoService;
+        this.fileBusinessInfoService = fileBusinessInfoService;
+        this.webClient = webClient;
     }
 
     /**
@@ -96,8 +112,28 @@ public class DefaultFileInfoOperation implements FileInfoOperation {
      */
     @Override
     public boolean checkFilePermission(String businessType, String businessId, UserBaseInfo requestUser, String... fileId) {
-        //TODO
-        return false;
+        FileBusinessInfoEntity businessInfo = fileBusinessInfoService.findByBusinessType(businessType);
+        if (businessInfo == null) {
+            log.warn("当前业务:[{}]没有配置文件业务信息!", businessType);
+            return false;
+        }
+        if (YesOrNoEnum.NO.equals(businessInfo.getNeedAuth())) {
+            log.info("当前业务:[{}]配置无需文件鉴权!", businessType);
+            return true;
+        }
+        if (requestUser == null) {
+            log.warn("当前业务:[{}]配置需要文件鉴权!但是获取到的用户信息为空", businessType);
+            return false;
+        }
+        Mono<Boolean> result = webClient.post()
+                .uri(businessInfo.getModuleName() + businessInfo.getAuthPath())
+                .bodyValue(new CheckFilePermissionRequest(businessType, businessId, requestUser.getUserId(),
+                        requestUser.getUsername(), requestUser.getTenantId(),
+                        requestUser.getClientId(), fileId))
+                .retrieve()
+                .bodyToMono(BOOLEAN_TYPE_REFERENCE)
+                .map(Result::checkAndGetData);
+        return result.blockOptional().orElse(false);
     }
 
 
@@ -187,5 +223,21 @@ public class DefaultFileInfoOperation implements FileInfoOperation {
     @Override
     public void deleteTempFileInfo(List<TempFileInfo> noBusinessList) {
         tempFileInfoService.deleteTempFileInfo(noBusinessList.stream().map(TempFileInfo::getId).toList());
+    }
+
+    /**
+     * 检查用户是否有当前业务权限
+     *
+     * @param businessType
+     * @param businessId
+     * @param userId
+     * @param userName
+     * @param tenantId
+     * @param clientId
+     * @param fileId
+     */
+    public record CheckFilePermissionRequest(String businessType, String businessId, String userId,
+                                             String userName, String tenantId, String clientId,
+                                             String[] fileId) {
     }
 }

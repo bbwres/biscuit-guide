@@ -66,7 +66,7 @@ springdoc:
 biscuit:
   rpc:
     security:
-      enable: true
+      enable: false
 
 
 file:
@@ -74,7 +74,7 @@ file:
   storage-config:
     local:
       enabled: true
-      storage-path: /opt/
+      storage-path: /Users/zhanglinfeng/workspace/bbwres/biscuit-guide/opt/
 
 
 

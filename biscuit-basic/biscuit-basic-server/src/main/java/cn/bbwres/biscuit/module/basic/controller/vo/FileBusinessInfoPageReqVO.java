@@ -1,4 +1,5 @@
 package cn.bbwres.biscuit.module.basic.controller.vo;
+import cn.bbwres.biscuit.enums.YesOrNoEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -83,7 +84,7 @@ public class FileBusinessInfoPageReqVO implements Serializable{
     * 是否需要鉴权
     */
     @Schema(description = "是否需要鉴权")
-    private String needAuth;
+    private YesOrNoEnum needAuth;
 
     /**
     * 业务所属模块

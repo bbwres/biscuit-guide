@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.module.basic.entity;
 
 import cn.bbwres.biscuit.entity.BaseNameTenantEntity;
+import cn.bbwres.biscuit.enums.YesOrNoEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -48,7 +49,7 @@ public class FileBusinessInfoEntity extends BaseNameTenantEntity {
      * 是否需要鉴权
      */
     @TableField("need_auth")
-    private String needAuth;
+    private YesOrNoEnum needAuth;
 
 
     /**

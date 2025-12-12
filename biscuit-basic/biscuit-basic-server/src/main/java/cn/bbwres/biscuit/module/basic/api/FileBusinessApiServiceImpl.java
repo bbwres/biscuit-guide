@@ -22,6 +22,7 @@ import cn.bbwres.biscuit.dto.Result;
 import cn.bbwres.biscuit.module.basic.api.vo.FileBindBusinessChangeParamsVO;
 import cn.bbwres.biscuit.module.basic.api.vo.FileBindBusinessParamsVO;
 import cn.bbwres.biscuit.module.basic.api.vo.FileInfoResultVO;
+import cn.bbwres.biscuit.module.basic.constants.BasicErrorCodeConstants;
 import cn.bbwres.biscuit.module.basic.convert.FileInfoConvert;
 import cn.bbwres.biscuit.web.file.api.FileBusinessOperation;
 import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessExpandParams;
@@ -29,6 +30,7 @@ import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessParams;
 import cn.bbwres.biscuit.web.file.api.vo.FileBindBusinessRefOldParams;
 import cn.bbwres.biscuit.web.file.entity.FileInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -145,7 +147,7 @@ public class FileBusinessApiServiceImpl implements FileBusinessApiService {
     }
 
     /**
-     * 获取文件流
+     * 获取文件流 需要避免超过20m的文件
      *
      * @param businessType a {@link String} object
      * @param businessId   a {@link String} object
@@ -153,7 +155,12 @@ public class FileBusinessApiServiceImpl implements FileBusinessApiService {
      * @return a {@link InputStream} object
      */
     @Override
-    public InputStream getFileInputStream(String businessType, String businessId, String fileId) {
-        return null;
+    public Result<byte[]> getFileInputStream(String businessType, String businessId, String fileId) {
+        try (InputStream inputStream = fileBusinessOperation.getFileInputStream(businessType, businessId, fileId)) {
+            return Result.success(IOUtils.toByteArray(inputStream));
+        } catch (Exception e) {
+            log.error("文件获取异常!{}", e.getMessage());
+            return Result.error(BasicErrorCodeConstants.FILE_GET_ERROR);
+        }
     }
 }

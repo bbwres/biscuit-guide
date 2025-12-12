@@ -61,5 +61,16 @@ public class FileBusinessInfoServiceImpl implements FileBusinessInfoService {
         return fileBusinessInfoMapper.selectPage(pageReqVO);
     }
 
+    /**
+     * 根据业务类型获取到配置信息
+     *
+     * @param businessType
+     * @return
+     */
+    @Override
+    public FileBusinessInfoEntity findByBusinessType(String businessType) {
+        return fileBusinessInfoMapper.findByBusinessType(businessType);
+    }
+
 
 }
