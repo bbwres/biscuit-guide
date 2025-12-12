@@ -74,7 +74,7 @@ file:
   storage-config:
     local:
       enabled: true
-      storage-path: /Users/zhanglinfeng/workspace/bbwres/biscuit-guide/opt/
+      storage-path: /opt/
 
 
 
