@@ -51,6 +51,10 @@
             <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-micrometer-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.bbwres</groupId>
+            <artifactId>biscuit-redis-cache-boot-starter</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>cn.bbwres</groupId>
@@ -72,10 +76,7 @@
             <groupId>cn.bbwres</groupId>
             <artifactId>biscuit-rpc-boot-starter</artifactId>
         </dependency>
-        <dependency>
-            <groupId>cn.bbwres</groupId>
-            <artifactId>biscuit-redis-cache-boot-starter</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

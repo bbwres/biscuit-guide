@@ -38,7 +38,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>3.5.6</spring.boot.version>
+        <spring.boot.version>3.5.9</spring.boot.version>
         <admin-starter-server.version>3.5.6</admin-starter-server.version>
         <biscuit.version>3.0.3-SNAPSHOT</biscuit.version>
         <mapstruct.version>1.6.3</mapstruct.version>
