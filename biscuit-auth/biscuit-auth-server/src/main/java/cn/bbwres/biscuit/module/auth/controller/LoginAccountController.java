@@ -131,7 +131,7 @@ public class LoginAccountController {
         }
         if (LoginAccountStatusEnum.NORMAL.equals(loginAccountAddOrUpdateReq.getStatus())) {
             //修改状态为启用，则检查是否配置角色信息
-            if (loginAccountService.checkUserRole(loginAccountAddOrUpdateReq.getId())) {
+            if (!loginAccountService.checkUserRole(loginAccountAddOrUpdateReq.getId())) {
                 return Result.error(AuthErrorCodeConstants.ACCOUNT_NO_ROLE_ERROR);
             }
         }
