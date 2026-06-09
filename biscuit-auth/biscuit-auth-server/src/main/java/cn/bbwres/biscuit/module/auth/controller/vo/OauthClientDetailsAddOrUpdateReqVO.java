@@ -31,6 +31,9 @@ import java.io.Serializable;
 /**
  * 新增或者修改客户端信息请求参数
  *
+ * <p>字段与 {@link cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity} 一一对应，
+ * 避免 MapStruct 因名称不一致静默丢字段。
+ *
  * @author zhanglinfeng
  */
 @Data
@@ -48,13 +51,6 @@ public class OauthClientDetailsAddOrUpdateReqVO implements Serializable {
 
 
     /**
-     * 客户端所能访问的资源id集合,多个资源时用逗号(,)分隔
-     */
-    @Schema(description = "客户端所能访问的资源id集合,多个资源时用逗号(,)分隔")
-    @NotBlank(groups = {ValidateAddGroup.class})
-    private String resourceIds;
-
-    /**
      * 用于指定客户端(client)的访问密匙
      */
     @Schema(description = "用于指定客户端(client)的访问密匙")
@@ -62,11 +58,18 @@ public class OauthClientDetailsAddOrUpdateReqVO implements Serializable {
     private String clientSecret;
 
     /**
+     * 客户端支持的认证方式
+     */
+    @Schema(description = "客户端支持的认证方式,如 client_secret_basic")
+    @NotBlank(groups = {ValidateAddGroup.class})
+    private String clientAuthenticationMethods;
+
+    /**
      * 指定客户端申请的权限范围,可选值包括read,write,trust;
      */
     @Schema(description = "指定客户端申请的权限范围,可选值包括read,write,trust;")
     @NotBlank(groups = {ValidateAddGroup.class})
-    private String scope;
+    private String scopes;
 
     /**
      * 指定客户端支持的grant_type
@@ -82,11 +85,10 @@ public class OauthClientDetailsAddOrUpdateReqVO implements Serializable {
     private String webServerRedirectUri;
 
     /**
-     * 指定客户端所拥有的权限值
+     * 登出后重定向URI,可为空
      */
-    @Schema(description = "指定客户端所拥有的权限值")
-    @NotBlank(groups = {ValidateAddGroup.class})
-    private String authorities;
+    @Schema(description = "登出后重定向URI,可为空")
+    private String postLogoutRedirectUri;
 
     /**
      * 设定客户端的access_token的有效时间值(单位:秒)
@@ -101,6 +103,24 @@ public class OauthClientDetailsAddOrUpdateReqVO implements Serializable {
     @Schema(description = "设定客户端的refresh_token的有效时间值(单位:秒)")
     @NotNull(groups = {ValidateAddGroup.class})
     private Integer refreshTokenValidity;
+
+    /**
+     * accessToken的类型，reference-不透明的token，self-contained-jwt类型的token
+     */
+    @Schema(description = "accessToken的类型,reference 或 self-contained")
+    private String accessTokenFormat;
+
+    /**
+     * 是否复用刷新令牌
+     */
+    @Schema(description = "是否复用刷新令牌")
+    private Boolean reuseRefreshToken;
+
+    /**
+     * 用户是否单一登录
+     */
+    @Schema(description = "用户是否单一登录")
+    private Boolean singleUserLogin;
 
 
 }

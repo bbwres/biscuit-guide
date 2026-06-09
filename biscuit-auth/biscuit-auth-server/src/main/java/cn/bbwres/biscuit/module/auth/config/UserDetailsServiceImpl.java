@@ -39,6 +39,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 加载用户
@@ -95,11 +96,12 @@ public class UserDetailsServiceImpl extends AbstractCustomUserDetailsService {
             throw new SystemRuntimeException(AuthErrorCodeConstants.ACCOUNT_NO_ROLE_ERROR);
         }
         //查询角色信息
+        // 使用 Objects.equals 避免 clientId 为 null 时的 NPE
         UserDetails userDetails = User.builder()
                 .username(loginAccount.getLoginName())
                 .password(loginAccount.getLoginPassword())
                 .roles(roleEntityList.stream()
-                        .filter(roleEntity -> roleEntity.getClientId().equals(clientId))
+                        .filter(roleEntity -> Objects.equals(roleEntity.getClientId(), clientId))
                         .map(RoleEntity::getId)
                         .toArray(String[]::new))
                 .build();

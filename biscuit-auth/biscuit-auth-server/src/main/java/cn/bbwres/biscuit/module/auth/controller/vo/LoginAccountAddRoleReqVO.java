@@ -2,6 +2,7 @@ package cn.bbwres.biscuit.module.auth.controller.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,10 +37,11 @@ public class LoginAccountAddRoleReqVO implements Serializable {
     private String id;
 
     /**
-     * 角色id
+     * 角色id列表
+     * <p>使用 {@link NotEmpty} 校验集合非空，并对每个元素使用 {@link NotBlank} 校验非空白字符串。
      */
     @Schema(description = "角色id")
-    @NotBlank
-    private List<String> roleIds;
+    @NotEmpty
+    private List<@NotBlank String> roleIds;
 
 }

@@ -1,9 +1,9 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
-import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -11,6 +11,8 @@ import java.io.Serializable;
 * <p>
 * 认证客户端信息表 Response VO
 * </p>
+*
+* <p>字段与 {@link cn.bbwres.biscuit.module.auth.entity.OauthClientDetailsEntity} 一一对应。
 *
 * @author zlf
 * @Date 2025-08-19
@@ -53,25 +55,22 @@ public class OauthClientDetailsRespVO implements Serializable {
     private LocalDateTime updateTime;
 
     /**
-    * 客户端所能访问的资源id集合,多个资源时用逗号(,)分隔
+    * 用于指定客户端(client)的访问密钥
     */
-    @Schema(description = "客户端所能访问的资源id集合,多个资源时用逗号(,)分隔")
-    private String resourceIds;
-
-    /**
-    * 用于指定客户端(client)的访问密匙
-    */
-    @Schema(description = "用于指定客户端(client)的访问密匙")
+    @Schema(description = "用于指定客户端(client)的访问密钥")
     private String clientSecret;
 
-
-
+    /**
+    * 客户端支持的认证方式
+    */
+    @Schema(description = "客户端支持的认证方式")
+    private String clientAuthenticationMethods;
 
     /**
     * 指定客户端申请的权限范围,可选值包括read,write,trust;
     */
     @Schema(description = "指定客户端申请的权限范围,可选值包括read,write,trust;")
-    private String scope;
+    private String scopes;
 
     /**
     * 指定客户端支持的grant_type
@@ -86,10 +85,10 @@ public class OauthClientDetailsRespVO implements Serializable {
     private String webServerRedirectUri;
 
     /**
-    * 指定客户端所拥有的权限值
+    * 登出后重定向URI,可为空
     */
-    @Schema(description = "指定客户端所拥有的权限值")
-    private String authorities;
+    @Schema(description = "登出后重定向URI,可为空")
+    private String postLogoutRedirectUri;
 
     /**
     * 设定客户端的access_token的有效时间值(单位:秒)
@@ -104,18 +103,10 @@ public class OauthClientDetailsRespVO implements Serializable {
     private Integer refreshTokenValidity;
 
     /**
-    * 租户编码
-    */
-    @Schema(description = "租户编码")
-    private String tenantId;
-
-
-    /**
      * accessToken的类型，reference-不透明的token，self-contained-jwt类型的token
      */
     @Schema(description = "accessToken的类型")
     private String accessTokenFormat;
-
 
     /**
      * 是否复用刷新令牌
@@ -124,21 +115,12 @@ public class OauthClientDetailsRespVO implements Serializable {
     @Schema(description = "是否复用刷新令牌")
     private Boolean reuseRefreshToken;
 
-
     /**
      * 用户是否单一登录
      * true则用户每次登录失效其他token，为false则允许用户同时登录多次
      */
     @Schema(description = "用户是否单一登录")
     private Boolean singleUserLogin;
-
-    /**
-     * 客户端支持的认证方式
-     */
-    @Schema(description = "客户端支持的认证方式")
-    private String clientAuthenticationMethods;
-
-
 
 
 }

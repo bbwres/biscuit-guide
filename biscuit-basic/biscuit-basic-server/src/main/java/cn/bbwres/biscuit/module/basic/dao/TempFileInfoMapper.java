@@ -27,15 +27,22 @@ public interface TempFileInfoMapper extends BatchBaseMapper<TempFileInfoEntity> 
 
     /**
      * 分页查询数据
+     * <p>
+     * 修复说明：原实现只按 id 过滤，导致 {@link TempFileInfoPageReqVO} 中其他字段无效。
      *
      * @param reqVO 分页查询条件
      * @return
      */
     default Page<TempFileInfoEntity, TempFileInfoPageReqVO> selectPage(Page<TempFileInfoEntity, TempFileInfoPageReqVO> reqVO) {
         LambdaQueryWrapper<TempFileInfoEntity> queryWrapper = Wrappers.lambdaQuery(TempFileInfoEntity.class);
-        if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    TempFileInfoEntity::getId, reqVO.getQuery().getId());
+        TempFileInfoPageReqVO query = reqVO.getQuery();
+        if (!ObjectUtils.isEmpty(query)) {
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getId()), TempFileInfoEntity::getId, query.getId());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getTenantId()), TempFileInfoEntity::getTenantId, query.getTenantId());
+            queryWrapper.like(!ObjectUtils.isEmpty(query.getFileName()), TempFileInfoEntity::getFileName, query.getFileName());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getFileSuffix()), TempFileInfoEntity::getFileSuffix, query.getFileSuffix());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getFileHash()), TempFileInfoEntity::getFileHash, query.getFileHash());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getFileStorageType()), TempFileInfoEntity::getFileStorageType, query.getFileStorageType());
         }
 
         // 大多数情况下，id 倒序

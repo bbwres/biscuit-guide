@@ -45,4 +45,14 @@ public interface AuthErrorCodeConstants {
      * 密码错误
      */
     ErrorCode ACCOUNT_PASSWORD_ERROR = new ErrorCode("201001004", "auth.account_password_error");
+
+    /**
+     * 菜单父节点不能为自身
+     */
+    ErrorCode MENU_PARENT_SELF_ERROR = new ErrorCode("201001005", "auth.menu_parent_self_error");
+
+    /**
+     * 菜单父节点不能为自身子孙节点
+     */
+    ErrorCode MENU_PARENT_IN_SUBTREE_ERROR = new ErrorCode("201001006", "auth.menu_parent_in_subtree_error");
 }

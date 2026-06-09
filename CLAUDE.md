@@ -94,3 +94,91 @@ biscuit-auth-server/src/main/java/cn/bbwres/biscuit/module/auth/
 - **网关路由**：biscuit-gateway 使用 biscuit 的 `biscuit-gateway-boot-starter`，支持 Nacos 动态路由，Knife4j 聚合所有下游服务的 API 文档
 - **认证流程**：Gateway AuthFilter 验证 Token → 下游服务通过 `biscuit-security-boot-starter` 做 Resource Server → 服务间调用通过 `biscuit-rpc-boot-starter` 签名校验
 - **代码生成**：各 `*-server` 模块含 `generator.properties`，可通过 biscuit 的 `biscuit-generator-code-maven-plugin` 一键生成增删改查代码
+
+## 错误码维护约定
+
+每个业务模块在 `cn.bbwres.biscuit.module.{module}.constants` 包下维护一个独立的 `{ModuleName}ErrorCodeConstants` 接口文件，用于集中管理该模块的所有业务错误码。
+
+### 现有错误码文件
+
+| 模块 | 文件 | 包路径 |
+|------|------|--------|
+| auth | `AuthErrorCodeConstants.java` | `cn.bbwres.biscuit.module.auth.constants` |
+| basic | `BasicErrorCodeConstants.java` | `cn.bbwres.biscuit.module.basic.constants` |
+
+新增模块时需按此约定创建对应的 `XxxErrorCodeConstants.java`。
+
+### 编码规范
+
+```java
+package cn.bbwres.biscuit.module.{module}.constants;
+
+import cn.bbwres.biscuit.exception.constants.ErrorCode;
+
+public interface {ModuleName}ErrorCodeConstants {
+    /**
+     * 业务错误描述
+     */
+    ErrorCode {SEMANTIC_NAME} = new ErrorCode("{错误码}", "{module}.{message_key}");
+}
+```
+
+- **结构**：interface（自动 `public static final`）
+- **错误码格式**：`20{moduleXX}01{seq}`，9 位数字
+  - `201001001` → auth 模块第 1 类业务第 001 个错误
+  - `202001001` → basic 模块第 1 类业务第 001 个错误
+- **message key 格式**：`{module}.{snake_case_key}`，与 i18n 资源文件（`src/main/resources/i18n/{module}_messages*.properties`）对应
+- **使用方式**：在 Service/Controller 中通过 `throw new SystemBusinessRuntimeException(AuthErrorCodeConstants.ACCOUNT_PASSWORD_ERROR)` 抛出
+
+### i18n 资源同步
+
+每个新错误码的 message key 必须同步添加到对应模块的 i18n 资源文件中：
+
+- `biscuit-{module}/biscuit-{module}-server/src/main/resources/i18n/{module}_messages.properties`（默认）
+- `..._messages_zh_CN.properties`（简体中文）
+- `..._messages_en_US.properties`（英文）
+- `..._messages_zh_HK.properties`（繁体）
+
+例：auth 模块的错误码 `auth.account_password_error` 对应 `auth_messages*.properties` 中的 `auth.account_password_error=...`。
+
+## 事务使用约定
+
+Service 层方法涉及**多步写操作**（含跨表、跨 SQL、跨缓存）时，必须标注 `@Transactional(rollbackFor = RuntimeException.class)`，确保任一步失败能完整回滚，避免出现"部分成功"的不一致状态。
+
+### 必须加事务的典型场景
+
+| 场景 | 例子 | 原因 |
+|------|------|------|
+| 多 SQL 写 | `addMenu` 包含 `insert` + `updateTreePathByParentId` 两步 | 后者依赖前者生成的 id 校正 `treePath`，必须原子化 |
+| 跨表写入 | `roleMenuConfig` 删除旧关联 + 插入新关联 | 不加事务会出现"删除成功但插入失败"的孤儿数据 |
+| 写库 + 清理缓存 | 实体更新后失效 Redis 缓存 | 缓存清理失败应回滚数据库修改 |
+| 主从写入 | 父表 insert + 子表 insert 依赖父表 id | 子表插入失败必须回滚父表 |
+
+### 强制规范
+
+```java
+// ✅ 正确：显式指定 rollbackFor，覆盖所有 RuntimeException
+@Override
+@Transactional(rollbackFor = RuntimeException.class)
+public void addMenu(MenuEntity menuEntity, MenuEntity parentMenu) { ... }
+
+// ❌ 错误：默认 rollbackFor 不覆盖 checked exception
+@Override
+@Transactional
+public void editMenu(...) { ... }
+
+// ❌ 错误：多步写但没加事务
+@Override
+public void addMenu(MenuEntity menuEntity, MenuEntity parentMenu) {
+    menuMapper.insert(menuEntity);                    // 第 1 步
+    menuMapper.updateTreePathByParentId(...);          // 第 2 步：失败时第 1 步不会回滚
+}
+```
+
+### 注意事项
+
+- 只读方法（如 `getMenu`、`selectPage`、`getMenuTree`）**不要**加事务
+- 单条 SQL 写操作（仅 `insert`/`updateById`/`delete` 之一）**不必**加事务
+- 跨服务调用（Feign、RPC）**不要**包含在事务中，事务应限定在单服务单数据源
+- 修改 Service 方法签名（增删 SQL 步骤）时，必须同时检查并更新事务边界
+- 单元测试可通过反射验证关键方法已标注 `@Transactional`，防止回归

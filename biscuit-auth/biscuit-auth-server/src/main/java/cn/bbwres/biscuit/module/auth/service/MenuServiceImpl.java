@@ -3,7 +3,9 @@ package cn.bbwres.biscuit.module.auth.service;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
+import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.MenuMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
@@ -14,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Collection;
@@ -76,23 +77,30 @@ public class MenuServiceImpl implements MenuService {
     /**
      * 新增菜单
      *
+     * <p>ID 由 MyBatis-Plus {@code IdType.ASSIGN_ID} 雪花算法生成，{@code insert} 前 id 为 null
+     * 会自动填充。修复说明：原实现使用 {@code select max(id)+1} 存在并发冲突，已删除。
+     *
+     * <p>本方法包含两次写操作：{@code insert} 创建菜单，再根据雪花算法生成的真实 id
+     * 校正 {@code treePath}（{@code updateTreePathByParentId}）。为保证原子性，
+     * 必须包裹在事务中，否则在校正失败时会出现"菜单已创建但 treePath 为占位符"的不一致状态。
+     *
      * @param menuEntity menuEntity
-     * @param menuEntity parentMenu 父级信息
+     * @param parentMenu parentMenu 父级信息
      */
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public void addMenu(MenuEntity menuEntity, MenuEntity parentMenu) {
-        //查询出当前层级最大的id数据
-        String id = menuMapper.findMaxId();
-        if (ObjectUtils.isEmpty(id)) {
-            id = "1000";
-        }
-        //查询父级数据是否存在
-        menuEntity.setId((NumberUtils.parseNumber(id, Long.class) + 1L) + "");
+        // 重置 id 为 null，由 MyBatis-Plus 雪花算法自动填充，避免并发 max(id)+1 冲突
+        menuEntity.setId(null);
         menuEntity.setStatus(DataStatusEnum.NORMAL);
-        menuEntity.setTreePath(ObjectUtils.isEmpty(parentMenu) ? menuEntity.getId() : parentMenu.getTreePath() + "/" + menuEntity.getId());
+        // 临时保存一个占位 id 用于拼 treePath，insert 后回写正确路径
+        String pendingId = Long.toString(System.currentTimeMillis());
+        menuEntity.setTreePath(ObjectUtils.isEmpty(parentMenu) ? pendingId : parentMenu.getTreePath() + "/" + pendingId);
         menuMapper.insert(menuEntity);
-
-
+        // 重新计算 treePath：以真实 id 替换占位符
+        String realId = menuEntity.getId();
+        String realTreePath = ObjectUtils.isEmpty(parentMenu) ? realId : parentMenu.getTreePath() + "/" + realId;
+        menuMapper.updateTreePathByParentId(menuEntity.getId(), menuEntity.getTreePath(), realTreePath);
     }
 
     /**
@@ -123,6 +131,9 @@ public class MenuServiceImpl implements MenuService {
             menuMapper.updateById(oldEntity);
             return;
         }
+        // 修改了层级：先做自循环校验，避免形成 treePath 死循环
+        validateParentNotInSubtree(oldEntity, updateEntity, parentMenu);
+
         //修改了层级
         String oldTreePath = oldEntity.getTreePath();
         oldEntity.setParentId(updateEntity.getParentId());
@@ -206,6 +217,30 @@ public class MenuServiceImpl implements MenuService {
         }
         return oldEntity.getParentId().equals(updateEntity.getParentId());
 
+    }
+
+    /**
+     * 校验修改父节点时不能形成自循环
+     * <ul>
+     *     <li>不能将菜单的父节点设置为自己</li>
+     *     <li>不能将菜单的父节点设置为自己的子孙节点（避免 treePath 形成环）</li>
+     * </ul>
+     */
+    private void validateParentNotInSubtree(MenuEntity oldEntity, MenuEntity updateEntity, MenuEntity parentMenu) {
+        // 1. 不能将父节点设置为自己
+        if (Objects.equals(oldEntity.getId(), updateEntity.getParentId())) {
+            throw new SystemRuntimeException(AuthErrorCodeConstants.MENU_PARENT_SELF_ERROR);
+        }
+        // 2. 不能将父节点设置为自己的子孙节点
+        //    判定方法：目标 parentMenu 的 treePath 以当前菜单的 treePath 开头
+        //    （注意：分隔符必须是 /，避免前缀误匹配，例如 1/10 vs 1/1）
+        if (parentMenu != null && oldEntity.getTreePath() != null && parentMenu.getTreePath() != null) {
+            String currentTreePath = oldEntity.getTreePath();
+            String targetParentTreePath = parentMenu.getTreePath();
+            if (targetParentTreePath.equals(currentTreePath) || targetParentTreePath.startsWith(currentTreePath + "/")) {
+                throw new SystemRuntimeException(AuthErrorCodeConstants.MENU_PARENT_IN_SUBTREE_ERROR);
+            }
+        }
     }
 
 

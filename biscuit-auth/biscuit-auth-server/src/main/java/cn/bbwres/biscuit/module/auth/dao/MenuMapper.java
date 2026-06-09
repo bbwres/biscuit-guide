@@ -63,15 +63,19 @@ public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
 
 
     /**
-     * 根据parentId 修改treePath数据
+     * 根据旧 treePath 前缀批量更新所有后代节点的 treePath
+     * <p>
+     * 修复说明：原实现以 {@code parent_id = #{parentId}} 为条件，只能更新直接子节点，
+     * 孙级及更深层节点的 treePath 不会更新，导致移动菜单后多级子节点路径失真。
+     * 改为按 {@code tree_path} 前缀匹配，覆盖所有后代节点。
      *
-     * @param parentId
-     * @param oldTreePath
-     * @param newTreePath
+     * @param parentId    父节点 id（保留参数以兼容调用方，但 SQL 中不再使用）
+     * @param oldTreePath 当前节点移动前的完整路径（不含通配符）
+     * @param newTreePath 当前节点移动后的完整路径
      */
     @Update("""
             update t_menu set tree_path = REPLACE(tree_path, #{oldTreePath}, #{newTreePath})
-            where parent_id=#{parentId}
+            where tree_path LIKE CONCAT(#{oldTreePath}, '/%')
             """)
     void updateTreePathByParentId(@Param("parentId") String parentId, @Param("oldTreePath") String oldTreePath,
                                   @Param("newTreePath") String newTreePath);

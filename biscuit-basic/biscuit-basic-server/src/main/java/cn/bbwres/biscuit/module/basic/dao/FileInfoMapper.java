@@ -27,15 +27,26 @@ public interface FileInfoMapper extends BatchBaseMapper<FileInfoEntity> {
 
     /**
      * 分页查询数据
+     * <p>
+     * 修复说明：原实现只按 id 过滤，导致 {@link FileInfoPageReqVO} 中的其他字段
+     * （fileName、businessId、businessType、fileHash、fileStorageType、createTime、tenantId 等）
+     * 形同虚设。现补全常见业务字段的查询条件。
      *
      * @param reqVO 分页查询条件
      * @return
      */
     default Page<FileInfoEntity, FileInfoPageReqVO> selectPage(Page<FileInfoEntity, FileInfoPageReqVO> reqVO) {
         LambdaQueryWrapper<FileInfoEntity> queryWrapper = Wrappers.lambdaQuery(FileInfoEntity.class);
-        if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    FileInfoEntity::getId, reqVO.getQuery().getId());
+        FileInfoPageReqVO query = reqVO.getQuery();
+        if (!ObjectUtils.isEmpty(query)) {
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getId()), FileInfoEntity::getId, query.getId());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getTenantId()), FileInfoEntity::getTenantId, query.getTenantId());
+            queryWrapper.like(!ObjectUtils.isEmpty(query.getFileName()), FileInfoEntity::getFileName, query.getFileName());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getFileSuffix()), FileInfoEntity::getFileSuffix, query.getFileSuffix());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getBusinessId()), FileInfoEntity::getBusinessId, query.getBusinessId());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getBusinessType()), FileInfoEntity::getBusinessType, query.getBusinessType());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getFileHash()), FileInfoEntity::getFileHash, query.getFileHash());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getFileStorageType()), FileInfoEntity::getFileStorageType, query.getFileStorageType());
         }
 
         // 大多数情况下，id 倒序

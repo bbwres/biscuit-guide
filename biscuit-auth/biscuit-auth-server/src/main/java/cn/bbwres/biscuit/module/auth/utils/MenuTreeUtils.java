@@ -5,6 +5,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -67,21 +68,28 @@ public class MenuTreeUtils {
 
     /**
      * 为当前节点递归挂载子节点
+     * <p>
+     * 使用 {@link Iterator#remove()} 替代直接 {@link Map#remove(Object)}，避免
+     * 在遍历 keySet 时修改 Map 抛出 {@link java.util.ConcurrentModificationException}。
      *
      * @param currentNode 当前节点
      * @param nodeMap     所有节点的ID映射
      */
     private static void buildChildren(MenuTreeRespVO currentNode, Map<String, List<MenuTreeRespVO>> nodeMap) {
-        for (String parentId : nodeMap.keySet()) {
-            if (currentNode.getId().equals(parentId)) {
-                List<MenuTreeRespVO> menuTreeResp = nodeMap.get(parentId);
+        Iterator<Map.Entry<String, List<MenuTreeRespVO>>> iterator = nodeMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, List<MenuTreeRespVO>> entry = iterator.next();
+            if (currentNode.getId().equals(entry.getKey())) {
+                List<MenuTreeRespVO> menuTreeResp = entry.getValue();
                 currentNode.setChildren(menuTreeResp);
-                nodeMap.remove(parentId);
+                // 通过 Iterator.remove() 删除当前条目，避免 CME
+                iterator.remove();
                 for (MenuTreeRespVO menuTree : menuTreeResp) {
                     buildChildren(menuTree, nodeMap);
                 }
+                // 找到匹配项后即可跳出本层递归
+                return;
             }
-
         }
     }
 
