@@ -58,7 +58,7 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
      */
     default void deleteByRoleId(String roleId) {
         delete(Wrappers.lambdaQuery(RoleMenuEntity.class)
-                .eq(RoleMenuEntity::getId, roleId));
+                .eq(RoleMenuEntity::getRoleId, roleId));
     }
 
 

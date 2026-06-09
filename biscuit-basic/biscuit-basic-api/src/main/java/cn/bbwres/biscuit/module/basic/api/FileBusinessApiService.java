@@ -23,8 +23,10 @@ import cn.bbwres.biscuit.module.basic.api.vo.FileBindBusinessChangeParamsVO;
 import cn.bbwres.biscuit.module.basic.api.vo.FileBindBusinessParamsVO;
 import cn.bbwres.biscuit.module.basic.api.vo.FileInfoResultVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -99,7 +101,8 @@ public interface FileBusinessApiService {
      * @param fileId       a {@link java.lang.String} object
      * @return a {@link java.io.InputStream} object
      */
-    Result<byte[]> getFileInputStream(String businessType, String businessId, String fileId);
+    @GetMapping("/getFileInputStream")
+    Result<byte[]> getFileInputStream(@RequestParam("businessType") String businessType, @RequestParam("businessId") String businessId, @RequestParam("fileId") String fileId);
 
 
 }

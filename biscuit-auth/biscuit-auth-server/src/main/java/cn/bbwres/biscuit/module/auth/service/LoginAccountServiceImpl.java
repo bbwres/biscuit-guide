@@ -171,7 +171,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
     public void editAccountPassword(LoginAccountEntity entity, LoginAccountEditPasswordReqVO loginAccountEditPasswordReq) {
         if (!ObjectUtils.isEmpty(loginAccountEditPasswordReq.getOldPassword())) {
             log.info("当前用户:[{}]修改密码，校验原密码是否正确", entity.getName());
-            if (passwordEncoder.matches(loginAccountEditPasswordReq.getOldPassword(), entity.getLoginPassword())) {
+            if (!passwordEncoder.matches(loginAccountEditPasswordReq.getOldPassword(), entity.getLoginPassword())) {
                 throw new SystemRuntimeException(AuthErrorCodeConstants.ACCOUNT_PASSWORD_ERROR);
             }
         }
