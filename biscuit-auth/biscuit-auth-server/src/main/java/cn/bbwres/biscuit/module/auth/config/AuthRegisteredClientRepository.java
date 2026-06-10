@@ -36,6 +36,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -106,19 +107,30 @@ public class AuthRegisteredClientRepository implements RegisteredClientRepositor
         if (ObjectUtils.isEmpty(entity)) {
             return null;
         }
+        // 防御：null 字段采用合理默认值，避免下游 OAuth2 库抛 IllegalArgument
         return RegisteredClient.withId(entity.getId())
                 .clientId(entity.getId())
                 .clientSecret(entity.getClientSecret())
-                .clientAuthenticationMethods(methods ->
-                        methods.addAll(StringUtils.arrayStr2List(entity.getClientAuthenticationMethods())
-                                .stream()
-                                .map(ClientAuthenticationMethod::new)
-                                .toList()))
-                .authorizationGrantTypes(grantTypes ->
-                        grantTypes.addAll(StringUtils.arrayStr2List(entity.getAuthorizedGrantTypes())
-                                .stream()
-                                .map(AuthorizationGrantType::new)
-                                .toList()))
+                .clientAuthenticationMethods(methods -> {
+                    List<String> list = StringUtils.arrayStr2List(entity.getClientAuthenticationMethods());
+                    if (ObjectUtils.isEmpty(list)) {
+                        // entity 未配置时使用 OAuth2 默认值，避免空集
+                        list = java.util.Arrays.asList("client_secret_basic");
+                    }
+                    methods.addAll(list.stream()
+                            .map(ClientAuthenticationMethod::new)
+                            .toList());
+                })
+                .authorizationGrantTypes(grantTypes -> {
+                    List<String> list = StringUtils.arrayStr2List(entity.getAuthorizedGrantTypes());
+                    if (ObjectUtils.isEmpty(list)) {
+                        // entity 未配置时使用 OAuth2 默认 grant type
+                        list = java.util.Arrays.asList("authorization_code", "refresh_token");
+                    }
+                    grantTypes.addAll(list.stream()
+                            .map(AuthorizationGrantType::new)
+                            .toList());
+                })
                 .redirectUri(entity.getWebServerRedirectUri())
                 .postLogoutRedirectUri(entity.getPostLogoutRedirectUri())
                 .scopes(sc -> {
@@ -127,12 +139,18 @@ public class AuthRegisteredClientRepository implements RegisteredClientRepositor
                     }
                 })
                 .tokenSettings(TokenSettings.builder()
-                        //设置不透明token
-                        .accessTokenFormat(new OAuth2TokenFormat(entity.getAccessTokenFormat()))
-                        //刷新token只能使用一次
-                        .reuseRefreshTokens(entity.getReuseRefreshToken())
-                        .accessTokenTimeToLive(Duration.ofSeconds(entity.getAccessTokenValidity()))
-                        .refreshTokenTimeToLive(Duration.ofSeconds(entity.getRefreshTokenValidity())).build())
+                        //设置不透明token(accessTokenFormat 为 null 时使用默认 self-contained)
+                        .accessTokenFormat(ObjectUtils.isEmpty(entity.getAccessTokenFormat())
+                                ? OAuth2TokenFormat.SELF_CONTAINED
+                                : new OAuth2TokenFormat(entity.getAccessTokenFormat()))
+                        //刷新token只能使用一次(null 默认 true)
+                        .reuseRefreshTokens(entity.getReuseRefreshToken() == null
+                                ? true : entity.getReuseRefreshToken())
+                        .accessTokenTimeToLive(Duration.ofSeconds(
+                                entity.getAccessTokenValidity() == null ? 3600L : entity.getAccessTokenValidity()))
+                        .refreshTokenTimeToLive(Duration.ofSeconds(
+                                entity.getRefreshTokenValidity() == null ? 86400L : entity.getRefreshTokenValidity()))
+                        .build())
                 .clientSettings(ClientSettings.builder()
                         .setting(Oauth2SystemConstants.CLIENT_SETTING_SINGLE_USER_LOGIN, entity.getSingleUserLogin())
                         .requireProofKey(true).build())

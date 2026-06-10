@@ -39,6 +39,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -132,7 +133,11 @@ public class DefaultFileInfoOperation implements FileInfoOperation {
                         requestUser.getClientId(), fileId))
                 .retrieve()
                 .bodyToMono(BOOLEAN_TYPE_REFERENCE)
-                .map(Result::checkAndGetData);
+                .map(Result::checkAndGetData)
+                // 防御：远程鉴权超时时快速失败，避免阻塞业务线程
+                .timeout(Duration.ofSeconds(3))
+                // 防御：网络异常 / 4xx-5xx / 解析异常时降级为"无权限"，避免业务侧误判为有权限
+                .onErrorReturn(false);
         return result.blockOptional().orElse(false);
     }
 

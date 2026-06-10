@@ -55,6 +55,10 @@ public class MenuTreeUtils {
     private static void buildTree(MenuTreeRespVO menuTreeResp, List<MenuTreeRespVO> childrenMenuTreeRespList) {
         Map<String, List<MenuTreeRespVO>> nextChildrenMap = new HashMap<>(16);
         for (MenuTreeRespVO menuTreeRespVO : childrenMenuTreeRespList) {
+            // 防御：跳过 children 列表中的 null 元素，避免下游 NPE
+            if (menuTreeRespVO == null) {
+                continue;
+            }
             List<MenuTreeRespVO> nextChildrenList = nextChildrenMap.get(menuTreeRespVO.getParentId());
             if (CollectionUtils.isEmpty(nextChildrenList)) {
                 nextChildrenList = new ArrayList<>(16);
