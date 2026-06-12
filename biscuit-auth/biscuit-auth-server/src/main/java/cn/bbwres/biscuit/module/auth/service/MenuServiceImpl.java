@@ -197,6 +197,22 @@ public class MenuServiceImpl implements MenuService {
         return roleMenuMapper.findRolesByMenuId(menuId);
     }
 
+    /**
+     * 删除菜单（需校验是否有子菜单）
+     *
+     * @param id 菜单id
+     */
+    @Override
+    public void deleteMenu(String id) {
+        long childCount = menuMapper.countByParentId(id);
+        if (childCount > 0) {
+            throw new SystemRuntimeException(AuthErrorCodeConstants.MENU_HAS_CHILDREN_ERROR);
+        }
+        menuMapper.deleteById(id);
+        // 删除角色-菜单关联数据
+        roleMenuMapper.deleteByMenuId(id);
+    }
+
 
     /**
      * 判断是否修改父节点

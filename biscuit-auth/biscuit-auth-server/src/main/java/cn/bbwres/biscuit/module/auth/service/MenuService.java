@@ -92,4 +92,11 @@ public interface MenuService {
      */
     List<String> findRolesByMenuId(String menuId);
 
+    /**
+     * 删除菜单（需校验是否有子菜单）
+     *
+     * @param id 菜单id
+     */
+    void deleteMenu(String id);
+
 }

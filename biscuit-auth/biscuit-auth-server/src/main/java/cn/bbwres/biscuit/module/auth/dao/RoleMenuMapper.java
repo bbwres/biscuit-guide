@@ -89,5 +89,29 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
                 .select(RoleMenuEntity::getRoleId));
     }
 
+
+    /**
+     * 根据角色ID获取菜单数据
+     * @param roleId
+     * @param status
+     * @return
+     */
+    @Select("""
+            select m.*  from t_role_menu rm left join  t_menu m on m.id = rm.menu_id
+            where rm.role_id = #{roleId,jdbcType=VARCHAR}
+            and m.status = #{status}
+            """)
+    List<MenuEntity> findByRoleId(@Param("roleId") String roleId, @Param("status") DataStatusEnum status);
+
+    /**
+     * 根据菜单id删除所有关联的角色数据
+     *
+     * @param menuId 菜单id
+     */
+    default void deleteByMenuId(String menuId) {
+        delete(Wrappers.lambdaQuery(RoleMenuEntity.class)
+                .eq(RoleMenuEntity::getMenuId, menuId));
+    }
+
 }
 

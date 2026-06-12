@@ -8,6 +8,7 @@ import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.RoleAccountMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
+import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleMenuEntity;
 import lombok.RequiredArgsConstructor;
@@ -154,7 +155,30 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public List<RoleEntity> findByAccountIdNoTenant(String accountId) {
+        return roleAccountMapper.findByAccountIdNoTenant(accountId,DataStatusEnum.NORMAL);
+    }
+
+    /**
+     * 根据账户id查询关联的角色信息
+     *
+     * @param accountId
+     * @return
+     */
+    @Override
+    public List<RoleEntity> findByAccountId(String accountId) {
         return roleAccountMapper.findByAccountId(accountId,DataStatusEnum.NORMAL);
+    }
+
+    /**
+     * 根据账户id查询关联的角色信息，支持按客户端id筛选
+     *
+     * @param accountId
+     * @param clientId  可选，为空则查询所有
+     * @return
+     */
+    @Override
+    public List<RoleEntity> findByAccountIdAndClientId(String accountId, String clientId) {
+        return roleAccountMapper.findByAccountIdAndClientId(accountId, DataStatusEnum.NORMAL, clientId);
     }
 
     /**
@@ -166,6 +190,17 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<String> findAccountsByRoleId(String roleId) {
         return roleAccountMapper.findAccountsByRoleId(roleId);
+    }
+
+    /**
+     * 根据角色id查询关联的菜单信息
+     *
+     * @param roleId
+     * @return
+     */
+    @Override
+    public List<MenuEntity> findMenusByRoleId(String roleId) {
+        return roleMenuMapper.findByRoleId(roleId, DataStatusEnum.NORMAL);
     }
 
 

@@ -44,4 +44,9 @@ public interface MenuCacheService {
      * @param roleId 角色id
      */
     void deleteCacheByRoleId(String roleId);
+
+    /**
+     * 刷新所有菜单缓存
+     */
+    void refreshAllCache();
 }

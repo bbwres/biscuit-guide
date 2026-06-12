@@ -7,6 +7,7 @@ import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddOrUpdateReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddRoleReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountEditPasswordReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountEditReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.dao.LoginAccountMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleAccountMapper;
@@ -158,6 +159,25 @@ public class LoginAccountServiceImpl implements LoginAccountService {
         LoginAccountEntity entity = new LoginAccountEntity();
         entity.setId(loginAccountAddOrUpdateReq.getId());
         entity.setStatus(loginAccountAddOrUpdateReq.getStatus());
+        loginAccountMapper.updateById(entity);
+    }
+
+    /**
+     * 编辑账户信息（姓名、手机号）
+     * <p>如果手机号包含掩码字符（*），说明前端未修改，跳过手机号更新</p>
+     *
+     * @param loginAccountEditReq
+     */
+    @Override
+    public void editAccount(LoginAccountEditReqVO loginAccountEditReq) {
+        LoginAccountEntity entity = new LoginAccountEntity();
+        entity.setId(loginAccountEditReq.getId());
+        entity.setName(loginAccountEditReq.getName());
+        // 手机号包含掩码字符 * 时视为未修改，不更新
+        String phone = loginAccountEditReq.getPhone();
+        if (phone != null && !phone.contains("*")) {
+            entity.setPhone(phone);
+        }
         loginAccountMapper.updateById(entity);
     }
 

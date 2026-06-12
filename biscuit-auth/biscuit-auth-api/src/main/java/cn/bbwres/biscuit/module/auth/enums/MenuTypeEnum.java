@@ -28,7 +28,11 @@ import cn.bbwres.biscuit.enums.BaseEnum;
 
 public enum MenuTypeEnum implements BaseEnum<String> {
     /**
-     * 正常
+     * 目录
+     */
+    DIR("dir", "目录"),
+    /**
+     * 菜单
      */
     MENU("menu", "菜单"),
     /**

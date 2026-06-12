@@ -71,6 +71,40 @@ public class MenuTreeUtils {
 
 
     /**
+     * 根据parentId将扁平菜单列表构建为树形结构
+     *
+     * @param flatList 扁平菜单列表
+     * @return 树形结构列表
+     */
+    public static List<MenuTreeRespVO> buildMenuTreeByParentId(List<MenuTreeRespVO> flatList) {
+        if (CollectionUtils.isEmpty(flatList)) {
+            return new ArrayList<>();
+        }
+        Map<String, MenuTreeRespVO> map = new HashMap<>(flatList.size());
+        List<MenuTreeRespVO> roots = new ArrayList<>();
+        for (MenuTreeRespVO node : flatList) {
+            if (node == null) continue;
+            node.setChildren(null);
+            map.put(node.getId(), node);
+        }
+        for (MenuTreeRespVO node : flatList) {
+            if (node == null) continue;
+            String parentId = node.getParentId();
+            if (parentId == null || parentId.isEmpty() || "0".equals(parentId) || !map.containsKey(parentId)) {
+                roots.add(node);
+            } else {
+                MenuTreeRespVO parent = map.get(parentId);
+                if (parent.getChildren() == null) {
+                    parent.setChildren(new ArrayList<>());
+                }
+                parent.getChildren().add(node);
+            }
+        }
+        return roots;
+    }
+
+
+    /**
      * 为当前节点递归挂载子节点
      * <p>
      * 使用 {@link Iterator#remove()} 替代直接 {@link Map#remove(Object)}，避免

@@ -20,4 +20,28 @@
         id, create_time, creator, updater, update_time, login_account_id, role_id, remark, tenant_id
     </sql>
 
+    <!-- 根据账号id查询出角色信息（忽略租户过滤） -->
+    <select id="findByAccountIdNoTenant" resultType="cn.bbwres.biscuit.module.auth.entity.RoleEntity">
+        select r.* from t_role_account ra left join t_role r on r.id = ra.role_id
+        where ra.login_account_id = #{accountId,jdbcType=VARCHAR}
+        and r.status = #{status}
+    </select>
+
+    <!-- 根据账号id查询出角色信息（有租户过滤） -->
+    <select id="findByAccountId" resultType="cn.bbwres.biscuit.module.auth.entity.RoleEntity">
+        select r.* from t_role_account ra left join t_role r on r.id = ra.role_id
+        where ra.login_account_id = #{accountId,jdbcType=VARCHAR}
+        and r.status = #{status}
+    </select>
+
+    <!-- 根据账号id查询出角色信息，支持按客户端id筛选（有租户过滤） -->
+    <select id="findByAccountIdAndClientId" resultType="cn.bbwres.biscuit.module.auth.entity.RoleEntity">
+        select r.* from t_role_account ra left join t_role r on r.id = ra.role_id
+        where ra.login_account_id = #{accountId,jdbcType=VARCHAR}
+        and r.status = #{status}
+        <if test="clientId != null and clientId != ''">
+            and r.client_id = #{clientId,jdbcType=VARCHAR}
+        </if>
+    </select>
+
 </mapper>

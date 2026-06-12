@@ -154,6 +154,38 @@ public class MenuController {
     }
 
     /**
+     * 删除菜单
+     *
+     * @param id 菜单id
+     * @return Result
+     */
+    @PostMapping("/deleteMenu")
+    @Operation(summary = "删除菜单", parameters = {@Parameter(name = "id", description = "菜单id", required = true)})
+    public Result<Void> deleteMenu(@RequestParam("id") String id) {
+        log.info("当前用户:[{}]删除菜单id:[{}]", WebFrameworkUtils.getUserInfo(UserBaseInfo::getUsername), id);
+        MenuEntity menu = menuService.getMenu(id);
+        if (ObjectUtils.isEmpty(menu)) {
+            return Result.error(AuthErrorCodeConstants.DATA_NO_EXISTS_ERROR);
+        }
+        menuService.deleteMenu(id);
+        deleteRoleCache(id);
+        return Result.success(null);
+    }
+
+    /**
+     * 刷新菜单缓存
+     *
+     * @return Result
+     */
+    @PostMapping("/refreshCache")
+    @Operation(summary = "刷新菜单缓存")
+    public Result<Void> refreshCache() {
+        log.info("当前用户:[{}]刷新菜单缓存", WebFrameworkUtils.getUserInfo(UserBaseInfo::getUsername));
+        menuCacheService.refreshAllCache();
+        return Result.success(null);
+    }
+
+    /**
      * 根据menuId删除角色缓存信息
      *
      * @param menuId 菜单id

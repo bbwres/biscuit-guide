@@ -22,6 +22,8 @@ import cn.bbwres.biscuit.module.auth.constants.AuthSystemConstant;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -39,9 +41,16 @@ public class MenuCacheServiceImpl implements MenuCacheService {
 
     private MenuService menuService;
 
+    private CacheManager cacheManager;
+
     @Autowired
     public void setMenuService(MenuService menuService) {
         this.menuService = menuService;
+    }
+
+    @Autowired
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
     }
 
     /**
@@ -67,5 +76,16 @@ public class MenuCacheServiceImpl implements MenuCacheService {
             key = "targetClass.name+':'+#roleId")})
     public void deleteCacheByRoleId(String roleId) {
 
+    }
+
+    /**
+     * 刷新所有菜单缓存
+     */
+    @Override
+    public void refreshAllCache() {
+        Cache cache = cacheManager.getCache(AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY);
+        if (cache != null) {
+            cache.clear();
+        }
     }
 }

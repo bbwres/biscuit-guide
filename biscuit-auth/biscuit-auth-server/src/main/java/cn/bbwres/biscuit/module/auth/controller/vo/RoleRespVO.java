@@ -1,6 +1,7 @@
 package cn.bbwres.biscuit.module.auth.controller.vo;
 
 import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -90,6 +92,12 @@ public class RoleRespVO implements Serializable {
      */
     @Schema(description = "角色所属客户端应用")
     private String clientId;
+
+    /**
+     * 角色关联的菜单树（withMenus=true 时返回）
+     */
+    @Schema(description = "角色关联的菜单树（withMenus=true 时返回）")
+    private List<MenuTreeRespVO> menus;
 
 
 }

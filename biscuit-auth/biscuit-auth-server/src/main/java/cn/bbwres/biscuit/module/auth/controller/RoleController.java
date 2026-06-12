@@ -8,10 +8,16 @@ import cn.bbwres.biscuit.module.auth.controller.vo.RoleAddMenuReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RoleAddReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RolePageReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.RoleRespVO;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuRespVO;
+import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
+import cn.bbwres.biscuit.module.auth.convert.MenuConvert;
 import cn.bbwres.biscuit.module.auth.convert.RoleConvert;
+import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.service.RoleService;
+import cn.bbwres.biscuit.module.auth.service.cache.MenuCacheService;
 import cn.bbwres.biscuit.module.auth.service.cache.RoleCacheService;
+import cn.bbwres.biscuit.module.auth.utils.MenuTreeUtils;
 import cn.bbwres.biscuit.validate.ValidateAddGroup;
 import cn.bbwres.biscuit.validate.ValidateEditGroup;
 import cn.bbwres.biscuit.validate.ValidateEditStatusGroup;
@@ -45,6 +51,7 @@ public class RoleController {
     private final RoleService roleService;
 
     private final RoleCacheService roleCacheService;
+    private final MenuCacheService menuCacheService;
 
     /**
      * 分页参数信息
@@ -65,9 +72,20 @@ public class RoleController {
      * @return Result
      */
     @GetMapping("/getById")
-    @Operation(summary = "根据id获取角色的数据", parameters = {@Parameter(name = "id", description = "id", required = true)})
-    public Result<RoleRespVO> getById(@RequestParam("id") String entityId) {
-        return Result.success(RoleConvert.INSTANCE.convert(roleService.getRole(entityId)));
+    @Operation(summary = "根据id获取角色的数据",
+            parameters = {
+                    @Parameter(name = "id", description = "id", required = true),
+                    @Parameter(name = "withMenus", description = "是否查询关联菜单（可选，默认false）")
+            })
+    public Result<RoleRespVO> getById(@RequestParam("id") String entityId,
+                                       @RequestParam(value = "withMenus", required = false, defaultValue = "false") Boolean withMenus) {
+        RoleRespVO respVO = RoleConvert.INSTANCE.convert(roleService.getRole(entityId));
+        if (Boolean.TRUE.equals(withMenus)) {
+            List<MenuEntity> menuEntities = roleService.findMenusByRoleId(entityId);
+            List<MenuTreeRespVO> flatMenus = MenuConvert.INSTANCE.convertTreeList(menuEntities);
+            respVO.setMenus(MenuTreeUtils.buildMenuTreeByParentId(flatMenus));
+        }
+        return Result.success(respVO);
     }
 
 
@@ -162,10 +180,12 @@ public class RoleController {
      * @param roleId 角色id
      */
     private void deleteAccountCache(String roleId) {
+        menuCacheService.deleteCacheByRoleId(roleId);
         List<String> accountIds = roleService.findAccountsByRoleId(roleId);
         for (String accountId : accountIds) {
             roleCacheService.deleteCacheByAccountId(accountId);
         }
+
     }
 
 

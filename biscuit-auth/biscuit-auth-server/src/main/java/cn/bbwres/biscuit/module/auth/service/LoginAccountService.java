@@ -4,6 +4,7 @@ import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddOrUpdateReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountAddRoleReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountEditPasswordReqVO;
+import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountEditReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.LoginAccountPageReqVO;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 
@@ -92,6 +93,13 @@ public interface LoginAccountService {
      * @param loginAccountAddOrUpdateReq
      */
     void editAccountStatus(LoginAccountAddOrUpdateReqVO loginAccountAddOrUpdateReq);
+
+    /**
+     * 编辑账户信息（姓名、手机号）
+     *
+     * @param loginAccountEditReq
+     */
+    void editAccount(LoginAccountEditReqVO loginAccountEditReq);
 
     /**
      * 修改密码

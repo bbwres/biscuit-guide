@@ -7,11 +7,15 @@ import cn.bbwres.biscuit.entity.UserBaseInfo;
 import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
 import cn.bbwres.biscuit.module.auth.controller.vo.*;
 import cn.bbwres.biscuit.module.auth.convert.LoginAccountConvert;
+import cn.bbwres.biscuit.module.auth.convert.RoleConvert;
 import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
+import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
 import cn.bbwres.biscuit.module.auth.service.LoginAccountService;
+import cn.bbwres.biscuit.module.auth.service.RoleService;
 import cn.bbwres.biscuit.module.auth.service.cache.LoginAccountCacheService;
 import cn.bbwres.biscuit.validate.ValidateAddGroup;
+import cn.bbwres.biscuit.validate.ValidateEditGroup;
 import cn.bbwres.biscuit.validate.ValidateEditStatusGroup;
 import cn.bbwres.biscuit.web.utils.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -42,6 +47,8 @@ public class LoginAccountController {
     private final LoginAccountService loginAccountService;
 
     private final LoginAccountCacheService loginAccountCacheService;
+
+    private final RoleService roleService;
 
 
     /**
@@ -68,6 +75,23 @@ public class LoginAccountController {
     public Result<LoginAccountRespVO> getById(@RequestParam("id") String entityId) {
         UserBaseInfo requestUser = WebFrameworkUtils.getRequestUser();
         return Result.success(LoginAccountConvert.INSTANCE.convert(loginAccountService.getLoginAccount(entityId)));
+    }
+
+    /**
+     * 获取指定账户拥有的角色列表
+     *
+     * @return Result
+     */
+    @GetMapping("/getRoles")
+    @Operation(summary = "获取指定账户拥有的角色列表",
+            parameters = {
+                    @Parameter(name = "id", description = "登陆账户id", required = true),
+                    @Parameter(name = "clientId", description = "客户端id（可选，不传则查询所有）")
+            })
+    public Result<List<RoleRespVO>> getRoles(@RequestParam("id") String accountId,
+                                              @RequestParam(value = "clientId", required = false) String clientId) {
+        List<RoleEntity> roleEntities = roleService.findByAccountIdAndClientId(accountId, clientId);
+        return Result.success(RoleConvert.INSTANCE.convertList(roleEntities));
     }
 
 
@@ -111,6 +135,25 @@ public class LoginAccountController {
         return Result.success(null);
     }
 
+
+
+    /**
+     * 编辑账户信息（姓名、手机号）
+     *
+     * @return Result
+     */
+    @PostMapping("/editAccount")
+    @Operation(summary = "编辑账户信息")
+    public Result<Void> editAccount(@RequestBody @Validated(ValidateEditGroup.class) LoginAccountEditReqVO loginAccountEditReq) {
+        log.info("当前用户:[{}]编辑账户信息:[{}]", WebFrameworkUtils.getUserInfo(UserBaseInfo::getUsername), loginAccountEditReq);
+        LoginAccountEntity entity = loginAccountService.getLoginAccount(loginAccountEditReq.getId());
+        if (Objects.isNull(entity)) {
+            return Result.error(AuthErrorCodeConstants.DATA_NO_EXISTS_ERROR);
+        }
+        loginAccountService.editAccount(loginAccountEditReq);
+        loginAccountCacheService.deleteCache(entity.getTenantId(), entity.getLoginName());
+        return Result.success(null);
+    }
 
 
     /**

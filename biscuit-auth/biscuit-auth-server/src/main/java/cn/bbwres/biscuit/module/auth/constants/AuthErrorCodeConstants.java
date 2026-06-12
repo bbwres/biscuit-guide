@@ -55,4 +55,9 @@ public interface AuthErrorCodeConstants {
      * 菜单父节点不能为自身子孙节点
      */
     ErrorCode MENU_PARENT_IN_SUBTREE_ERROR = new ErrorCode("201001006", "auth.menu_parent_in_subtree_error");
+
+    /**
+     * 菜单存在子菜单，无法删除
+     */
+    ErrorCode MENU_HAS_CHILDREN_ERROR = new ErrorCode("201001007", "auth.menu_has_children_error");
 }

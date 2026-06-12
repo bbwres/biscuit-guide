@@ -59,6 +59,8 @@ biscuit:
       - /service-b/**
       - /auth/oauth2/token
       - /auth/oauth2/revoke
+      - /auth/captcha/create
+      - /auth/captcha/checkCaptcha
     disable-csrf: true
 
 # 接口文档
@@ -73,4 +75,4 @@ knife4j:
       version : openapi3
       # 需要排除的微服务(eg:网关服务)
       excluded-services:
-        - gateway-service
+        - gateway

@@ -134,5 +134,16 @@ public interface MenuMapper extends BatchBaseMapper<MenuEntity> {
      * @return
      */
     List<MenuTreeRespVO> getMenuTreeByTreePathAndStatus(@Param("treePath") String treePath, @Param("dataStatus") DataStatusEnum dataStatus);
+
+    /**
+     * 根据父级id查询子菜单数量
+     *
+     * @param parentId 父级id
+     * @return 子菜单数量
+     */
+    default long countByParentId(String parentId) {
+        return selectCount(Wrappers.lambdaQuery(MenuEntity.class)
+                .eq(MenuEntity::getParentId, parentId));
+    }
 }
 
