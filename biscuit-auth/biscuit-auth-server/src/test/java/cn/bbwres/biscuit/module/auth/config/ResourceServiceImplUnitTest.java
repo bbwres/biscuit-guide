@@ -18,7 +18,7 @@
 
 package cn.bbwres.biscuit.module.auth.config;
 
-import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.service.cache.MenuCacheService;
 import cn.bbwres.biscuit.utils.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,9 +49,8 @@ import static org.mockito.Mockito.when;
  * <p>覆盖：
  * <ul>
  *     <li>getLoginAuthResource 直接返回注入的列表</li>
- *     <li>getResourceByRole 多角色聚合菜单</li>
- *     <li>菜单去重(同 apiUrl 出现多次时输出一次)</li>
- *     <li>apiUrl 为空的菜单被过滤</li>
+ *     <li>getResourceByRole 多角色聚合接口</li>
+ *     <li>apiUrl 为空的接口被过滤</li>
  *     <li>apiUrlMethod 为空时使用通配符 "*"</li>
  *     <li>apiUrlMethod 不为空时使用原值</li>
  *     <li>roleIds 为空/为 null 时返回空列表</li>
@@ -73,8 +72,8 @@ class ResourceServiceImplUnitTest {
         ReflectionTestUtils.setField(resourceService, "menuCacheService", menuCacheService);
     }
 
-    private static MenuEntity menu(String id, String apiUrl, String apiUrlMethod) {
-        MenuEntity entity = new MenuEntity();
+    private static MenuApiEntity api(String id, String apiUrl, String apiUrlMethod) {
+        MenuApiEntity entity = new MenuApiEntity();
         entity.setId(id);
         entity.setApiUrl(apiUrl);
         entity.setApiUrlMethod(apiUrlMethod);
@@ -123,11 +122,11 @@ class ResourceServiceImplUnitTest {
     // ------------------- getResourceByRole -------------------
 
     @Test
-    @DisplayName("getResourceByRole: 单角色、单菜单、method 有值,输出 'method:apiUrl'")
-    void getResourceByRole_singleMenuWithMethod() {
+    @DisplayName("getResourceByRole: 单角色、单接口、method 有值,输出 'method:apiUrl'")
+    void getResourceByRole_singleApiWithMethod() {
         String roleId = "role-1";
-        when(menuCacheService.findByRoleId(roleId))
-                .thenReturn(Collections.singletonList(menu("m1", "/api/users", "GET")));
+        when(menuCacheService.findApisByRoleId(roleId))
+                .thenReturn(Collections.singletonList(api("a1", "/api/users", "GET")));
 
         List<String> result = resourceService.getResourceByRole(Collections.singleton(roleId));
 
@@ -140,8 +139,8 @@ class ResourceServiceImplUnitTest {
     @DisplayName("getResourceByRole: apiUrlMethod 为空时使用通配符 '*'")
     void getResourceByRole_blankMethod_useWildcard() {
         String roleId = "role-1";
-        when(menuCacheService.findByRoleId(roleId))
-                .thenReturn(Collections.singletonList(menu("m1", "/api/users", null)));
+        when(menuCacheService.findApisByRoleId(roleId))
+                .thenReturn(Collections.singletonList(api("a1", "/api/users", null)));
 
         List<String> result = resourceService.getResourceByRole(Collections.singleton(roleId));
 
@@ -153,8 +152,8 @@ class ResourceServiceImplUnitTest {
     @DisplayName("getResourceByRole: apiUrlMethod 为空字符串时也使用通配符")
     void getResourceByRole_emptyStringMethod_useWildcard() {
         String roleId = "role-1";
-        when(menuCacheService.findByRoleId(roleId))
-                .thenReturn(Collections.singletonList(menu("m1", "/api/users", "")));
+        when(menuCacheService.findApisByRoleId(roleId))
+                .thenReturn(Collections.singletonList(api("a1", "/api/users", "")));
 
         List<String> result = resourceService.getResourceByRole(Collections.singleton(roleId));
 
@@ -162,14 +161,14 @@ class ResourceServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("getResourceByRole: apiUrl 为空的菜单被过滤掉")
+    @DisplayName("getResourceByRole: apiUrl 为空的接口被过滤掉")
     void getResourceByRole_blankApiUrlFiltered() {
         String roleId = "role-1";
-        when(menuCacheService.findByRoleId(roleId)).thenReturn(Arrays.asList(
-                menu("m1", "/api/users", "GET"),
-                menu("m2", null, "POST"),         // apiUrl null,应被过滤
-                menu("m3", "", "PUT"),              // apiUrl 空字符串,应被过滤
-                menu("m4", "   ", "DELETE")         // apiUrl 空白字符串,应被过滤
+        when(menuCacheService.findApisByRoleId(roleId)).thenReturn(Arrays.asList(
+                api("a1", "/api/users", "GET"),
+                api("a2", null, "POST"),         // apiUrl null,应被过滤
+                api("a3", "", "PUT"),              // apiUrl 空字符串,应被过滤
+                api("a4", "   ", "DELETE")         // apiUrl 空白字符串,应被过滤
         ));
 
         List<String> result = resourceService.getResourceByRole(Collections.singleton(roleId));
@@ -179,12 +178,12 @@ class ResourceServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("getResourceByRole: 多角色聚合所有菜单")
+    @DisplayName("getResourceByRole: 多角色聚合所有接口")
     void getResourceByRole_multipleRoles_aggregated() {
-        when(menuCacheService.findByRoleId("role-1"))
-                .thenReturn(Collections.singletonList(menu("m1", "/api/a", "GET")));
-        when(menuCacheService.findByRoleId("role-2"))
-                .thenReturn(Collections.singletonList(menu("m2", "/api/b", "POST")));
+        when(menuCacheService.findApisByRoleId("role-1"))
+                .thenReturn(Collections.singletonList(api("a1", "/api/a", "GET")));
+        when(menuCacheService.findApisByRoleId("role-2"))
+                .thenReturn(Collections.singletonList(api("a2", "/api/b", "POST")));
 
         Set<String> roleIds = new HashSet<>(Arrays.asList("role-1", "role-2"));
         List<String> result = resourceService.getResourceByRole(roleIds);
@@ -196,15 +195,15 @@ class ResourceServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("getResourceByRole: 多角色 + 不同 method 的菜单全部输出")
+    @DisplayName("getResourceByRole: 多角色 + 不同 method 的接口全部输出")
     void getResourceByRole_multipleMethodsAndUrls() {
-        when(menuCacheService.findByRoleId("role-1")).thenReturn(Arrays.asList(
-                menu("m1", "/api/users", "GET"),
-                menu("m2", "/api/users", "POST"),
-                menu("m3", "/api/roles", null)   // method 空 -> *
+        when(menuCacheService.findApisByRoleId("role-1")).thenReturn(Arrays.asList(
+                api("a1", "/api/users", "GET"),
+                api("a2", "/api/users", "POST"),
+                api("a3", "/api/roles", null)   // method 空 -> *
         ));
-        when(menuCacheService.findByRoleId("role-2")).thenReturn(Arrays.asList(
-                menu("m4", "/api/login", "POST")
+        when(menuCacheService.findApisByRoleId("role-2")).thenReturn(Arrays.asList(
+                api("a4", "/api/login", "POST")
         ));
 
         Set<String> roleIds = new HashSet<>(Arrays.asList("role-1", "role-2"));
@@ -237,19 +236,19 @@ class ResourceServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("getResourceByRole: menuCacheService.findByRoleId 返回 null 列表时会抛 NPE(已知问题)")
+    @DisplayName("getResourceByRole: menuCacheService.findApisByRoleId 返回 null 列表时会抛 NPE(已知问题)")
     void getResourceByRole_cacheReturnsNullList() {
-        // 当前实现:menuEntityList.addAll(null) 会抛 NPE
+        // 当前实现:apiList.addAll(null) 会抛 NPE
         // 记录当前实现行为,未来可作为"应做空值防御"的回归点
-        when(menuCacheService.findByRoleId("role-1")).thenReturn(null);
+        when(menuCacheService.findApisByRoleId("role-1")).thenReturn(null);
         org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class,
                 () -> resourceService.getResourceByRole(Collections.singleton("role-1")));
     }
 
     @Test
-    @DisplayName("getResourceByRole: menuCacheService.findByRoleId 返回空列表时聚合结果为空")
+    @DisplayName("getResourceByRole: menuCacheService.findApisByRoleId 返回空列表时聚合结果为空")
     void getResourceByRole_cacheReturnsEmptyList() {
-        when(menuCacheService.findByRoleId("role-1")).thenReturn(Collections.emptyList());
+        when(menuCacheService.findApisByRoleId("role-1")).thenReturn(Collections.emptyList());
 
         List<String> result = resourceService.getResourceByRole(Collections.singleton("role-1"));
 
@@ -259,11 +258,11 @@ class ResourceServiceImplUnitTest {
 
     @Test
     @DisplayName("getResourceByRole: 输出按角色顺序(同 menu 顺序由 stream().toList() 保留)")
-    void getResourceByRole_preservesMenuOrder() {
-        when(menuCacheService.findByRoleId("role-1")).thenReturn(Arrays.asList(
-                menu("m1", "/api/a", "GET"),
-                menu("m2", "/api/b", "GET"),
-                menu("m3", "/api/c", "GET")
+    void getResourceByRole_preservesApiOrder() {
+        when(menuCacheService.findApisByRoleId("role-1")).thenReturn(Arrays.asList(
+                api("a1", "/api/a", "GET"),
+                api("a2", "/api/b", "GET"),
+                api("a3", "/api/c", "GET")
         ));
 
         List<String> result = resourceService.getResourceByRole(Collections.singleton("role-1"));
@@ -277,8 +276,8 @@ class ResourceServiceImplUnitTest {
     @Test
     @DisplayName("getResourceByRole: 角色去重(Set 语义):同一角色多次传入只查询一次 cache")
     void getResourceByRole_setDeduplicatesRoleIds() {
-        when(menuCacheService.findByRoleId("role-1"))
-                .thenReturn(Collections.singletonList(menu("m1", "/api/users", "GET")));
+        when(menuCacheService.findApisByRoleId("role-1"))
+                .thenReturn(Collections.singletonList(api("a1", "/api/users", "GET")));
 
         // Set 语义:重复 role-1 也只保留一份
         Set<String> roleIds = new HashSet<>(Arrays.asList("role-1", "role-1", "role-1"));
@@ -291,8 +290,8 @@ class ResourceServiceImplUnitTest {
     @Test
     @DisplayName("getResourceByRole: 分隔符使用 StringUtils.DATA_STRING_SPLIT(冒号)")
     void getResourceByRole_usesCorrectSeparator() {
-        when(menuCacheService.findByRoleId("role-1"))
-                .thenReturn(Collections.singletonList(menu("m1", "/api/users", "GET")));
+        when(menuCacheService.findApisByRoleId("role-1"))
+                .thenReturn(Collections.singletonList(api("a1", "/api/users", "GET")));
 
         List<String> result = resourceService.getResourceByRole(Collections.singleton("role-1"));
 

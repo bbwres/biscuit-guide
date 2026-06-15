@@ -18,7 +18,7 @@
 
 package cn.bbwres.biscuit.module.auth.config;
 
-import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.service.cache.MenuCacheService;
 import cn.bbwres.biscuit.security.oauth2.endpoint.ResourceService;
 import lombok.extern.slf4j.Slf4j;
@@ -73,18 +73,18 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public List<String> getResourceByRole(Set<String> roleIds) {
-        List<MenuEntity> menuEntityList = new ArrayList<>(16);
+        List<MenuApiEntity> apiList = new ArrayList<>(16);
         for (String roleId : roleIds) {
-            menuEntityList.addAll(menuCacheService.findByRoleId(roleId));
+            apiList.addAll(menuCacheService.findApisByRoleId(roleId));
         }
-        //过滤掉没有api的数据
-        return menuEntityList.stream()
-                .filter(menuEntity -> StringUtils.isNotBlank(menuEntity.getApiUrl()))
-                .map(menuEntity -> {
-                    if (StringUtils.isBlank(menuEntity.getApiUrlMethod())) {
-                        return "*" + cn.bbwres.biscuit.utils.StringUtils.DATA_STRING_SPLIT + menuEntity.getApiUrl();
+        //过滤掉没有 api 的数据
+        return apiList.stream()
+                .filter(api -> StringUtils.isNotBlank(api.getApiUrl()))
+                .map(api -> {
+                    if (StringUtils.isBlank(api.getApiUrlMethod())) {
+                        return "*" + cn.bbwres.biscuit.utils.StringUtils.DATA_STRING_SPLIT + api.getApiUrl();
                     }
-                    return menuEntity.getApiUrlMethod() + cn.bbwres.biscuit.utils.StringUtils.DATA_STRING_SPLIT + menuEntity.getApiUrl();
+                    return api.getApiUrlMethod() + cn.bbwres.biscuit.utils.StringUtils.DATA_STRING_SPLIT + api.getApiUrl();
                 }).toList();
     }
 }

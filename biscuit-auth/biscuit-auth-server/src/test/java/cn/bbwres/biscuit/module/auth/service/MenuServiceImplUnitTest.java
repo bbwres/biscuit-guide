@@ -21,8 +21,10 @@ package cn.bbwres.biscuit.module.auth.service;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
 import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
+import cn.bbwres.biscuit.module.auth.dao.MenuApiMapper;
 import cn.bbwres.biscuit.module.auth.dao.MenuMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,8 @@ import org.mockito.quality.Strictness;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -68,8 +72,14 @@ class MenuServiceImplUnitTest {
     @Mock
     private RoleMenuMapper roleMenuMapper;
 
+    @Mock
+    private MenuApiMapper menuApiMapper;
+
     @InjectMocks
     private MenuServiceImpl menuService;
+
+    /** 空接口列表，避免重复 new */
+    private static final List<MenuApiEntity> NO_APIS = Collections.emptyList();
 
     private static MenuEntity menuEntity(String id, String parentId, String treePath) {
         MenuEntity e = new MenuEntity();
@@ -97,7 +107,7 @@ class MenuServiceImplUnitTest {
         MenuEntity newMenu = new MenuEntity();
         newMenu.setName("测试菜单");
 
-        menuService.addMenu(newMenu, null);
+        menuService.addMenu(newMenu, null, NO_APIS);
 
         ArgumentCaptor<MenuEntity> captor = ArgumentCaptor.forClass(MenuEntity.class);
         verify(menuMapper).insert(captor.capture());
@@ -124,7 +134,7 @@ class MenuServiceImplUnitTest {
         MenuEntity newMenu = new MenuEntity();
         newMenu.setName("子菜单");
 
-        menuService.addMenu(newMenu, parent);
+        menuService.addMenu(newMenu, parent, NO_APIS);
 
         ArgumentCaptor<MenuEntity> captor = ArgumentCaptor.forClass(MenuEntity.class);
         verify(menuMapper).insert(captor.capture());
@@ -145,7 +155,7 @@ class MenuServiceImplUnitTest {
         MenuEntity updateEntity = menuEntity("1", "1", "1");
 
         SystemRuntimeException ex = assertThrows(SystemRuntimeException.class,
-                () -> menuService.editMenu(oldEntity, updateEntity, null));
+                () -> menuService.editMenu(oldEntity, updateEntity, null, NO_APIS));
 
         assertEquals(AuthErrorCodeConstants.MENU_PARENT_SELF_ERROR.getCode(), ex.getErrorCode());
         verify(menuMapper, never()).updateById(any(MenuEntity.class));
@@ -159,7 +169,7 @@ class MenuServiceImplUnitTest {
         MenuEntity targetParent = menuEntity("11", "1", "1/11");
 
         SystemRuntimeException ex = assertThrows(SystemRuntimeException.class,
-                () -> menuService.editMenu(oldEntity, updateEntity, targetParent));
+                () -> menuService.editMenu(oldEntity, updateEntity, targetParent, NO_APIS));
 
         assertEquals(AuthErrorCodeConstants.MENU_PARENT_IN_SUBTREE_ERROR.getCode(), ex.getErrorCode());
         verify(menuMapper, never()).updateById(any(MenuEntity.class));
@@ -173,7 +183,7 @@ class MenuServiceImplUnitTest {
         MenuEntity targetParent = menuEntity("111", "11", "1/11/111");
 
         SystemRuntimeException ex = assertThrows(SystemRuntimeException.class,
-                () -> menuService.editMenu(oldEntity, updateEntity, targetParent));
+                () -> menuService.editMenu(oldEntity, updateEntity, targetParent, NO_APIS));
 
         assertEquals(AuthErrorCodeConstants.MENU_PARENT_IN_SUBTREE_ERROR.getCode(), ex.getErrorCode());
     }
@@ -185,7 +195,7 @@ class MenuServiceImplUnitTest {
         MenuEntity updateEntity = menuEntity("1", "5", "10/5");
         MenuEntity targetParent = menuEntity("5", "10", "10/5");
 
-        menuService.editMenu(oldEntity, updateEntity, targetParent);
+        menuService.editMenu(oldEntity, updateEntity, targetParent, NO_APIS);
         verify(menuMapper).updateById(any(MenuEntity.class));
     }
 
@@ -196,7 +206,7 @@ class MenuServiceImplUnitTest {
         MenuEntity updateEntity = menuEntity("1", "10", "10");
         MenuEntity targetParent = menuEntity("10", null, "10");
 
-        menuService.editMenu(oldEntity, updateEntity, targetParent);
+        menuService.editMenu(oldEntity, updateEntity, targetParent, NO_APIS);
         verify(menuMapper).updateById(any(MenuEntity.class));
     }
 
@@ -208,7 +218,7 @@ class MenuServiceImplUnitTest {
         updateEntity.setName("新名字");
         MenuEntity targetParent = menuEntity("5", null, "5");
 
-        menuService.editMenu(oldEntity, updateEntity, targetParent);
+        menuService.editMenu(oldEntity, updateEntity, targetParent, NO_APIS);
         verify(menuMapper).updateById(any(MenuEntity.class));
     }
 
@@ -221,7 +231,7 @@ class MenuServiceImplUnitTest {
         MenuEntity updateEntity = menuEntity("1", "5", "5/1");
         MenuEntity targetParent = menuEntity("5", null, "5");
 
-        menuService.editMenu(oldEntity, updateEntity, targetParent);
+        menuService.editMenu(oldEntity, updateEntity, targetParent, NO_APIS);
 
         ArgumentCaptor<String> oldPathCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> newPathCaptor = ArgumentCaptor.forClass(String.class);
@@ -238,7 +248,8 @@ class MenuServiceImplUnitTest {
         menuService.editMenu(
                 menuEntity("1", null, "1"),
                 menuEntity("1", "5", "5/1"),
-                menuEntity("5", null, "5")
+                menuEntity("5", null, "5"),
+                NO_APIS
         );
 
         verify(menuMapper).updateTreePathByParentId(
@@ -255,12 +266,12 @@ class MenuServiceImplUnitTest {
     void transactionalAnnotationsPresent() throws NoSuchMethodException {
         // addMenu 包含两次写操作（insert + updateTreePathByParentId），必须事务化保证原子性
         Method addMenu = MenuServiceImpl.class.getDeclaredMethod("addMenu",
-                MenuEntity.class, MenuEntity.class);
+                MenuEntity.class, MenuEntity.class, List.class);
         assertNotNull(addMenu.getAnnotation(Transactional.class),
                 "addMenu 必须标注 @Transactional，否则 insert 与 treePath 校正会失去原子性");
 
         Method editMenu = MenuServiceImpl.class.getDeclaredMethod("editMenu",
-                MenuEntity.class, MenuEntity.class, MenuEntity.class);
+                MenuEntity.class, MenuEntity.class, MenuEntity.class, List.class);
         assertNotNull(editMenu.getAnnotation(Transactional.class),
                 "editMenu 应保持 @Transactional");
 

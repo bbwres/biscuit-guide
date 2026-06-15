@@ -62,8 +62,6 @@ class MenuConvertTest {
         entity.setVisible(Boolean.TRUE);
         entity.setKeepAlive(Boolean.FALSE);
         entity.setAlwaysShow(Boolean.TRUE);
-        entity.setApiUrlMethod("GET");
-        entity.setApiUrl("/api/system/user/list");
         entity.setTreePath("0,menu-1");
         entity.setCreator("zlf");
         entity.setCreateTime(LocalDateTime.of(2025, 1, 1, 12, 0, 0));
@@ -93,8 +91,6 @@ class MenuConvertTest {
         assertEquals(Boolean.TRUE, vo.getVisible());
         assertEquals(Boolean.FALSE, vo.getKeepAlive());
         assertEquals(Boolean.TRUE, vo.getAlwaysShow());
-        assertEquals("GET", vo.getApiUrlMethod());
-        assertEquals("/api/system/user/list", vo.getApiUrl());
         assertEquals("0,menu-1", vo.getTreePath());
         assertEquals("zlf", vo.getCreator());
         assertEquals(entity.getCreateTime(), vo.getCreateTime());
@@ -226,8 +222,6 @@ class MenuConvertTest {
         req.setVisible(Boolean.TRUE);
         req.setKeepAlive(Boolean.FALSE);
         req.setAlwaysShow(Boolean.FALSE);
-        req.setApiUrlMethod("POST");
-        req.setApiUrl("/api/system/add");
 
         MenuEntity entity = MenuConvert.INSTANCE.convertByAddReq(req);
 
@@ -244,8 +238,6 @@ class MenuConvertTest {
         assertEquals(Boolean.TRUE, entity.getVisible());
         assertEquals(Boolean.FALSE, entity.getKeepAlive());
         assertEquals(Boolean.FALSE, entity.getAlwaysShow());
-        assertEquals("POST", entity.getApiUrlMethod());
-        assertEquals("/api/system/add", entity.getApiUrl());
         // MenuAddReqVO 不包含 treePath 字段,转换后应为 null
         assertNull(entity.getTreePath());
     }

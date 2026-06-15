@@ -7,8 +7,11 @@ import cn.bbwres.biscuit.exception.SystemRuntimeException;
 import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
+import cn.bbwres.biscuit.module.auth.convert.MenuConvert;
+import cn.bbwres.biscuit.module.auth.dao.MenuApiMapper;
 import cn.bbwres.biscuit.module.auth.dao.MenuMapper;
 import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.utils.MenuTreeUtils;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -39,6 +47,8 @@ public class MenuServiceImpl implements MenuService {
     private final MenuMapper menuMapper;
 
     private final RoleMenuMapper roleMenuMapper;
+
+    private final MenuApiMapper menuApiMapper;
 
 
     /**
@@ -86,10 +96,11 @@ public class MenuServiceImpl implements MenuService {
      *
      * @param menuEntity menuEntity
      * @param parentMenu parentMenu 父级信息
+     * @param apiList    关联的接口列表（可空）
      */
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public void addMenu(MenuEntity menuEntity, MenuEntity parentMenu) {
+    public void addMenu(MenuEntity menuEntity, MenuEntity parentMenu, List<MenuApiEntity> apiList) {
         // 重置 id 为 null，由 MyBatis-Plus 雪花算法自动填充，避免并发 max(id)+1 冲突
         menuEntity.setId(null);
         menuEntity.setStatus(DataStatusEnum.NORMAL);
@@ -101,18 +112,21 @@ public class MenuServiceImpl implements MenuService {
         String realId = menuEntity.getId();
         String realTreePath = ObjectUtils.isEmpty(parentMenu) ? realId : parentMenu.getTreePath() + "/" + realId;
         menuMapper.updateTreePathByParentId(menuEntity.getId(), menuEntity.getTreePath(), realTreePath);
+        // 写入菜单关联的接口数据
+        saveMenuApiList(realId, apiList);
     }
 
     /**
      * 修改数据
      *
-     * @param oldEntity
-     * @param updateEntity
-     * @param parentMenu
+     * @param oldEntity    原菜单
+     * @param updateEntity 修改后的菜单
+     * @param parentMenu   父级菜单
+     * @param apiList      关联的接口列表（全量替换，可空表示清空）
      */
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public void editMenu(MenuEntity oldEntity, MenuEntity updateEntity, MenuEntity parentMenu) {
+    public void editMenu(MenuEntity oldEntity, MenuEntity updateEntity, MenuEntity parentMenu, List<MenuApiEntity> apiList) {
         oldEntity.setName(Objects.isNull(updateEntity.getName()) ? oldEntity.getName() : updateEntity.getName());
         oldEntity.setMenuSort(Objects.isNull(updateEntity.getMenuSort()) ? oldEntity.getMenuSort() : updateEntity.getMenuSort());
         oldEntity.setMenuType(Objects.isNull(updateEntity.getMenuType()) ? oldEntity.getMenuType() : updateEntity.getMenuType());
@@ -122,8 +136,9 @@ public class MenuServiceImpl implements MenuService {
         oldEntity.setVisible(Objects.isNull(updateEntity.getVisible()) ? oldEntity.getVisible() : updateEntity.getVisible());
         oldEntity.setKeepAlive(Objects.isNull(updateEntity.getKeepAlive()) ? oldEntity.getKeepAlive() : updateEntity.getKeepAlive());
         oldEntity.setAlwaysShow(Objects.isNull(updateEntity.getAlwaysShow()) ? oldEntity.getAlwaysShow() : updateEntity.getAlwaysShow());
-        oldEntity.setApiUrlMethod(Objects.isNull(updateEntity.getApiUrlMethod()) ? oldEntity.getApiUrlMethod() : updateEntity.getApiUrlMethod());
-        oldEntity.setApiUrl(Objects.isNull(updateEntity.getApiUrl()) ? oldEntity.getApiUrl() : updateEntity.getApiUrl());
+
+        // 全量替换 menuApiList：先删后插
+        replaceMenuApiList(oldEntity.getId(), apiList);
 
         if (checkNoChangeParent(oldEntity, updateEntity)) {
             //没有修改层级
@@ -163,16 +178,55 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-     * 根据菜单id获取出整个树形结构
+     * 根据菜单id获取出整个树形结构（含每个节点的 menuApiList）
      *
      * @param entityId
      * @return
      */
     @Override
     public List<MenuTreeRespVO> getMenuTreeById(String entityId) {
-        return MenuTreeUtils.buildMenuTree(id ->
+        List<MenuTreeRespVO> tree = MenuTreeUtils.buildMenuTree(id ->
                         menuMapper.getMenuTreeByIdAndStatus(id, DataStatusEnum.NORMAL), entityId,
                 treePath -> menuMapper.getMenuTreeByTreePathAndStatus(treePath, DataStatusEnum.NORMAL));
+        // 一次性查询所有节点的接口列表，避免 N+1
+        List<String> menuIds = new ArrayList<>();
+        collectMenuIds(tree, menuIds);
+        if (!menuIds.isEmpty()) {
+            List<MenuApiEntity> apiList = menuApiMapper.findByMenuIds(menuIds);
+            Map<String, List<MenuApiEntity>> apiByMenu = apiList.stream()
+                    .collect(Collectors.groupingBy(MenuApiEntity::getMenuId));
+            attachMenuApiList(tree, apiByMenu);
+        }
+        return tree;
+    }
+
+    /**
+     * 递归收集所有节点的 id
+     */
+    private static void collectMenuIds(List<MenuTreeRespVO> tree, List<String> out) {
+        if (CollectionUtils.isEmpty(tree)) {
+            return;
+        }
+        for (MenuTreeRespVO node : tree) {
+            if (node == null) continue;
+            out.add(node.getId());
+            collectMenuIds(node.getChildren(), out);
+        }
+    }
+
+    /**
+     * 递归为每个节点挂载关联的接口列表
+     */
+    private static void attachMenuApiList(List<MenuTreeRespVO> tree, Map<String, List<MenuApiEntity>> apiByMenu) {
+        if (CollectionUtils.isEmpty(tree)) {
+            return;
+        }
+        for (MenuTreeRespVO node : tree) {
+            if (node == null) continue;
+            List<MenuApiEntity> apis = apiByMenu.get(node.getId());
+            node.setMenuApiList(MenuConvert.INSTANCE.convertApiList(apis));
+            attachMenuApiList(node.getChildren(), apiByMenu);
+        }
     }
 
     /**
@@ -184,6 +238,17 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<MenuEntity> findByRoleId(String roleId) {
         return roleMenuMapper.findByRoleIdNoTenant(roleId, DataStatusEnum.NORMAL);
+    }
+
+    /**
+     * 根据角色id查询出关联菜单的所有接口（用于资源鉴权）
+     *
+     * @param roleId 角色id
+     * @return 接口列表
+     */
+    @Override
+    public List<MenuApiEntity> findApisByRoleId(String roleId) {
+        return roleMenuMapper.findApisByRoleIdNoTenant(roleId, DataStatusEnum.NORMAL);
     }
 
     /**
@@ -203,6 +268,7 @@ public class MenuServiceImpl implements MenuService {
      * @param id 菜单id
      */
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public void deleteMenu(String id) {
         long childCount = menuMapper.countByParentId(id);
         if (childCount > 0) {
@@ -211,6 +277,68 @@ public class MenuServiceImpl implements MenuService {
         menuMapper.deleteById(id);
         // 删除角色-菜单关联数据
         roleMenuMapper.deleteByMenuId(id);
+        // 删除菜单-接口关联数据
+        menuApiMapper.deleteByMenuId(id);
+    }
+
+    /**
+     * 根据菜单 id 查询关联的接口列表
+     *
+     * @param menuId 菜单 id
+     * @return 接口列表
+     */
+    @Override
+    public List<MenuApiEntity> findApiListByMenuId(String menuId) {
+        if (ObjectUtils.isEmpty(menuId)) {
+            return Collections.emptyList();
+        }
+        return menuApiMapper.findByMenuId(menuId);
+    }
+
+    /**
+     * 批量根据菜单 id 查询关联的接口列表
+     *
+     * @param menuIds 菜单 id 集合
+     * @return 接口列表
+     */
+    @Override
+    public List<MenuApiEntity> findApiListByMenuIds(Collection<String> menuIds) {
+        if (CollectionUtils.isEmpty(menuIds)) {
+            return Collections.emptyList();
+        }
+        return menuApiMapper.findByMenuIds(menuIds);
+    }
+
+
+    /**
+     * 写入菜单关联接口（仅用于新增场景）
+     *
+     * @param menuId  菜单 id
+     * @param apiList 接口列表
+     */
+    private void saveMenuApiList(String menuId, List<MenuApiEntity> apiList) {
+        if (CollectionUtils.isEmpty(apiList)) {
+            return;
+        }
+        for (MenuApiEntity api : apiList) {
+            if (api == null || ObjectUtils.isEmpty(api.getApiUrl())) {
+                continue;
+            }
+            api.setId(null);
+            api.setMenuId(menuId);
+            menuApiMapper.insert(api);
+        }
+    }
+
+    /**
+     * 全量替换菜单关联接口：先删后插
+     *
+     * @param menuId  菜单 id
+     * @param apiList 新的接口列表（空表示清空）
+     */
+    private void replaceMenuApiList(String menuId, List<MenuApiEntity> apiList) {
+        menuApiMapper.deleteByMenuId(menuId);
+        saveMenuApiList(menuId, apiList);
     }
 
 

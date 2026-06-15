@@ -110,17 +110,6 @@ public class MenuEntity extends BaseNameTenantEntity {
     @TableField("always_show")
     private Boolean alwaysShow;
 
-    /**
-     * 请求接口方法
-     */
-    @TableField("api_url_method")
-    private String apiUrlMethod;
-    /**
-     * 请求接口地址
-     */
-    @TableField("api_url")
-    private String apiUrl;
-
 
     /**
      * 树形路径

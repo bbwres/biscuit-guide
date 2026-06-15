@@ -19,6 +19,7 @@
 package cn.bbwres.biscuit.module.auth.service.cache;
 
 import cn.bbwres.biscuit.module.auth.constants.AuthSystemConstant;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,13 +68,30 @@ public class MenuCacheServiceImpl implements MenuCacheService {
     }
 
     /**
+     * 根据角色id查询关联菜单的所有接口
+     *
+     * @param roleId 角色id
+     * @return 接口列表
+     */
+    @Override
+    @Cacheable(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
+            key = "targetClass.name+':apis:'+#roleId", unless = "#result eq null or #result.size()<=0")
+    public List<MenuApiEntity> findApisByRoleId(String roleId) {
+        return menuService.findApisByRoleId(roleId);
+    }
+
+    /**
      * 删除缓存
      *
      * @param roleId 角色id
      */
     @Override
-    @Caching(evict = {@CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
-            key = "targetClass.name+':'+#roleId")})
+    @Caching(evict = {
+            @CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
+                    key = "targetClass.name+':'+#roleId"),
+            @CacheEvict(cacheNames = AuthSystemConstant.CACHE_NAME_AUTH_ONE_DAY,
+                    key = "targetClass.name+':apis:'+#roleId")
+    })
     public void deleteCacheByRoleId(String roleId) {
 
     }

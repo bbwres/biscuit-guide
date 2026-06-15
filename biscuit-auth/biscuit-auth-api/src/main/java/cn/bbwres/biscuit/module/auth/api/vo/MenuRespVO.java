@@ -29,6 +29,7 @@ import lombok.experimental.Accessors;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -121,16 +122,10 @@ public class MenuRespVO implements Serializable {
     private Boolean alwaysShow;
 
     /**
-     * 请求接口方法
+     * 菜单关联的接口列表（一个菜单可对应多个后端接口）
      */
-    @Schema(description = "请求接口方法")
-    private String apiUrlMethod;
-
-    /**
-     * 请求接口地址
-     */
-    @Schema(description = "请求接口地址")
-    private String apiUrl;
+    @Schema(description = "菜单关联的接口列表")
+    private List<MenuApiRespVO> menuApiList;
 
     /**
      * 创建时间

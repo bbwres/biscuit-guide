@@ -3,6 +3,7 @@ package cn.bbwres.biscuit.module.auth.service;
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.module.auth.api.vo.MenuTreeRespVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 
 import java.util.Collection;
@@ -49,17 +50,19 @@ public interface MenuService {
      *
      * @param menuEntity menuEntity
      * @param parentMenu parentMenu 父级信息
+     * @param apiList    关联的接口列表（可空）
      */
-    void addMenu(MenuEntity menuEntity, MenuEntity parentMenu);
+    void addMenu(MenuEntity menuEntity, MenuEntity parentMenu, List<MenuApiEntity> apiList);
 
     /**
      * 修改数据
      *
-     * @param oldEntity
-     * @param updateEntity
-     * @param parentMenu
+     * @param oldEntity    原菜单
+     * @param updateEntity 修改后的菜单
+     * @param parentMenu   父级菜单
+     * @param apiList      关联的接口列表（全量替换，可空表示清空）
      */
-    void editMenu(MenuEntity oldEntity, MenuEntity updateEntity, MenuEntity parentMenu);
+    void editMenu(MenuEntity oldEntity, MenuEntity updateEntity, MenuEntity parentMenu, List<MenuApiEntity> apiList);
 
     /**
      * 修改菜单状态
@@ -69,7 +72,7 @@ public interface MenuService {
     void editMenuStatus(MenuEntity entity);
 
     /**
-     * 根据菜单id获取出整个树形结构
+     * 根据菜单id获取出整个树形结构（含每个节点的 menuApiList）
      *
      * @param entityId
      * @return
@@ -85,6 +88,14 @@ public interface MenuService {
     List<MenuEntity> findByRoleId(String roleId);
 
     /**
+     * 根据角色id查询出关联菜单的所有接口（用于资源鉴权）
+     *
+     * @param roleId 角色id
+     * @return 接口列表
+     */
+    List<MenuApiEntity> findApisByRoleId(String roleId);
+
+    /**
      * 根据菜单id查询出 关联的角色id
      *
      * @param menuId
@@ -98,5 +109,21 @@ public interface MenuService {
      * @param id 菜单id
      */
     void deleteMenu(String id);
+
+    /**
+     * 根据菜单 id 查询关联的接口列表
+     *
+     * @param menuId 菜单 id
+     * @return 接口列表
+     */
+    List<MenuApiEntity> findApiListByMenuId(String menuId);
+
+    /**
+     * 批量根据菜单 id 查询关联的接口列表
+     *
+     * @param menuIds 菜单 id 集合
+     * @return 接口列表
+     */
+    List<MenuApiEntity> findApiListByMenuIds(Collection<String> menuIds);
 
 }

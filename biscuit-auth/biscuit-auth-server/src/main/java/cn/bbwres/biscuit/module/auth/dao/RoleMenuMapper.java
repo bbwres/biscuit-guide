@@ -2,6 +2,7 @@ package cn.bbwres.biscuit.module.auth.dao;
 
 import cn.bbwres.biscuit.dto.Page;
 import cn.bbwres.biscuit.enums.DataStatusEnum;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleMenuEntity;
 import cn.bbwres.biscuit.mybatis.mapper.BatchBaseMapper;
@@ -112,6 +113,24 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
         delete(Wrappers.lambdaQuery(RoleMenuEntity.class)
                 .eq(RoleMenuEntity::getMenuId, menuId));
     }
+
+    /**
+     * 根据角色id 查询出关联菜单的所有接口（忽略租户隔离）
+     *
+     * @param roleId 角色id
+     * @param status 菜单状态
+     * @return 接口列表
+     */
+    @Select("""
+            select ma.*
+            from t_menu_api ma
+            inner join t_role_menu rm on rm.menu_id = ma.menu_id
+            inner join t_menu m on m.id = ma.menu_id
+            where rm.role_id = #{roleId,jdbcType=VARCHAR}
+            and m.status = #{status}
+            """)
+    @InterceptorIgnore(tenantLine = "true")
+    List<MenuApiEntity> findApisByRoleIdNoTenant(@Param("roleId") String roleId, @Param("status") DataStatusEnum status);
 
 }
 

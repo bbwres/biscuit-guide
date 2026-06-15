@@ -9,6 +9,7 @@ import cn.bbwres.biscuit.module.auth.constants.AuthErrorCodeConstants;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuAddReqVO;
 import cn.bbwres.biscuit.module.auth.controller.vo.MenuPageReqVO;
 import cn.bbwres.biscuit.module.auth.convert.MenuConvert;
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.service.MenuService;
 import cn.bbwres.biscuit.module.auth.service.cache.MenuCacheService;
@@ -22,10 +23,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,7 +71,14 @@ public class MenuController {
     @GetMapping("/getById")
     @Operation(summary = "根据id获取菜单权限表详情数据", parameters = {@Parameter(name = "id", description = "id", required = true)})
     public Result<MenuRespVO> getById(@RequestParam("id") String entityId) {
-        return Result.success(MenuConvert.INSTANCE.convert(menuService.getMenu(entityId)));
+        MenuEntity entity = menuService.getMenu(entityId);
+        if (ObjectUtils.isEmpty(entity)) {
+            return Result.success(null);
+        }
+        MenuRespVO resp = MenuConvert.INSTANCE.convert(entity);
+        // 加载关联接口列表
+        resp.setMenuApiList(MenuConvert.INSTANCE.convertApiList(menuService.findApiListByMenuId(entityId)));
+        return Result.success(resp);
     }
 
     /**
@@ -98,7 +108,10 @@ public class MenuController {
             log.warn("新增菜单信息失败，传入了父级id，但是根据父级id没有查询到父级数据。父级id:[{}]", req.getParentId());
             return Result.error(AuthErrorCodeConstants.DATA_NO_EXISTS_ERROR);
         }
-        menuService.addMenu(MenuConvert.INSTANCE.convertByAddReq(req), parentMenu);
+        List<MenuApiEntity> apiList = CollectionUtils.isEmpty(req.getMenuApiList())
+                ? Collections.emptyList()
+                : MenuConvert.INSTANCE.convertApiEntityList(req.getMenuApiList());
+        menuService.addMenu(MenuConvert.INSTANCE.convertByAddReq(req), parentMenu, apiList);
         return Result.success(null);
     }
 
@@ -123,7 +136,10 @@ public class MenuController {
             return Result.error(AuthErrorCodeConstants.DATA_NO_EXISTS_ERROR);
         }
         MenuEntity updateMenu = MenuConvert.INSTANCE.convertByAddReq(req);
-        menuService.editMenu(oldMenu, updateMenu, parentMenu);
+        List<MenuApiEntity> apiList = CollectionUtils.isEmpty(req.getMenuApiList())
+                ? Collections.emptyList()
+                : MenuConvert.INSTANCE.convertApiEntityList(req.getMenuApiList());
+        menuService.editMenu(oldMenu, updateMenu, parentMenu, apiList);
         deleteRoleCache(req.getId());
         return Result.success(null);
     }

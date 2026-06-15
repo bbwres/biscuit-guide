@@ -18,6 +18,7 @@
 
 package cn.bbwres.biscuit.module.auth.service.cache;
 
+import cn.bbwres.biscuit.module.auth.entity.MenuApiEntity;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 
 import java.util.List;
@@ -37,6 +38,14 @@ public interface MenuCacheService {
      * @return List<MenuEntity>
      */
     List<MenuEntity> findByRoleId(String roleId);
+
+    /**
+     * 根据角色id查询关联菜单的所有接口（用于资源鉴权）
+     *
+     * @param roleId 角色id
+     * @return 接口列表
+     */
+    List<MenuApiEntity> findApisByRoleId(String roleId);
 
     /**
      * 删除缓存
