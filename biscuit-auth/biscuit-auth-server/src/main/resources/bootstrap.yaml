@@ -21,13 +21,13 @@ spring:
       discovery:
         server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:public}
-#        username: ${NACOS_USERNAME:nacos}
-#        password: ${NACOS_PASSWORD:nacos}
+      #        username: ${NACOS_USERNAME:nacos}
+      #        password: ${NACOS_PASSWORD:nacos}
       config:
         server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:public}
-#        username: ${NACOS_USERNAME:nacos}
-#        password: ${NACOS_PASSWORD:nacos}
+        #        username: ${NACOS_USERNAME:nacos}
+        #        password: ${NACOS_PASSWORD:nacos}
         group: DEFAULT_GROUP
         file-extension: yaml
 
@@ -71,6 +71,16 @@ biscuit:
         - bgimages/slider
   security:
     token-store-type: redis
+    # 登录密码 RSA 解密配置
+    password:
+      # 是否启用密码解密（false 时直接透传明文密码，仅用于本地调试）
+      enabled: true
+      # 时间戳有效窗口（秒），客户端时间戳与服务端时差超过该值视为过期，默认 5 分钟
+      timestamp-window-seconds: 300
+      # RSA 2048 私钥（PKCS#8 Base64，去掉 PEM 头尾和换行）
+      # 与前端 VITE_LOGIN_PUBLIC_KEY 配套使用，密钥对生成方式见项目文档
+      private-key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCttoCFtpKWIDUg3Ph4uuoy8cSSgOmuknnuAaEvzgZq5eS/eZkPz7TFDFwmF/7Sr5pxbYsXrt+YctcpG/hThIoq+zfD92OLJBzZ2B1wCF5iUOEWCNO7b9z2hJ20qm+Bmfs4VMROO14ShHzOXkob5WxBlmgt/gQaUomwEVB93DHZ2lLgYTNAfGspzz310PgHje+yVtPTK0x6xsjRCQhKTnfouWuF2s8PsgpWdwNnZKTjpmhkUCSgVEQUZP8BZhQeUOrmX3boVLFyh1stKmafLBH9FIW65rQXvvzImXghKzdqtNwSmd3FTseseDixonC0VtroX0MMpL0XwsfKIX3K4rnvAgMBAAECggEAEqgDlJi/lIT//7gLrXexmGgTywIyVq/fjXq6U3aGhOuMzi2ijSqrCPCjYun30avPY/g2VIRQ+j/3MLCS0nFtH2GcoxzKIZLu0EygGLylWlzCV8n552sDqawjfdhCIoKlku6zqI1CtK1q9AT3Y5iXsFGVfb8GtMcBh5nMcb/40KMvHg6oTV3re1q9E6z/jH9tckjgHglpIYnPD7fVzY8ceOCZGOp0JIXgcZfu84aolFDLqXLwY0LxmpZMp1Z3NhYCiPnySC+RDL8U7puqT/8m835Sj0FQrCF87iYbSkfCm/zhxQEY2kWG5zcXLJZmpi3c02WQUu9bsCAFanhtUSzgaQKBgQDfHCUhi5a5qXJuqM5gCxolZrRGs4oSKhKpkukEd0nMC7gApO33BPlx/io9kpF1DEI6qk7nWnZJaxWJU37xtrGuwGWHzJo6fFuB8yT2nvKfxJF/BOhlaVyq5uYywWmmxgtG7+xhx0rOFWVoN7PVY1Iq+adODgINpqcNfCH58fjUBwKBgQDHUi6ikq6PUg3CUcD9XxxNBlFNGEzJF82Bcca0SK7MIAkTGIRYx3zkhp+SE4sc9y85AtESRk9H6b7t4bpODG5PoC9RXF2nj4IdbyyqvBoh3v3sVr3E2pHIQ/lzqSbYW8rs/qNzd8qTFjW8I2I0XUZo/7VB65H8g26P5V0D8ZEA2QKBgCvqelSUCWMaO3AUwiqdhNP/11RjWrYgmfPO+xbp9Bi55coarMyGqiMKCH5+Lyt+8jph844OfGIPNfoF+WLStz7SmCmW2HTSraByn7/7oX5ZTtpVuPjdOGRbdsxezdEKAoZAC6NjexH9nCxbaoaCOlZDNe9jSnwtZYx99qIgQv5ZAoGAMA82w2hOwqvsOWBxAia+sivFyqsDSLF+kamXWbz0uK84wOv2bVmcWZXEP/qKXm+TaVGui5N8ZkCMEtuMimkg5/4dqqZ0xoQpwWMfCAPW4TfdTfEUTLTO1dTd/u9YOG7ZnQ9A5gSKSbDfP//gG/QpmAOf9scQKiyeqf+Jz/udFPECgYEAiX/mskIENdMiGxDn3oWzRT+N8TdfzoyyIbzTmAFzOZC/hj0P2cHAQeNcmUME2RRHR/nDYni8lqhJ9uVIOqgIDGKVioyez/D2bzVeQCwHOshHqwZzbs6K0epTh+2ZnPNsIm+YAIRvXc7Shgz4OPqFm4pSgfOqlGl/bzOwLZEJAvg=
+
   rpc:
     security:
       enable: true
@@ -86,6 +96,8 @@ captcha:
   init-default-resource: true
   secondary:
     enabled: true
-    expire: 120000
+    expire: 5000
+
+
 
 
