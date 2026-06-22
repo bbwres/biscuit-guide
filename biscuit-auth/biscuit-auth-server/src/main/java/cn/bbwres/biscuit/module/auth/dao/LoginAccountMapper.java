@@ -31,9 +31,21 @@ public interface LoginAccountMapper extends BatchBaseMapper<LoginAccountEntity> 
      */
     default Page<LoginAccountEntity, LoginAccountPageReqVO> selectPage(Page<LoginAccountEntity, LoginAccountPageReqVO> reqVO) {
         LambdaQueryWrapper<LoginAccountEntity> queryWrapper = Wrappers.lambdaQuery(LoginAccountEntity.class);
-        if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    LoginAccountEntity::getId, reqVO.getQuery().getId());
+        LoginAccountPageReqVO query = reqVO.getQuery();
+        if (!ObjectUtils.isEmpty(query)) {
+            // 精确匹配
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getId()),
+                    LoginAccountEntity::getId, query.getId());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getStatus()),
+                    LoginAccountEntity::getStatus, query.getStatus());
+
+            // 模糊匹配：登录名 / 姓名 / 手机号
+            queryWrapper.like(!ObjectUtils.isEmpty(query.getLoginName()),
+                    LoginAccountEntity::getLoginName, query.getLoginName());
+            queryWrapper.like(!ObjectUtils.isEmpty(query.getName()),
+                    LoginAccountEntity::getName, query.getName());
+            queryWrapper.like(!ObjectUtils.isEmpty(query.getPhone()),
+                    LoginAccountEntity::getPhone, query.getPhone());
         }
 
         // 大多数情况下，id 倒序

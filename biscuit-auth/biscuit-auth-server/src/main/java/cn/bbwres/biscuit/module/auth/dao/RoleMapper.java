@@ -30,9 +30,21 @@ public interface RoleMapper extends BatchBaseMapper<RoleEntity> {
      */
     default Page<RoleEntity, RolePageReqVO> selectPage(Page<RoleEntity, RolePageReqVO> reqVO) {
         LambdaQueryWrapper<RoleEntity> queryWrapper = Wrappers.lambdaQuery(RoleEntity.class);
-        if (!ObjectUtils.isEmpty(reqVO.getQuery())) {
-            queryWrapper.eq(!ObjectUtils.isEmpty(reqVO.getQuery().getId()),
-                    RoleEntity::getId, reqVO.getQuery().getId());
+        RolePageReqVO query = reqVO.getQuery();
+        if (!ObjectUtils.isEmpty(query)) {
+            // 精确匹配
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getId()),
+                    RoleEntity::getId, query.getId());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getStatus()),
+                    RoleEntity::getStatus, query.getStatus());
+            queryWrapper.eq(!ObjectUtils.isEmpty(query.getClientId()),
+                    RoleEntity::getClientId, query.getClientId());
+
+            // 模糊匹配：角色编码 / 角色名称
+            queryWrapper.like(!ObjectUtils.isEmpty(query.getRoleCode()),
+                    RoleEntity::getRoleCode, query.getRoleCode());
+            queryWrapper.like(!ObjectUtils.isEmpty(query.getRoleName()),
+                    RoleEntity::getRoleName, query.getRoleName());
         }
 
         // 大多数情况下，id 倒序
