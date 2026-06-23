@@ -19,4 +19,35 @@
         id, create_time, creator, updater, update_time, role_id, menu_id, tenant_id
     </sql>
 
+    <!-- 根据roleId 查询关联的菜单信息（忽略租户隔离，对应 @InterceptorIgnore） -->
+    <select id="findByRoleIdNoTenant"
+            resultType="cn.bbwres.biscuit.module.auth.entity.MenuEntity">
+        select m.*
+        from t_role_menu rm
+                 left join t_menu m on m.id = rm.menu_id
+        where rm.role_id = #{roleId,jdbcType=VARCHAR}
+          and m.status = #{status}
+    </select>
+
+    <!-- 根据角色ID获取菜单数据 -->
+    <select id="findByRoleId"
+            resultType="cn.bbwres.biscuit.module.auth.entity.MenuEntity">
+        select m.*
+        from t_role_menu rm
+                 left join t_menu m on m.id = rm.menu_id
+        where rm.role_id = #{roleId,jdbcType=VARCHAR}
+          and m.status = #{status}
+    </select>
+
+    <!-- 根据角色id 查询出关联菜单的所有接口（忽略租户隔离，对应 @InterceptorIgnore） -->
+    <select id="findApisByRoleIdNoTenant"
+            resultType="cn.bbwres.biscuit.module.auth.entity.MenuApiEntity">
+        select ma.*
+        from t_menu_api ma
+                 inner join t_role_menu rm on rm.menu_id = ma.menu_id
+                 inner join t_menu m on m.id = ma.menu_id
+        where rm.role_id = #{roleId,jdbcType=VARCHAR}
+          and m.status = #{status}
+    </select>
+
 </mapper>

@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -70,11 +69,6 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
      * @param status
      * @return
      */
-    @Select("""
-            select m.*  from t_role_menu rm left join  t_menu m on m.id = rm.menu_id
-            where rm.role_id = #{roleId,jdbcType=VARCHAR}
-            and m.status = #{status}
-            """)
     @InterceptorIgnore(tenantLine = "true")
     List<MenuEntity> findByRoleIdNoTenant(@Param("roleId") String roleId, @Param("status") DataStatusEnum status);
 
@@ -97,11 +91,6 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
      * @param status
      * @return
      */
-    @Select("""
-            select m.*  from t_role_menu rm left join  t_menu m on m.id = rm.menu_id
-            where rm.role_id = #{roleId,jdbcType=VARCHAR}
-            and m.status = #{status}
-            """)
     List<MenuEntity> findByRoleId(@Param("roleId") String roleId, @Param("status") DataStatusEnum status);
 
     /**
@@ -121,14 +110,6 @@ public interface RoleMenuMapper extends BatchBaseMapper<RoleMenuEntity> {
      * @param status 菜单状态
      * @return 接口列表
      */
-    @Select("""
-            select ma.*
-            from t_menu_api ma
-            inner join t_role_menu rm on rm.menu_id = ma.menu_id
-            inner join t_menu m on m.id = ma.menu_id
-            where rm.role_id = #{roleId,jdbcType=VARCHAR}
-            and m.status = #{status}
-            """)
     @InterceptorIgnore(tenantLine = "true")
     List<MenuApiEntity> findApisByRoleIdNoTenant(@Param("roleId") String roleId, @Param("status") DataStatusEnum status);
 
