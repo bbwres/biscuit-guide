@@ -34,6 +34,12 @@ spring:
                 - Path=/basic/**
               filters:
                 - StripPrefix=1
+            - id: scheduler
+              uri: lb://scheduler
+              predicates:
+                - Path=/scheduler/**
+              filters:
+                - StripPrefix=1
 
 
 server:

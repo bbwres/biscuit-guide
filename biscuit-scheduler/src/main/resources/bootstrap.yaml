@@ -34,6 +34,7 @@ spring:
     jdbc:
       table-prefix: t_qrtz_
       job-store-type: jdbc
+      driver-delegate-class: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 
   datasource:
     # 数据库配置
@@ -58,7 +59,7 @@ springdoc:
       author: zlf
       version: 1.0
   packages-to-scan:
-    - cn.bbwres.biscuit.module.auth.controller
+    - cn.bbwres.biscuit.module.scheduler.controller
   show-oauth2-endpoints: true
 
 biscuit:
