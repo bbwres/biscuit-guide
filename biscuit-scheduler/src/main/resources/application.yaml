@@ -1,0 +1,49 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  servlet:
+    multipart:
+      max-request-size: 500MB
+      max-file-size: 500MB
+  #数据源配置
+  datasource:
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      connection-timeout: 60000
+      connection-test-query: SELECT 1
+  cloud:
+    openfeign:
+      okhttp:
+        enabled: true
+      httpclient:
+        connection-timeout: 10000
+        max-connections: 200
+        time-to-live: 900
+        ok-http:
+          read-timeout: 30
+
+
+
+# 监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+    jmx:
+      exposure:
+        include: health,info,metrics,loggers
+  endpoint:
+    health:
+      show-details: always
+
+
+
+
+
+
+
+
+

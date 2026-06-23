@@ -30,7 +30,6 @@
     <artifactId>biscuit-auth-server</artifactId>
 
     <properties>
- 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
