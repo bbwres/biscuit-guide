@@ -15,6 +15,7 @@ import cn.bbwres.biscuit.module.auth.entity.LoginAccountEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleAccountEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.enums.LoginAccountStatusEnum;
+import cn.bbwres.biscuit.module.auth.service.cache.RoleCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class LoginAccountServiceImpl implements LoginAccountService {
     private final PasswordEncoder passwordEncoder;
 
     private final RoleAccountMapper roleAccountMapper;
+    private final RoleCacheService roleCacheService;
 
 
     /**
@@ -136,6 +138,8 @@ public class LoginAccountServiceImpl implements LoginAccountService {
                 .setLoginAccountId(loginAccountAddRoleReq.getId())
                 .setRoleId(roleId)).toList();
         roleAccountMapper.insert(roleAccounts);
+        // 清除该账户的角色缓存，使配置立即生效
+        roleCacheService.deleteCacheByAccountId(loginAccountAddRoleReq.getId());
     }
 
     /**
