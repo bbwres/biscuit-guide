@@ -11,6 +11,7 @@ import cn.bbwres.biscuit.module.auth.dao.RoleMenuMapper;
 import cn.bbwres.biscuit.module.auth.entity.MenuEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleEntity;
 import cn.bbwres.biscuit.module.auth.entity.RoleMenuEntity;
+import cn.bbwres.biscuit.module.auth.service.cache.MenuCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class RoleServiceImpl implements RoleService {
     private final RoleMenuMapper roleMenuMapper;
 
     private final RoleAccountMapper roleAccountMapper;
+    private final MenuCacheService menuCacheService;
 
 
     /**
@@ -144,6 +146,8 @@ public class RoleServiceImpl implements RoleService {
             roleMenuEntities.add(roleMenuEntity);
         }
         roleMenuMapper.insert(roleMenuEntities);
+        // 清除该角色的菜单缓存，使配置立即生效
+        menuCacheService.deleteCacheByRoleId(roleEntity.getId());
 
     }
 
